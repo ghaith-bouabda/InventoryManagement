@@ -1,10 +1,10 @@
-package com.GestionDustock.configserver;
+package com.pfe.GestioDuStock;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ConfigServerApplicationTests {
+class GestioDuStockApplicationTests {
 
 	@Test
 	void contextLoads() {
