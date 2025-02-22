@@ -29,7 +29,9 @@ public class fournisseur {
         private String telephone;
         private String adresse;
         private String contactPerson;
+    @OneToMany(mappedBy = "fournisseur", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<product> products; 
 
         @Column(name = "is_deleted", nullable = false)
-        private boolean isDeleted = false;  // For soft delete
+        private boolean isDeleted = false;
     }

@@ -17,11 +17,11 @@ public class product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;  // Product name
+    private String name;
 
-    private Double price;  // Product price
+    private Double price;
 
-
+    @ManyToOne
     @JoinColumn(name = "fournisseur_id", nullable = false)
-    private fournisseur fournisseur;  // Reference to the supplier of the product
+    private fournisseur fournisseur;
 }

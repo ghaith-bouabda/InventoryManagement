@@ -12,18 +12,20 @@ public class fournisseurService {
 
     private final fournisseurRepository fournisseurRepository;
 
-    private String generateSlug(String nom) {
-        return nom.toLowerCase().replaceAll("[^a-z0-9]+", "-");
-    }
+
 
     private String generateUniqueSlug(String nom) {
-        String slug = generateSlug(nom);
+        // Use UUID to generate a unique string
+        String baseSlug = nom.toLowerCase().replaceAll("[^a-z0-9]+", "-");
 
-        while (fournisseurRepository.existsBySlug(slug)) {
-            slug = slug + "-" + UUID.randomUUID().toString().substring(0, 6); // Append a random suffix
+        // Append a unique UUID
+        String uniqueSlug = baseSlug + "-" + UUID.randomUUID().toString().substring(0, 8);
+
+        while (fournisseurRepository.existsBySlug(uniqueSlug)) {
+            uniqueSlug = baseSlug + "-" + UUID.randomUUID().toString().substring(0, 8);
         }
 
-        return slug;
+        return uniqueSlug;
     }
 
     public fournisseur createFournisseur(fournisseur fournisseur) {
