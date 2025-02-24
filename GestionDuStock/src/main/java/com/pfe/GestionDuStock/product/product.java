@@ -1,6 +1,6 @@
 package com.pfe.GestionDuStock.product;
 
-import com.pfe.GestionDuStock.fournisseur.fournisseur;
+import com.pfe.GestionDuStock.supplier.supplier;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,10 +18,15 @@ public class product {
     private Long id;
 
     private String name;
-
     private Double price;
 
     @ManyToOne
-    @JoinColumn(name = "fournisseur_id", nullable = false)
-    private fournisseur fournisseur;
+    @JoinColumn(name = "supplier_id")
+    private supplier supplier;
+
+    private Integer stockQuantity;  // Current stock
+    private Integer stockThreshold; // Minimum stock level before reorder notification
+
+
+
 }

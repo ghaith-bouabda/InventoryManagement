@@ -12,14 +12,25 @@ public class purchaseService {
 
     private final purchaseRepository purchaseRepository;
 
-    // Create or update a purchase
     public purchase savePurchase(purchase purchase) {
+        purchase.builder()
+                .purchaseDate(purchase.getPurchaseDate())
+                .approved(purchase.isApproved())
+                .autoOrder(purchase.getAutoOrder())
+                .invoiceNumber(generateInvoiceNumber())
+                .status(purchase.getStatus())
+                .quantity(purchase.getQuantity())
+                .totalAmount(purchase.getTotalAmount())
+                .build();
         return purchaseRepository.save(purchase);
     }
 
     // Get all purchases
     public List<purchase> getAllPurchases() {
         return purchaseRepository.findAll();
+    }
+    private String generateInvoiceNumber() {
+        return "INV-" + System.currentTimeMillis();
     }
 
     // Get purchase by ID

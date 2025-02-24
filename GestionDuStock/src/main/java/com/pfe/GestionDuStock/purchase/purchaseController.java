@@ -10,12 +10,11 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/purchases")
-@RequiredArgsConstructor  // Lombok generates the constructor automatically
+@RequiredArgsConstructor
 public class purchaseController {
 
     private final purchaseService purchaseService;
 
-    // Create or update a purchase
     @PostMapping
     public ResponseEntity<purchase> createPurchase(@RequestBody purchase purchase) {
         purchase savedPurchase = purchaseService.savePurchase(purchase);
@@ -37,7 +36,6 @@ public class purchaseController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    // Get a purchase by invoice number
     @GetMapping("/invoice/{invoiceNumber}")
     public ResponseEntity<purchase> getPurchaseByInvoiceNumber(@PathVariable String invoiceNumber) {
         Optional<purchase> purchase = purchaseService.getPurchaseByInvoiceNumber(invoiceNumber);
@@ -45,7 +43,6 @@ public class purchaseController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    // Delete a purchase by ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePurchase(@PathVariable Long id) {
         purchaseService.deletePurchase(id);

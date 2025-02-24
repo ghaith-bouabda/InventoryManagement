@@ -1,6 +1,6 @@
-package com.pfe.GestionDuStock.fournisseur;
+package com.pfe.GestionDuStock.supplier;
 
-public record fournisseurDTO(
+public record supplierDTO(
         String slug,
         String nom,
         String email,
