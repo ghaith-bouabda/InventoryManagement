@@ -24,8 +24,8 @@ public class product {
     @JoinColumn(name = "supplier_id")
     private supplier supplier;
 
-    private Integer stockQuantity;  // Current stock
-    private Integer stockThreshold; // Minimum stock level before reorder notification
+    private Long stockQuantity;  // Current stock
+    private Long stockThreshold; // Minimum stock level before reorder notification
 
 
 

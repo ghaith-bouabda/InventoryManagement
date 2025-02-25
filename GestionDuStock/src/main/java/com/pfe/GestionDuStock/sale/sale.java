@@ -1,6 +1,7 @@
 package com.pfe.GestionDuStock.sale;
 
 
+import com.pfe.GestionDuStock.customer.customer;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,7 +21,10 @@ public class sale {
     private Long id;
 
     private LocalDateTime saleDate; // When the sale occurred
-
+     private long amount;
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private customer customer;
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<saleItem> saleItems = new ArrayList<>(); // Initialize directly here
 

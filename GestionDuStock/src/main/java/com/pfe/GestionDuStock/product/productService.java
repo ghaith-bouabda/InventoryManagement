@@ -1,8 +1,6 @@
 package com.pfe.GestionDuStock.product;
 
-import com.pfe.GestionDuStock.purchase.purchase;
 import com.pfe.GestionDuStock.purchase.purchaseRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,41 +12,12 @@ import java.util.Optional;
 public class productService {
 
     private final productRepository productRepository;
-    private final purchaseRepository purchaseRepository;
 
 
     public product saveProduct(product product) {
         return productRepository.save(product); // Just save the product as it is
     }
 
-    @Transactional
-    public void finalizePurchase(Long purchaseOrderId) {
-        purchase order = purchaseRepository.findById(purchaseOrderId)
-                .orElseThrow(() -> new RuntimeException("Purchase order not found"));
-
-        // Ensure the order is approved before proceeding
-        if (!order.isApproved()) {
-            throw new RuntimeException("Purchase order not approved yet.");
-        }
-
-        for (product p : order.getProducts()) {
-            // Ensure there is enough stock to fulfill the order
-            Optional<product> productInDb = productRepository.findById(p.getId());
-            if (productInDb.isPresent()) {
-                product productFromDb = productInDb.get();
-                if (productFromDb.getStockQuantity() < p.getStockQuantity()) {
-                    throw new RuntimeException("Not enough stock to fulfill order for " + p.getName());
-                }
-                // Reduce stock by the quantity ordered
-                productFromDb.setStockQuantity(productFromDb.getStockQuantity() - p.getStockQuantity());
-                productRepository.save(productFromDb); // Save the updated product stock
-            } else {
-                throw new RuntimeException("Product not found in inventory: " + p.getName());
-            }
-        }
-        order.setStatus("Finalized");
-        purchaseRepository.save(order); // Save the updated purchase order
-    }
     public List<product> getAllProducts() {
         return productRepository.findAll();
     }
@@ -59,5 +28,22 @@ public class productService {
 
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
+    }
+    public product reduceProductQuantity(Long productId, Long quantitySold) {
+        product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        if (product.getStockQuantity() < quantitySold) {
+            throw new RuntimeException("Not enough stock for the sale");
+        }
+        product.setStockQuantity(product.getStockQuantity() - quantitySold);
+        return productRepository.save(product);
+    }
+
+    public product increaseProductQuantity(Long productId, Long quantityPurchased) {
+        product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+        product.setStockQuantity(product.getStockQuantity() + quantityPurchased);
+        return productRepository.save(product);
     }
 }

@@ -6,4 +6,5 @@ import java.util.Optional;
 
 public interface purchaseRepository extends JpaRepository<purchase, Long> {
     Optional<purchase> findByInvoiceNumber(String invoiceNumber);
+   Optional <purchase> findBySupplierSlug(String slug);
 }

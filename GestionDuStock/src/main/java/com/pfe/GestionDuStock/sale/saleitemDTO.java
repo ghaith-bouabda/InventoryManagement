@@ -1,4 +1,4 @@
 package com.pfe.GestionDuStock.sale;
 
-public record saleitemDTO(Long productId, int quantity, double price) {
+public record saleitemDTO(Long productId, Long quantity, Long price) {
 }

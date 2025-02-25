@@ -16,8 +16,8 @@ public class purchaseController {
     private final purchaseService purchaseService;
 
     @PostMapping
-    public ResponseEntity<purchase> createPurchase(@RequestBody purchase purchase) {
-        purchase savedPurchase = purchaseService.savePurchase(purchase);
+    public ResponseEntity<purchase> createPurchase(@RequestBody Long supplierId,  purchase purchase) {
+        purchase savedPurchase = purchaseService.savePurchase(supplierId,purchase);
         return new ResponseEntity<>(savedPurchase, HttpStatus.CREATED);
     }
 
@@ -30,8 +30,9 @@ public class purchaseController {
 
     // Get a purchase by ID
     @GetMapping("/{id}")
-    public ResponseEntity<purchase> getPurchaseById(@PathVariable Long id) {
-        Optional<purchase> purchase = purchaseService.getPurchaseById(id);
+    public ResponseEntity<purchase> getPurchaseBySupplier(@PathVariable String  Slug)
+    {
+        Optional<purchase> purchase = purchaseService.getPurchaseBySupplierSlug(Slug);
         return purchase.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }

@@ -1,5 +1,7 @@
 package com.pfe.GestionDuStock.sale;
 
+import com.pfe.GestionDuStock.customer.customer;
+import com.pfe.GestionDuStock.customer.customerRepository;
 import com.pfe.GestionDuStock.product.product;
 import com.pfe.GestionDuStock.product.productService;
 import lombok.AllArgsConstructor;
@@ -14,12 +16,19 @@ public class saleService {
 
     private final productService productService;
     private final saleRepository saleRepository;
+    private final customerRepository customerRepository;
 
-    public sale registerSale(saleDTO saleDTO) {
-        // Create a new sale instance and initialize the saleDate and saleItems list
+    public sale registerSale(Long customerId,saleDTO saleDTO) {
+        customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+
+        // Create a new sale instance and link it to the customer
         sale sale = new sale();
-        sale.setSaleDate(LocalDateTime.now());  // Set current date and time for the sale
-        sale.setSaleItems(new ArrayList<>());   // Initialize the saleItems list
+        sale.setSaleDate(LocalDateTime.now());
+        sale.setSaleItems(new ArrayList<>());
+        sale.setCustomer(customer);  // ✅ Associate the sale with the customer
+
+
 
         // Loop through the sale items DTO and create saleItems
         for (saleitemDTO itemDTO : saleDTO.saleItems()) {
@@ -42,12 +51,10 @@ public class saleService {
         return saleRepository.save(sale);
     }
 
-    public void addSaleItem(Long saleId, Long productId, int quantity, double price) {
-        // Find the sale by ID, throw exception if not found
+    public void addSaleItem(Long saleId, Long productId, Long quantity, Long price) {
         sale sale = saleRepository.findById(saleId)
                 .orElseThrow(() -> new RuntimeException("Sale not found"));
 
-        // Fetch the product by ID, throw exception if not found
         product product = productService.getProductById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 

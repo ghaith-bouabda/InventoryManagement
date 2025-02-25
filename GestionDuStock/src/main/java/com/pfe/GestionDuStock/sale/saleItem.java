@@ -19,9 +19,9 @@ public class saleItem {
     @JoinColumn(name = "product_id", nullable = false)
     private product product; // The product being sold
 
-    private int quantity;  // How many units of this product
+    private Long quantity;  // How many units of this product
 
-    private double price;  // Price at which the product was sold
+    private Long price;  // Price at which the product was sold
 
     @ManyToOne
     @JoinColumn(name = "sale_id", nullable = false)
