@@ -2,8 +2,10 @@ package com.pfe.GestionDuStock.customer;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface customerRepository extends JpaRepository<customer, Long> {
-    customer findByEmail(String email);
+import java.util.Optional;
 
-    customer findByPhone(String phone);
+public interface customerRepository extends JpaRepository<customer, Long> {
+    Optional<customer>  findByEmail(String email);
+
+   Optional<customer> findByPhone(String phone);
 }

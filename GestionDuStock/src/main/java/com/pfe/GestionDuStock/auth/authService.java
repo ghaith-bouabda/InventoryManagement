@@ -2,6 +2,7 @@ package com.pfe.GestionDuStock.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pfe.GestionDuStock.config.JwtService;
+import com.pfe.GestionDuStock.exception.UserAlreadyExistsException;
 import com.pfe.GestionDuStock.token.TokenType;
 import com.pfe.GestionDuStock.token.token;
 import com.pfe.GestionDuStock.token.tokenRepository;
@@ -31,25 +32,32 @@ public class authService {
 
 
     //REGISTRATION
-    public authResponse  register(registerRequest RegisterRequest) {
-        var user= User.builder()
+    public authResponse register(registerRequest RegisterRequest) {
+        if (userRepository.existsByUsername(RegisterRequest.getUsername())) {
+            throw new UserAlreadyExistsException("Username already taken");
+        }
+        if (userRepository.existsByEmail(RegisterRequest.getEmail())) {
+            throw new UserAlreadyExistsException("Email already registered");
+        }
+
+        var user = User.builder()
                 .username(RegisterRequest.getUsername())
                 .password(passwordEncoder.encode(RegisterRequest.getPassword()))
                 .email(RegisterRequest.getEmail())
                 .role(Role.ADMIN)
                 .build();
 
-        var savedUser=userRepository.save(user);
-        var JwtToken= jwtService.generateToken(user);
-        var RefreshToken= jwtService.generateRefreshToken(user);
+        var savedUser = userRepository.save(user);
+        var JwtToken = jwtService.generateToken(user);
+        var RefreshToken = jwtService.generateRefreshToken(user);
 
         SaveUserToken(savedUser, JwtToken);
-        return authResponse
-                .builder()
+        return authResponse.builder()
                 .accessToken(JwtToken)
                 .refreshToken(RefreshToken)
                 .build();
     }
+
     private void RevokeUserToken(User user) {
         var UserAllTokens = tokenRepository.findAllValidTokenByUser(user.getId());
         if (UserAllTokens.isEmpty()) {

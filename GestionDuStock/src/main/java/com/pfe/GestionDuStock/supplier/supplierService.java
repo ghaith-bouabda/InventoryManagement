@@ -1,6 +1,7 @@
 package com.pfe.GestionDuStock.supplier;
 
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -27,20 +28,20 @@ public class supplierService {
         return uniqueSlug;
     }
 
-    public supplier createFournisseur(supplier supplier) {
+    public supplier createSupplier(supplier supplier) {
         String slug = generateUniqueSlug(supplier.getNom());
         supplier.setSlug(slug);
 
         return supplierRepository.save(supplier);
     }
 
-    public supplier getFournisseurBySlug(String slug) {
+    public supplier getSupplierBySlug(String slug) {
         return supplierRepository.findBySlug(slug)
                 .orElseThrow(() -> new RuntimeException("Fournisseur not found with slug: " + slug));
     }
 
-    public supplier updateFournisseurBySlug(String slug, supplier supplierDetails) {
-        supplier supplier = getFournisseurBySlug(slug); // Find existing fournisseur
+    public supplier updateSupplierBySlug(String slug, supplier supplierDetails) {
+        supplier supplier = getSupplierBySlug(slug);
 
         supplier.setNom(supplierDetails.getNom());
         supplier.setEmail(supplierDetails.getEmail());
@@ -56,7 +57,7 @@ public class supplierService {
         return supplierRepository.save(supplier);
     }
 
-    public void deleteFournisseurBySlug(String slug) {
-        supplier supplier = getFournisseurBySlug(slug);
-    }
+    public void deleteSupplierBySlug(String slug) {
+        supplier supplier = getSupplierBySlug(slug);
+        supplier.setDeleted(true);}
 }
