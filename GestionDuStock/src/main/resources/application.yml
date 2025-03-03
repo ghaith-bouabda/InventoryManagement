@@ -22,3 +22,11 @@ application:
       expiration: 62500
       refresh-token:
         expiration: 7800
+springdoc:
+  default-produces-media-type: application/json
+
+  swagger-ui:
+      path: /swagger-ui.html
+      enabled: true
+  api-docs:
+      enabled: true

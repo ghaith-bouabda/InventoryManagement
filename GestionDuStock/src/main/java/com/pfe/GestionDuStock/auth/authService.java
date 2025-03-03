@@ -2,6 +2,7 @@ package com.pfe.GestionDuStock.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pfe.GestionDuStock.config.JwtService;
+import com.pfe.GestionDuStock.exception.InvalidCredentialsException;
 import com.pfe.GestionDuStock.exception.UserAlreadyExistsException;
 import com.pfe.GestionDuStock.token.TokenType;
 import com.pfe.GestionDuStock.token.token;
@@ -14,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,15 +31,13 @@ public class authService {
     private final AuthenticationManager authenticationManager;
     private final tokenRepository tokenRepository;
 
-
-
     //REGISTRATION
     public authResponse register(registerRequest RegisterRequest) {
         if (userRepository.existsByUsername(RegisterRequest.getUsername())) {
-            throw new UserAlreadyExistsException("Username already taken");
+            throw new UserAlreadyExistsException("Username is already taken.");
         }
         if (userRepository.existsByEmail(RegisterRequest.getEmail())) {
-            throw new UserAlreadyExistsException("Email already registered");
+            throw new UserAlreadyExistsException("Email is already registered.");
         }
 
         var user = User.builder()
@@ -72,7 +72,7 @@ public class authService {
 
     //SAVING THE USER'S TOKEN METHOD
     private void SaveUserToken(User User, String JwtToken) {
-        var Token= token.builder()
+        var Token = token.builder()
                 .user(User)
                 .token(JwtToken)
                 .expired(false)
@@ -81,18 +81,24 @@ public class authService {
                 .build();
         tokenRepository.save(Token);
     }
+
     //AUTHENTICATION
     public authResponse authenticate(authRequest authenticationRequest) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken
-                        (
-                                authenticationRequest.getUsername(),
-                                authenticationRequest.getPassword()
-                        ));
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            authenticationRequest.getUsername(),
+                            authenticationRequest.getPassword()
+                    ));
+        } catch (BadCredentialsException e) {
+            throw new InvalidCredentialsException("Invalid username or password.");
+        }
+
         var user = userRepository.findByUsername(authenticationRequest.getUsername())
-                .orElseThrow();
-        var JwtToken= jwtService.generateToken(user);
-        var RefreshToken= jwtService.generateRefreshToken(user);
+                .orElseThrow(() -> new InvalidCredentialsException("User not found with given credentials."));
+
+        var JwtToken = jwtService.generateToken(user);
+        var RefreshToken = jwtService.generateRefreshToken(user);
         RevokeUserToken(user);
         SaveUserToken(user, JwtToken);
         return authResponse
@@ -111,12 +117,13 @@ public class authService {
             return;
         }
         refresh = authHeader.substring(7);
-        Username= jwtService.extractUsername(refresh);
-        if(Username !=null ){
-            var user= this.userRepository.findByUsername(Username).orElseThrow();
+        Username = jwtService.extractUsername(refresh);
+        if (Username != null) {
+            var user = this.userRepository.findByUsername(Username)
+                    .orElseThrow(() -> new InvalidCredentialsException("User not found with given token."));
 
-            if (jwtService.isTokenValid(refresh,user) ) {
-                var accessToken= jwtService.generateToken(user);
+            if (jwtService.isTokenValid(refresh, user)) {
+                var accessToken = jwtService.generateToken(user);
                 RevokeUserToken(user);
                 SaveUserToken(user, accessToken);
                 var authResponse = com.pfe.GestionDuStock.auth.authResponse
@@ -124,7 +131,7 @@ public class authService {
                         .accessToken(accessToken)
                         .refreshToken(refresh)
                         .build();
-                new ObjectMapper().writeValue(response.getOutputStream(),authResponse);
+                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
             }
         }
     }

@@ -1,0 +1,39 @@
+.beige-space {
+  background-color: beige;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px;
+
+  .content {
+    max-width: 1200px;
+    margin: 0 auto;
+
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-between;
+
+      .stat-item {
+        background-color: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        width: 30%;
+
+        h3 {
+          color: #555;
+          margin-bottom: 10px;
+        }
+
+        p {
+          color: #777;
+          margin: 5px 0;
+        }
+      }
+    }
+  }
+}

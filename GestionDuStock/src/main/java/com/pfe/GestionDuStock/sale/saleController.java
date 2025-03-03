@@ -1,21 +1,23 @@
 package com.pfe.GestionDuStock.sale;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/sales")
+@RequiredArgsConstructor
 public class saleController {
 
-    @Autowired
-    private saleService saleService;
+    private final saleService saleService;
 
     @PostMapping
-    public sale createSale(@RequestBody Long customerId, saleDTO saleDTO) {
-        return saleService.registerSale(customerId,saleDTO);
+    public sale createSale(@RequestParam Long customerId, @RequestBody saleDTO saleDTO) {
+        return saleService.registerSale(customerId, saleDTO);
     }
 
-    // Endpoint to add a sale item to an existing sale
     @PostMapping("/{saleId}/items")
     public void addSaleItem(@PathVariable Long saleId,
                             @RequestParam Long productId,
@@ -24,10 +26,20 @@ public class saleController {
         saleService.addSaleItem(saleId, productId, quantity, price);
     }
 
-    // Endpoint to remove a sale item from an existing sale
+    @GetMapping("/invoice/{invoiceNumber}")
+    public ResponseEntity<sale> getSaleByInvoiceNumber(@PathVariable String invoiceNumber) {
+        Optional<sale> sale = saleService.getSaleByInvoiceNumber(invoiceNumber);
+        return sale.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/{saleId}/items/{saleItemId}")
-    public void removeSaleItem(@PathVariable Long saleId,
-                               @PathVariable Long saleItemId) {
+    public void removeSaleItem(@PathVariable Long saleId, @PathVariable Long saleItemId) {
         saleService.removeSaleItem(saleId, saleItemId);
+    }
+
+    @PutMapping("/{saleId}")
+    public sale updateSale(@PathVariable Long saleId, @RequestBody saleDTO updatedSaleDTO) {
+        return saleService.updateSale(saleId, updatedSaleDTO);
     }
 }

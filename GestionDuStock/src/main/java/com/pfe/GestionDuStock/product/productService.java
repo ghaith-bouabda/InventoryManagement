@@ -1,6 +1,7 @@
 package com.pfe.GestionDuStock.product;
 
 import com.pfe.GestionDuStock.purchase.purchaseRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,8 @@ public class productService {
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
     }
+
+    @Transactional
     public product reduceProductQuantity(Long productId, Long quantitySold) {
         product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
@@ -36,13 +39,16 @@ public class productService {
         if (product.getStockQuantity() < quantitySold) {
             throw new RuntimeException("Not enough stock for the sale");
         }
+
         product.setStockQuantity(product.getStockQuantity() - quantitySold);
         return productRepository.save(product);
     }
 
+    @Transactional
     public product increaseProductQuantity(Long productId, Long quantityPurchased) {
         product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
+
         product.setStockQuantity(product.getStockQuantity() + quantityPurchased);
         return productRepository.save(product);
     }

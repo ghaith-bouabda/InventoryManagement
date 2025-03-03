@@ -28,16 +28,16 @@ public class SecurityConfig {
         http.csrf().disable()
                 .cors(withDefaults())
                 .authorizeRequests()
-                .requestMatchers("/api/auth/**","/swagger-ui/**","/v2/api-docs",
-                        "/v3/api-docs",
-                        "/v3/api-docs/**",
-                        "/swagger-ressources",
-                        "/swagger-ressources/**",
-                        "/configuration/ui",
-                        "/configuration/security",
-                        "/swagger-ui/**",
-                        "/webjars/**",
-                        "/swagger-ui.html","/api/products/**","/api/purchases/**","/fournisseurs/**","/ws/**","/topic/**").permitAll()
+                .requestMatchers("/api/auth/**",// Authentication endpoints
+                        "/swagger-ui/**", // Swagger UI
+                        "/v3/api-docs", // OpenAPI JSON
+                        "/v3/api-docs/**", // OpenAPI JSON
+                        "/swagger-resources", // Swagger resources
+                        "/swagger-resources/**", // Swagger resources
+                        "/configuration/ui", // Swagger UI configuration
+                        "/configuration/security", // Swagger security configuration
+                        "/webjars/**", // WebJars for Swagger
+                        "/swagger-ui.html").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()
