@@ -1,29 +1,36 @@
-import { Component } from '@angular/core';
-import { ChartOptions, ChartType, ChartData } from 'chart.js';
+import { Component, AfterViewInit } from '@angular/core';
+import { Chart, registerables } from 'chart.js';
 
 @Component({
   selector: 'app-charts',
   templateUrl: './charts.component.html',
   styleUrls: ['./charts.component.scss']
 })
-export class ChartsComponent {
-  // Bar Chart
-  public barChartOptions: ChartOptions = {
-    responsive: true
-  };
-  public barChartLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-  public barChartData: ChartData<'bar'> = {
-    labels: this.barChartLabels,
-    datasets: [
-      { data: [10, 20, 30, 40, 50, 60], label: 'Sales' }
-    ]
-  };
-  public barChartType: ChartType = 'bar';
+export class ChartsComponent implements AfterViewInit {
 
-  // Pie Chart
-  public pieChartData: ChartData<'pie'> = {
-    labels: ['Red', 'Blue', 'Yellow'],
-    datasets: [{ data: [30, 50, 20] }]
-  };
-  public pieChartType: ChartType = 'pie';
+  ngAfterViewInit() {
+    Chart.register(...registerables);  // Register necessary components
+
+    const ctx = document.getElementById('myChart') as HTMLCanvasElement;
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Red', 'Blue', 'Yellow'],
+        datasets: [{
+          label: 'My First Dataset',
+          data: [12, 19, 3],
+          borderColor: ['red', 'blue', 'yellow'],
+          backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)']
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
 }

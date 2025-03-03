@@ -1,22 +1,25 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import {ChartsComponent} from "./charts/charts.component";
+import {AppComponent} from "./app.component";
+import {SidebarComponent} from "./sidebar/sidebar.component";
+import {DashboardComponent} from "./dashboard/dashboard.component";
+import {AppRoutingModule} from "./app-routing.module";
+import {provideAnimationsAsync} from "@angular/platform-browser/animations/async";
+import {MatSidenav, MatSidenavContainer, MatSidenavModule} from "@angular/material/sidenav";
+import {MatListItem, MatListModule, MatNavList} from "@angular/material/list";
+import { LloginComponent } from './llogin/llogin.component';
+import { LoginComponent } from './login/login.component';
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { SidebarComponent } from './sidebar/sidebar.component';
-import {MatListItem, MatListModule, MatNavList} from '@angular/material/list';
-import {MatSidenav, MatSidenavContainer, MatSidenavModule} from '@angular/material/sidenav';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { ChartsComponent } from './charts/charts.component';
-import {BaseChartDirective} from 'ng2-charts';
+
 
 @NgModule({
   declarations: [
-    AppComponent,
+    AppComponent ,DashboardComponent,
+    ChartsComponent,
     SidebarComponent,
-    DashboardComponent,
-    ChartsComponent
+    LloginComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,
@@ -27,7 +30,8 @@ import {BaseChartDirective} from 'ng2-charts';
     MatSidenav,
     MatSidenavModule,
     MatListModule,
-    BaseChartDirective,
+
+
   ],
   providers: [
     provideAnimationsAsync()
