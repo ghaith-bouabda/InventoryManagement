@@ -14,13 +14,17 @@ import { StrictHttpResponse } from '../strict-http-response';
 import { authentication } from '../fn/auth-controller/authentication';
 import { Authentication$Params } from '../fn/auth-controller/authentication';
 import { AuthResponse } from '../models/auth-response';
+import { getCurrentUser1 } from '../fn/auth-controller/get-current-user-1';
+import { GetCurrentUser1$Params } from '../fn/auth-controller/get-current-user-1';
 import { refresh } from '../fn/auth-controller/refresh';
 import { Refresh$Params } from '../fn/auth-controller/refresh';
 import { register } from '../fn/auth-controller/register';
 import { Register$Params } from '../fn/auth-controller/register';
+import { User } from '../models/user';
 
 @Injectable({ providedIn: 'root' })
 export class AuthControllerService extends BaseService {
+  currentUser: any;
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }
@@ -100,4 +104,36 @@ export class AuthControllerService extends BaseService {
     );
   }
 
+  /** Path part for operation `getCurrentUser1()` */
+  static readonly GetCurrentUser1Path = '/api/auth/me';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getCurrentUser1()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getCurrentUser1$Response(params?: GetCurrentUser1$Params, context?: HttpContext): Observable<StrictHttpResponse<User>> {
+    return getCurrentUser1(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getCurrentUser1$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getCurrentUser1(params?: GetCurrentUser1$Params, context?: HttpContext): Observable<User> {
+    return this.getCurrentUser1$Response(params, context).pipe(
+      map((r: StrictHttpResponse<User>): User => r.body)
+    );
+  }
+
+  isAdmin() {
+    return true;
+  }
+
+  logout() {
+
+  }
 }

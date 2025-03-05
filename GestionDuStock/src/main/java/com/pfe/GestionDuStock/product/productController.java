@@ -39,4 +39,22 @@ public class productController {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/low-stock")
+    public ResponseEntity<List<product>> getLowStockProducts() {
+        List<product> lowStockProducts = productService.getLowStockProducts();
+        return new ResponseEntity<>(lowStockProducts, HttpStatus.OK);
+    }
+
+    @GetMapping("/out-of-stock")
+    public ResponseEntity<List<product>> getOutOfStockProducts() {
+        List<product> outOfStockProducts = productService.getOutOfStockProducts();
+        return new ResponseEntity<>(outOfStockProducts, HttpStatus.OK);
+    }
+
+    @GetMapping("/category-count")
+    public ResponseEntity<List<ProductCategoryDTO>> getProductsByCategoryCount() {
+        List<ProductCategoryDTO> categoryCount = productService.getProductsByCategoryCount();
+        return new ResponseEntity<>(categoryCount, HttpStatus.OK);
+    }
 }

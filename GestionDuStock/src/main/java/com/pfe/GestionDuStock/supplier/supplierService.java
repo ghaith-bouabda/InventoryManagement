@@ -29,7 +29,7 @@ public class supplierService {
     }
 
     public supplier createSupplier(supplier supplier) {
-        String slug = generateUniqueSlug(supplier.getNom());
+        String slug = generateUniqueSlug(supplier.getName());
         supplier.setSlug(slug);
 
         return supplierRepository.save(supplier);
@@ -43,14 +43,14 @@ public class supplierService {
     public supplier updateSupplierBySlug(String slug, supplier supplierDetails) {
         supplier supplier = getSupplierBySlug(slug);
 
-        supplier.setNom(supplierDetails.getNom());
+        supplier.setName(supplierDetails.getName());
         supplier.setEmail(supplierDetails.getEmail());
         supplier.setTelephone(supplierDetails.getTelephone());
         supplier.setAdresse(supplierDetails.getAdresse());
         supplier.setContactPerson(supplierDetails.getContactPerson());
 
-        if (!supplier.getNom().equals(supplierDetails.getNom())) {
-            String newSlug = generateUniqueSlug(supplierDetails.getNom());
+        if (!supplier.getName().equals(supplierDetails.getName())) {
+            String newSlug = generateUniqueSlug(supplierDetails.getName());
             supplier.setSlug(newSlug);
         }
 

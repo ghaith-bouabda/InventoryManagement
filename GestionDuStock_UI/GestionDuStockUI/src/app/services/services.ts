@@ -8,3 +8,4 @@ export { PurchaseControllerService } from './services/purchase-controller.servic
 export { ProductControllerService } from './services/product-controller.service';
 export { CustomerControllerService } from './services/customer-controller.service';
 export { AuthControllerService } from './services/auth-controller.service';
+export { UserControllerService } from './services/user-controller.service';

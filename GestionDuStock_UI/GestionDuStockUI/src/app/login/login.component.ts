@@ -3,6 +3,7 @@ import { AuthRequest } from "../services/models/auth-request";
 import { AuthControllerService } from "../services/services/auth-controller.service";
 import { Router } from "@angular/router";
 import { TokenService } from "../token/token.service";
+import {UserControllerService} from "../services/services/user-controller.service"
 
 
 @Component({
@@ -19,7 +20,7 @@ export class LoginComponent {
     private authService: AuthControllerService,
     private router: Router,
     private tokenService: TokenService,
-    private userService: UserService,
+    private userService: UserControllerService,
   ) {}
 
   login() {
@@ -28,7 +29,7 @@ export class LoginComponent {
     this.authService.authentication({ body: this.authReq }).subscribe({
       next: (res) => {
         this.tokenService.token = res.accessToken as string;
-        this.userService.getUserDetails(<string>username).subscribe({
+        this.userService.getCurrentUser$Response(<string>username).subscribe({
           next: (userDetails: any) => {
             localStorage.setItem('user', JSON.stringify(userDetails));
             this.router.navigate(['dashboard']);

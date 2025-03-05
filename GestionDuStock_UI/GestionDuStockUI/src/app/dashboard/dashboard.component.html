@@ -1,17 +1,106 @@
-<div class="beige-space">
-  <div class="content">
-    <h2>HI, here's what's happening in your stores</h2>
-    <div class="stats">
-      <div class="stat-item">
-        <h3>This month your stores have sold $8619.86</h3>
-        <p>That's $1,780.24 more than this time last month!</p>
-      </div>
-      <div class="stat-item">
-        <h3>Average Sale Value $48.68</h3>
-        <p>Average Items per Sale $2.8</p>
-        <p>0.95 items than last month</p>
-      </div>
-      <!-- Add more stat items as needed -->
+<div class="dashboard-container">
+  <h1>Dashboard</h1>
+
+  <p-toast></p-toast>
+
+  <div *ngIf="loading" class="loading-container">
+    <p-progressBar mode="indeterminate" [style]="{'height': '6px'}"></p-progressBar>
+    <span>Loading dashboard data...</span>
+  </div>
+
+  <div *ngIf="!loading" class="dashboard-content">
+    <!-- Stats Cards -->
+    <div class="stats-cards">
+      <p-card styleClass="stats-card">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="pi pi-box"></i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ productStats.total }}</div>
+            <div class="stat-label">Total Products</div>
+          </div>
+        </div>
+      </p-card>
+
+      <p-card styleClass="stats-card warning">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="pi pi-exclamation-triangle"></i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ productStats.lowStock }}</div>
+            <div class="stat-label">Low Stock</div>
+          </div>
+        </div>
+      </p-card>
+
+      <p-card styleClass="stats-card danger">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="pi pi-times-circle"></i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ productStats.outOfStock }}</div>
+            <div class="stat-label">Out of Stock</div>
+          </div>
+        </div>
+      </p-card>
     </div>
+
+    <!-- Charts section -->
+    <div class="charts-container">
+      <p-card header="Stock Status Distribution" styleClass="chart-card">
+        <p-chart type="pie" [data]="stockStatusData" [options]="{ responsive: true }"></p-chart>
+      </p-card>
+
+      <p-card header="Products by Category" styleClass="chart-card">
+        <p-chart type="bar" [data]="productCategoryData" [options]="{ responsive: true }"></p-chart>
+      </p-card>
+    </div>
+
+    <!-- Alert Products Table -->
+    <p-card header="Low Stock Products" styleClass="alert-table">
+      <p-table [value]="lowStockProducts" [paginator]="true" [rows]="5" styleClass="p-datatable-sm">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Quantity</th>
+            <th>Threshold</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-product>
+          <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.category }}</td>
+            <td>{{ product.quantity }}</td>
+            <td>{{ product.threshold }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="{
+                'status-low': product.status === 'LOW',
+                'status-out': product.status === 'OUT_OF_STOCK'
+              }">
+                {{ product.status }}
+              </span>
+            </td>
+            <td>
+              <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm"
+                      [routerLink]="['/products/edit', product.id]"></button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6" class="text-center">
+              No products with low stock found
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
   </div>
 </div>
+

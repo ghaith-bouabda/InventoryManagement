@@ -12,6 +12,7 @@ import { PurchaseControllerService } from './services/purchase-controller.servic
 import { ProductControllerService } from './services/product-controller.service';
 import { CustomerControllerService } from './services/customer-controller.service';
 import { AuthControllerService } from './services/auth-controller.service';
+import { UserControllerService } from './services/user-controller.service';
 
 /**
  * Module that provides all services and configuration.
@@ -27,6 +28,7 @@ import { AuthControllerService } from './services/auth-controller.service';
     ProductControllerService,
     CustomerControllerService,
     AuthControllerService,
+    UserControllerService,
     ApiConfiguration
   ],
 })

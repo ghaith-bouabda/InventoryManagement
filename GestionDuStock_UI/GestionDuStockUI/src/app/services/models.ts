@@ -5,7 +5,9 @@
 export { AuthRequest } from './models/auth-request';
 export { AuthResponse } from './models/auth-response';
 export { Customer } from './models/customer';
+export { GrantedAuthority } from './models/granted-authority';
 export { Product } from './models/product';
+export { ProductCategoryDto } from './models/product-category-dto';
 export { Purchase } from './models/purchase';
 export { RegisterRequest } from './models/register-request';
 export { Sale } from './models/sale';
@@ -13,3 +15,4 @@ export { SaleDto } from './models/sale-dto';
 export { SaleItem } from './models/sale-item';
 export { SaleitemDto } from './models/saleitem-dto';
 export { Supplier } from './models/supplier';
+export { User } from './models/user';

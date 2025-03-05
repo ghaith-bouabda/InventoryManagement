@@ -1,0 +1,36 @@
+<div class="navbar">
+  <div class="navbar-brand">
+    <a [routerLink]="['/']">
+      <i class="pi pi-box"></i>
+      <span>Stock Management</span>
+    </a>
+  </div>
+
+  <div class="navbar-menu">
+    <div class="search-bar">
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input type="text" pInputText placeholder="Search..." />
+      </span>
+    </div>
+
+    <div class="navbar-end">
+      <div class="user-dropdown">
+        <button pButton type="button" icon="pi pi-user" label="{{ currentUser?.username }}" class="p-button-text" (click)="menu.toggle($event)"></button>
+        <p-menu #menu [popup]="true" [model]="[
+          {
+            label: 'Profile',
+            icon: 'pi pi-user-edit',
+            routerLink: '/profile'
+          },
+          {
+            label: 'Logout',
+            icon: 'pi pi-sign-out',
+
+          }
+        ]"></p-menu>
+      </div>
+    </div>
+  </div>
+</div>
+

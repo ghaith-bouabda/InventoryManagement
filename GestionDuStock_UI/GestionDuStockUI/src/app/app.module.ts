@@ -5,24 +5,45 @@ import {AppComponent} from "./app.component";
 import {SidebarComponent} from "./sidebar/sidebar.component";
 import {DashboardComponent} from "./dashboard/dashboard.component";
 import {AppRoutingModule} from "./app-routing.module";
+import { HttpClientModule } from '@angular/common/http';
+
 import {provideAnimationsAsync} from "@angular/platform-browser/animations/async";
 import {MatSidenav, MatSidenavContainer, MatSidenavModule} from "@angular/material/sidenav";
 import {MatListItem, MatListModule, MatNavList} from "@angular/material/list";
-import { LloginComponent } from './llogin/llogin.component';
+import { ChartModule } from "primeng/chart"
+import { TableModule } from "primeng/table"
+import { ButtonModule } from "primeng/button"
+import { DialogModule } from "primeng/dialog"
+import { InputTextModule } from "primeng/inputtext"
+import { DropdownModule } from "primeng/dropdown"
+import { ToastModule } from "primeng/toast"
+import { ConfirmDialogModule } from "primeng/confirmdialog"
+import { ConfirmationService, MessageService } from "primeng/api"
+import { CardModule } from "primeng/card"
+import { ProgressBarModule } from "primeng/progressbar"
+import { PanelModule } from "primeng/panel"
+
 import { LoginComponent } from './login/login.component';
+import {FormsModule} from '@angular/forms';
+import { NavbarComponent } from './navbar/navbar.component';
+import {Menu} from 'primeng/menu';
+
 
 
 
 @NgModule({
   declarations: [
-    AppComponent ,DashboardComponent,
+    AppComponent ,
+    DashboardComponent,
     ChartsComponent,
     SidebarComponent,
-    LloginComponent,
     LoginComponent,
+    NavbarComponent,
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
+
     AppRoutingModule,
     MatListItem,
     MatSidenavContainer,
@@ -30,11 +51,25 @@ import { LoginComponent } from './login/login.component';
     MatSidenav,
     MatSidenavModule,
     MatListModule,
-
+    FormsModule,
+    ChartModule,
+    TableModule,
+    ButtonModule,
+    DialogModule,
+    InputTextModule,
+    DropdownModule,
+    ToastModule,
+    ConfirmDialogModule,
+    CardModule,
+    ProgressBarModule,
+    PanelModule,
+    Menu,
 
   ],
   providers: [
-    provideAnimationsAsync()
+    provideAnimationsAsync(),
+    MessageService,
+    ConfirmationService,
   ],
   bootstrap: [AppComponent]
 })

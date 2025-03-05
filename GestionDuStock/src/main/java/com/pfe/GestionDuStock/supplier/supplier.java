@@ -24,7 +24,7 @@ public class supplier {
         @Column(unique = true)
         private String slug;
 
-        private String nom;
+        private String name;
         private String email;
         private String telephone;
         private String adresse;

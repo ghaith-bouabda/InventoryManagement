@@ -9,7 +9,7 @@ export interface Supplier {
   deleted?: boolean;
   email?: string;
   id?: number;
-  nom?: string;
+  name?: string;
   products?: Array<Product>;
   slug?: string;
   telephone?: string;

@@ -1,12 +1,12 @@
 package com.pfe.GestionDuStock.product;
 
-import com.pfe.GestionDuStock.purchase.purchaseRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -14,9 +14,8 @@ public class productService {
 
     private final productRepository productRepository;
 
-
     public product saveProduct(product product) {
-        return productRepository.save(product); // Just save the product as it is
+        return productRepository.save(product);
     }
 
     public List<product> getAllProducts() {
@@ -51,5 +50,27 @@ public class productService {
 
         product.setStockQuantity(product.getStockQuantity() + quantityPurchased);
         return productRepository.save(product);
+    }
+
+
+    public List<product> getLowStockProducts() {
+        return productRepository.findAll().stream()
+                .filter(p -> p.getStockQuantity() > 0 && p.getStockQuantity() < p.getStockThreshold())
+                .collect(Collectors.toList());
+    }
+
+
+    public List<product> getOutOfStockProducts() {
+        return productRepository.findAll().stream()
+                .filter(p -> p.getStockQuantity() == 0)
+                .collect(Collectors.toList());
+    }
+
+    public List<ProductCategoryDTO> getProductsByCategoryCount() {
+        return productRepository.findAll().stream()
+                .collect(Collectors.groupingBy(p -> p.getSupplier().getName(), Collectors.counting()))
+                .entrySet().stream()
+                .map(entry -> new ProductCategoryDTO(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
     }
 }

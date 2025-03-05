@@ -1,0 +1,55 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1.5rem;
+  height: 64px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-brand a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: #333;
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.navbar-brand i {
+  font-size: 1.5rem;
+  color: #2196f3;
+}
+
+.navbar-menu {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.search-bar {
+  width: 300px;
+}
+
+.navbar-end {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-dropdown button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+

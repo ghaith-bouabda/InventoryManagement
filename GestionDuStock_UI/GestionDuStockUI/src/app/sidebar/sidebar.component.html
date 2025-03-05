@@ -1,15 +1,64 @@
-<mat-sidenav-container class="sidenav-container">
-  <mat-sidenav mode="side" opened class="sidenav">
-    <h1>STOCK</h1>
-    <mat-nav-list>
-      <mat-list-item>🏠 Home</mat-list-item>
-      <mat-list-item>📊 Reporting</mat-list-item>
-      <mat-list-item>📦 Inventory</mat-list-item>
-      <mat-list-item>⚙️ Setup</mat-list-item>
-    </mat-nav-list>
-  </mat-sidenav>
-  <mat-sidenav-content class="content">
-    <app-dashboard></app-dashboard>
-    <app-charts></app-charts>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+<div class="sidebar">
+  <div class="sidebar-content">
+    <div class="menu-section">
+      <h3 class="menu-header">Main</h3>
+      <ul class="menu-items">
+        <li>
+          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+            <i class="pi pi-home"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/products" routerLinkActive="active">
+            <i class="pi pi-box"></i>
+            <span>Products</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/suppliers" routerLinkActive="active">
+            <i class="pi pi-truck"></i>
+            <span>Suppliers</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/customers" routerLinkActive="active">
+            <i class="pi pi-users"></i>
+            <span>Customers</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/sales" routerLinkActive="active">
+            <i class="pi pi-shopping-cart"></i>
+            <span>Sales</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="menu-section" *ngIf="isAdmin">
+      <h3 class="menu-header">Administration</h3>
+      <ul class="menu-items">
+        <li>
+          <a routerLink="/users" routerLinkActive="active">
+            <i class="pi pi-user-edit"></i>
+            <span>User Management</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/reports" routerLinkActive="active">
+            <i class="pi pi-chart-bar"></i>
+            <span>Reports</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/settings" routerLinkActive="active">
+            <i class="pi pi-cog"></i>
+            <span>Settings</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+

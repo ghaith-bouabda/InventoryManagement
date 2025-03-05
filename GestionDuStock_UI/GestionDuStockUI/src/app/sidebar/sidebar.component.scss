@@ -1,14 +1,62 @@
-.sidenav-container {
-  height: 100vh;
-}
-
-.sidenav {
+.sidebar {
   width: 250px;
-  background-color: black;
-  color: white;
-  padding: 16px;
+  background-color: #ffffff;
+  height: 100%;
+  border-right: 1px solid #e0e0e0;
+  overflow-y: auto;
+  transition: width 0.3s;
 }
 
-.content {
-  padding: 20px;
+.sidebar-content {
+  padding: 1.5rem 0;
 }
+
+.menu-section {
+  margin-bottom: 1.5rem;
+}
+
+.menu-header {
+  padding: 0 1.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #757575;
+  font-weight: 600;
+}
+
+.menu-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-items li {
+  margin-bottom: 2px;
+}
+
+.menu-items a {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  color: #333;
+  text-decoration: none;
+  transition: background-color 0.2s;
+  gap: 1rem;
+}
+
+.menu-items a:hover {
+  background-color: #f5f5f5;
+}
+
+.menu-items a.active {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  border-right: 3px solid #1976d2;
+}
+
+.menu-items i {
+  font-size: 1.25rem;
+  width: 24px;
+  text-align: center;
+}
+
