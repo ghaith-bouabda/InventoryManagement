@@ -4,7 +4,7 @@
 
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { BaseService } from '../base-service';
@@ -24,9 +24,15 @@ import { User } from '../models/user';
 
 @Injectable({ providedIn: 'root' })
 export class AuthControllerService extends BaseService {
-  currentUser: any;
+  private currentUserSubject: BehaviorSubject<User | null>;
+  public currentUser: Observable<User | null>;
+  private apiUrl = `localhost:8080/auth/auth`;
+
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
+    const storedUser = localStorage.getItem("currentUser")
+    this.currentUserSubject = new BehaviorSubject<User | null>(storedUser ? JSON.parse(storedUser) : null)
+    this.currentUser = this.currentUserSubject.asObservable()
   }
 
   /** Path part for operation `register()` */
@@ -129,11 +135,18 @@ export class AuthControllerService extends BaseService {
     );
   }
 
-  isAdmin() {
-    return true;
+
+  public get currentUserValue(): User | null {
+    return this.currentUserSubject.value
   }
 
-  logout() {
+  isAdmin(): boolean {
+    const user = this.currentUserValue
+    return user?.role === "ADMIN"
+  }
 
+
+  isAuthenticated() {
+    return !!localStorage.getItem("token")
   }
 }

@@ -1,0 +1,94 @@
+<div class="app-container">
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-container">
+      <div class="logo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
+          <path d="M20 5H8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Z"></path>
+          <path d="M4 12V7a2 2 0 0 1 2-2"></path>
+          <path d="M10 2v3"></path>
+          <path d="M18 2v3"></path>
+          <path d="M14 14v4"></path>
+          <path d="M14 10v1"></path>
+        </svg>
+        <span class="logo-text">StockSense</span>
+      </div>
+
+      <nav class="main-nav">
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#testimonials" class="nav-link">Testimonials</a>
+        <a href="#pricing" class="nav-link">Pricing</a>
+        <a href="#contact" class="nav-link">Contact</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="#" class="login-link">Login</a>
+        <a href="#" class="btn btn-primary">Get Started</a>
+        <button class="mobile-menu-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1 class="hero-title">Inventory Management Made Simple</h1>
+          <p class="hero-subtitle">
+            Streamline your inventory processes, reduce costs, and boost efficiency with our powerful yet intuitive platform.
+          </p>
+          <div class="hero-buttons">
+            <a href="#" class="btn btn-white">Start Free Trial</a>
+            <a href="#" class="btn btn-outline-white">Watch Demo</a>
+          </div>
+        </div>
+        <div class="hero-image">
+          <img src="assets/hero-image.png" alt="Inventory Dashboard" class="dashboard-image">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">98%</div>
+          <p class="stat-text">Reduction in stockouts</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">35%</div>
+          <p class="stat-text">Increase in inventory turnover</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">10,000+</div>
+          <p class="stat-text">Businesses using StockSense</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Powerful Features for Modern Inventory Management</h2>
+        <p class="section-subtitle">
+          Everything you need to optimize your inventory operations, from warehouse to point of sale.
+        </p>
+      </div>
+
+      <div class="features-grid">
+        <div *ngFor="let feature of features" class="feature-card">
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <ng-container [ngSwitch]="feature.icon">
+

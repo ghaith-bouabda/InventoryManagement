@@ -4,7 +4,7 @@ import { AuthControllerService } from "../services/services/auth-controller.serv
 import { Router } from "@angular/router";
 import { TokenService } from "../token/token.service";
 import {UserControllerService} from "../services/services/user-controller.service"
-
+import {UserService} from "../user-service/user-service"
 
 @Component({
   selector: 'app-login',
@@ -20,8 +20,13 @@ export class LoginComponent {
     private authService: AuthControllerService,
     private router: Router,
     private tokenService: TokenService,
-    private userService: UserControllerService,
-  ) {}
+    private userService: UserService,
+  ) {
+    if (this.authService.isAuthenticated()) {
+    this.router.navigate(["/"]);
+  }
+  }
+
 
   login() {
     this.errorMsg = [];
@@ -29,15 +34,10 @@ export class LoginComponent {
     this.authService.authentication({ body: this.authReq }).subscribe({
       next: (res) => {
         this.tokenService.token = res.accessToken as string;
-        this.userService.getCurrentUser$Response(<string>username).subscribe({
-          next: (userDetails: any) => {
-            localStorage.setItem('user', JSON.stringify(userDetails));
-            this.router.navigate(['dashboard']);
-          },
-          error: (err: { error: { message: any; }; }) => {
-            this.errorMsg.push(err.error?.message || 'Error loading user details');
-          }
-        });
+        var userDetails = this.authService.currentUserValue
+        console.log(this.authService.isAdmin());
+        localStorage.setItem('user', JSON.stringify(userDetails));
+        this.router.navigate(['/']);
       },
       error: (err) => {
         this.errorMsg.push(err.error?.message || 'Authentication failed');

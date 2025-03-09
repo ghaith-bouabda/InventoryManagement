@@ -5,6 +5,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -21,6 +22,10 @@ public class userController {
     @GetMapping
     public List<User> getAllUsers() {
         return userService.getAllUsers();
+    }
+    @GetMapping("/getuser")
+    public Optional<User> getuser(String Username) {
+        return userService.getuser(Username);
     }
 
     @GetMapping("/me")

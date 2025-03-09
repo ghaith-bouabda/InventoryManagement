@@ -5,7 +5,7 @@ import {AppComponent} from "./app.component";
 import {SidebarComponent} from "./sidebar/sidebar.component";
 import {DashboardComponent} from "./dashboard/dashboard.component";
 import {AppRoutingModule} from "./app-routing.module";
-import { HttpClientModule } from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 
 import {provideAnimationsAsync} from "@angular/platform-browser/animations/async";
 import {MatSidenav, MatSidenavContainer, MatSidenavModule} from "@angular/material/sidenav";
@@ -27,6 +27,8 @@ import { LoginComponent } from './login/login.component';
 import {FormsModule} from '@angular/forms';
 import { NavbarComponent } from './navbar/navbar.component';
 import {Menu} from 'primeng/menu';
+import {AuthInterceptor} from './auth-interceptor.service';
+import { LandingComponent } from './landing/landing.component';
 
 
 
@@ -39,6 +41,7 @@ import {Menu} from 'primeng/menu';
     SidebarComponent,
     LoginComponent,
     NavbarComponent,
+    LandingComponent,
   ],
   imports: [
     BrowserModule,
@@ -69,7 +72,11 @@ import {Menu} from 'primeng/menu';
   providers: [
     provideAnimationsAsync(),
     MessageService,
-    ConfirmationService,
+    ConfirmationService, {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true,
+    }
   ],
   bootstrap: [AppComponent]
 })
