@@ -4,6 +4,7 @@ import {DashboardComponent} from './dashboard/dashboard.component';
 import {LoginComponent} from './login/login.component';
 import {AuthguardService} from './authguard/authguard.service';
 import {LandingComponent} from './landing/landing.component';
+import {SupplierComponent} from './supplier/supplier.component';
 
 const routes: Routes = [
   {
@@ -18,6 +19,12 @@ const routes: Routes = [
   {
     path:"landing",
     component: LandingComponent
+  }
+  ,
+  {
+    path:"supplier",
+    component: SupplierComponent,
+    canActivate: [AuthguardService]
   }
 ]
 

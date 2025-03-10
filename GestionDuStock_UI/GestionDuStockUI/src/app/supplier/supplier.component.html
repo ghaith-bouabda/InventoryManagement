@@ -1,0 +1,70 @@
+<div class="supplier-container">
+  <h2>Supplier Management</h2>
+
+  <button (click)="startAddingSupplier()">Add Supplier</button>
+
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+  <!-- Form to Add a New Supplier -->
+  <div *ngIf="isAdding">
+    <h3>Add New Supplier</h3>
+    <form (ngSubmit)="addSupplier()">
+      <label for="name">Name:</label>
+      <input id="name" [(ngModel)]="newSupplier.name" name="name" required />
+
+      <label for="adresse">Address:</label>
+      <input id="adresse" [(ngModel)]="newSupplier.adresse" name="adresse" required />
+
+      <label for="email">Email:</label>
+      <input id="email" [(ngModel)]="newSupplier.email" name="email" type="email" required />
+
+      <label for="telephone">Telephone:</label>
+      <input id="telephone" [(ngModel)]="newSupplier.telephone" name="telephone" required />
+
+      <label for="contactPerson">Contact Person:</label>
+      <input id="contactPerson" [(ngModel)]="newSupplier.contactPerson" name="contactPerson" />
+
+      <button type="submit">Create Supplier</button>
+      <button type="button" (click)="cancelAdding()">Cancel</button>
+    </form>
+  </div>
+
+  <!-- Existing Suppliers List -->
+  <div *ngIf="suppliers.length > 0">
+    <ul>
+      <li *ngFor="let supplier of suppliers" (click)="selectSupplier(supplier)">
+        {{ supplier.name }} ({{ supplier.email }})
+      </li>
+    </ul>
+  </div>
+
+  <div *ngIf="selectedSupplier">
+    <h3>Selected Supplier: {{ selectedSupplier.name }}</h3>
+
+    <div *ngIf="isEditing">
+      <form (ngSubmit)="updateSupplier()">
+        <label for="name">Name:</label>
+        <input id="name" [(ngModel)]="selectedSupplier.name" name="name" required />
+
+        <label for="adresse">Address:</label>
+        <input id="adresse" [(ngModel)]="selectedSupplier.adresse" name="adresse" required />
+
+        <label for="email">Email:</label>
+        <input id="email" [(ngModel)]="selectedSupplier.email" name="email" required />
+
+        <label for="telephone">Telephone:</label>
+        <input id="telephone" [(ngModel)]="selectedSupplier.telephone" name="telephone" required />
+
+        <label for="contactPerson">Contact Person:</label>
+        <input id="contactPerson" [(ngModel)]="selectedSupplier.contactPerson" name="contactPerson" />
+
+        <button type="submit">Update Supplier</button>
+      </form>
+    </div>
+
+    <div *ngIf="!isEditing">
+      <button (click)="editSupplier()">Edit</button>
+      <button (click)="deleteSupplier()">Delete</button>
+    </div>
+  </div>
+</div>

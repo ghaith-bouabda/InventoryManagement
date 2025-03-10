@@ -1,4 +1,10 @@
 <div class="sidebar">
+  <div class="navbar-brand">
+    <a [routerLink]="['/']">
+      <i class="pi pi-box"></i>
+      <span>Stock Management</span>
+    </a>
+  </div>
   <div class="sidebar-content">
     <div class="menu-section">
       <h3 class="menu-header">Main</h3>
@@ -16,7 +22,7 @@
           </a>
         </li>
         <li>
-          <a routerLink="/suppliers" routerLinkActive="active">
+          <a routerLink="/supplier" routerLinkActive="active">
             <i class="pi pi-truck"></i>
             <span>Suppliers</span>
           </a>

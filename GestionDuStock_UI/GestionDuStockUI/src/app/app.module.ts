@@ -25,10 +25,11 @@ import { PanelModule } from "primeng/panel"
 
 import { LoginComponent } from './login/login.component';
 import {FormsModule} from '@angular/forms';
-import { NavbarComponent } from './navbar/navbar.component';
 import {Menu} from 'primeng/menu';
 import {AuthInterceptor} from './auth-interceptor.service';
 import { LandingComponent } from './landing/landing.component';
+import { AlertComponent } from './alert/alert.component';
+import { SupplierComponent } from './supplier/supplier.component';
 
 
 
@@ -40,8 +41,9 @@ import { LandingComponent } from './landing/landing.component';
     ChartsComponent,
     SidebarComponent,
     LoginComponent,
-    NavbarComponent,
     LandingComponent,
+    AlertComponent,
+    SupplierComponent,
   ],
   imports: [
     BrowserModule,
