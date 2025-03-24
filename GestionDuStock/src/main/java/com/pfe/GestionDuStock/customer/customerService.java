@@ -16,7 +16,7 @@ public class customerService {
 
     @Transactional
     public customerDTO saveCustomer(customerDTO customerDTO) {
-        if (customerRepository.findByEmail(customerDTO.email()) != null) {
+        if (customerRepository.findByEmail(customerDTO.email()).isPresent()) {
             throw new DuplicateEmailException("Email " + customerDTO.email() + " is already in use");
         }
 
