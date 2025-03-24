@@ -30,7 +30,7 @@ export class AuthControllerService extends BaseService {
 
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
-    const storedUser = localStorage.getItem("currentUser")
+    const storedUser = localStorage.getItem("user")
     this.currentUserSubject = new BehaviorSubject<User | null>(storedUser ? JSON.parse(storedUser) : null)
     this.currentUser = this.currentUserSubject.asObservable()
   }
@@ -135,7 +135,6 @@ export class AuthControllerService extends BaseService {
     );
   }
 
-
   public get currentUserValue(): User | null {
     return this.currentUserSubject.value
   }
@@ -149,4 +148,5 @@ export class AuthControllerService extends BaseService {
   isAuthenticated() {
     return !!localStorage.getItem("token")
   }
+
 }

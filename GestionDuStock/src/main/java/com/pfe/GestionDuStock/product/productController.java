@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -16,20 +17,20 @@ public class productController {
     private final productService productService;
 
     @PostMapping
-    public ResponseEntity<product> createProduct(@RequestBody product product) {
-        product savedProduct = productService.saveProduct(product);
+    public ResponseEntity<productDTO> createProduct(@RequestBody productDTO productDTO) {
+        productDTO savedProduct = productService.saveProduct(productDTO);
         return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<product>> getAllProducts() {
-        List<product> products = productService.getAllProducts();
+    public ResponseEntity<List<productDTO>> getAllProducts() {
+        List<productDTO> products = productService.getAllProducts();
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<product> getProductById(@PathVariable Long id) {
-        Optional<product> product = productService.getProductById(id);
+    public ResponseEntity<productDTO> getProductById(@PathVariable Long id) {
+        Optional<productDTO> product = productService.getProductById(id);
         return product.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
@@ -41,20 +42,20 @@ public class productController {
     }
 
     @GetMapping("/low-stock")
-    public ResponseEntity<List<product>> getLowStockProducts() {
-        List<product> lowStockProducts = productService.getLowStockProducts();
+    public ResponseEntity<List<productDTO>> getLowStockProducts() {
+        List<productDTO> lowStockProducts = productService.getLowStockProducts();
         return new ResponseEntity<>(lowStockProducts, HttpStatus.OK);
     }
 
     @GetMapping("/out-of-stock")
-    public ResponseEntity<List<product>> getOutOfStockProducts() {
-        List<product> outOfStockProducts = productService.getOutOfStockProducts();
+    public ResponseEntity<List<productDTO>> getOutOfStockProducts() {
+        List<productDTO> outOfStockProducts = productService.getOutOfStockProducts();
         return new ResponseEntity<>(outOfStockProducts, HttpStatus.OK);
     }
 
-    @GetMapping("/category-count")
-    public ResponseEntity<List<ProductCategoryDTO>> getProductsByCategoryCount() {
-        List<ProductCategoryDTO> categoryCount = productService.getProductsByCategoryCount();
-        return new ResponseEntity<>(categoryCount, HttpStatus.OK);
+    @GetMapping("/supplier-count")
+    public ResponseEntity<Map<String, Long>> getProductCountBySupplier() {
+        Map<String, Long> supplierProductCount = productService.getProductCountBySupplier();
+        return new ResponseEntity<>(supplierProductCount, HttpStatus.OK);
     }
 }

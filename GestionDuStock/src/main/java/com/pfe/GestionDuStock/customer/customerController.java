@@ -14,37 +14,39 @@ public class customerController {
 
     private final customerService customerService;
 
+    // Create a new customer
     @PostMapping
-    public ResponseEntity<customer> saveCustomer(@RequestBody customer customer) {
-        customer savedCustomer = customerService.saveCustomer(customer);
+    public ResponseEntity<customerDTO> saveCustomer(@RequestBody customerDTO customerDTO) {
+        customerDTO savedCustomer = customerService.saveCustomer(customerDTO);
         return new ResponseEntity<>(savedCustomer, HttpStatus.CREATED);
     }
 
+    // Get all customers
     @GetMapping
-    public ResponseEntity<List<customer>> getAllCustomers() {
-        List<customer> customers = customerService.getAllCustomers();
+    public ResponseEntity<List<customerDTO>> getAllCustomers() {
+        List<customerDTO> customers = customerService.getAllCustomers();
         return new ResponseEntity<>(customers, HttpStatus.OK);
     }
 
+    // Get customer by email
     @GetMapping("/email/{email}")
-    public ResponseEntity<customer> getCustomerByEmail(@PathVariable String email) {
-        customer customer = customerService.getCustomerByEmail(email);
-        if (customer != null) {
-            return new ResponseEntity<>(customer, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<customerDTO> getCustomerByEmail(@PathVariable String email) {
+        customerDTO customer = customerService.getCustomerByEmail(email);
+        return customer != null ?
+                new ResponseEntity<>(customer, HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    // Get customer by phone
     @GetMapping("/phone/{phone}")
-    public ResponseEntity<customer> getCustomerByPhone(@PathVariable String phone) {
-        customer customer = customerService.getCustomerByPhone(phone);
-        if (customer != null) {
-            return new ResponseEntity<>(customer, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<customerDTO> getCustomerByPhone(@PathVariable String phone) {
+        customerDTO customer = customerService.getCustomerByPhone(phone);
+        return customer != null ?
+                new ResponseEntity<>(customer, HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    // Endpoint to delete a customer by ID
+    // Delete a customer by ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
         customerService.deleteCustomer(id);

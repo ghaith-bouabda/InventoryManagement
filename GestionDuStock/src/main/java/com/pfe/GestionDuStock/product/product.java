@@ -1,5 +1,7 @@
 package com.pfe.GestionDuStock.product;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.pfe.GestionDuStock.purchase.purchase;
 import com.pfe.GestionDuStock.supplier.supplier;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,6 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class product {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,11 +25,8 @@ public class product {
 
     @ManyToOne
     @JoinColumn(name = "supplier_id")
-    private supplier supplier;
+    private supplier supplier;  // Only have supplier as a reference for product
 
-    private Long stockQuantity;  // Current stock
-    private Long stockThreshold; // Minimum stock level before reorder notification
-
-
-
+    private Long stockQuantity;
+    private Long stockThreshold;
 }

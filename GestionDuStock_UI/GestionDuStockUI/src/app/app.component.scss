@@ -1,13 +1,15 @@
-@import '@angular/material/prebuilt-themes/indigo-pink.css';
-
 .app-container {
   display: flex;
-  height: calc(100vh - 64px);
+  flex-direction: row; /* Align the sidebar and content horizontally */
+  height: 100vh; /* Full height of the viewport */
+}
+
+app-sidebar {
+  width: 250px; /* Sidebar width */
+  height: 100vh; /* Ensure sidebar takes full height */
 }
 
 .content {
-  flex-grow: 1;
-  padding: 20px;
-  overflow-y: auto;
-  background-color: #f8f9fa;
+  flex-grow: 1; /* Content takes remaining space */
+  overflow: auto; /* In case content overflows */
 }

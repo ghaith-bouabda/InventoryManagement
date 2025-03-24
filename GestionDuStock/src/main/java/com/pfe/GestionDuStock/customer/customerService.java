@@ -4,6 +4,7 @@ import com.pfe.GestionDuStock.exception.CustomerNotFoundException;
 import com.pfe.GestionDuStock.exception.DuplicateEmailException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -11,33 +12,52 @@ import java.util.List;
 @RequiredArgsConstructor
 public class customerService {
 
+    private final customerRepository customerRepository;
 
-    final private customerRepository customerRepository;
-
-
-    public customer saveCustomer(customer customer) {
-        if (customerRepository.findByEmail(customer.getEmail()) != null) {
-            throw new DuplicateEmailException("Email " + customer.getEmail() + " is already in use");
+    @Transactional
+    public customerDTO saveCustomer(customerDTO customerDTO) {
+        if (customerRepository.findByEmail(customerDTO.email()) != null) {
+            throw new DuplicateEmailException("Email " + customerDTO.email() + " is already in use");
         }
-        return customerRepository.save(customer);
-    }
-    public List<customer> getAllCustomers() {
-        if (customerRepository.findAll().isEmpty()) {throw new RuntimeException("no customers found");}
-        return customerRepository.findAll();
+
+        customer customer = customerMapper.toEntity(customerDTO);
+
+        customer savedCustomer = customerRepository.save(customer);
+
+        return customerMapper.toDTO(savedCustomer);
     }
 
+    // Get all customers
+    public List<customerDTO> getAllCustomers() {
+        List<customer> customers = customerRepository.findAll();
+
+        if (customers.isEmpty()) {
+            throw new RuntimeException("No customers found");
+        }
+
+        return customers.stream()
+                .map(customerMapper::toDTO)  // Convert each customer to DTO
+                .toList();
+    }
+
+    // Delete customer by ID
     public void deleteCustomer(Long id) {
         customerRepository.deleteById(id);
     }
 
-
-    public customer getCustomerByEmail(String email) {
-        return customerRepository.findByEmail(email)
+    // Get customer by email
+    public customerDTO getCustomerByEmail(String email) {
+        customer customer = customerRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer with email " + email + " not found"));
+
+        return customerMapper.toDTO(customer);  // Return as DTO
     }
 
-    public customer getCustomerByPhone(String phone) {
-        return customerRepository.findByPhone(phone)
+    // Get customer by phone
+    public customerDTO getCustomerByPhone(String phone) {
+        customer customer = customerRepository.findByPhone(phone)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer with phone " + phone + " not found"));
+
+        return customerMapper.toDTO(customer);  // Return as DTO
     }
 }

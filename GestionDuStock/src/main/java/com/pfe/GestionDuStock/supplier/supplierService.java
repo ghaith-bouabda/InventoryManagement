@@ -1,10 +1,11 @@
 package com.pfe.GestionDuStock.supplier;
 
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -12,13 +13,8 @@ public class supplierService {
 
     private final supplierRepository supplierRepository;
 
-
-
     private String generateUniqueSlug(String nom) {
-        // Use UUID to generate a unique string
         String baseSlug = nom.toLowerCase().replaceAll("[^a-z0-9]+", "-");
-
-        // Append a unique UUID
         String uniqueSlug = baseSlug + "-" + UUID.randomUUID().toString().substring(0, 8);
 
         while (supplierRepository.existsBySlug(uniqueSlug)) {
@@ -28,36 +24,54 @@ public class supplierService {
         return uniqueSlug;
     }
 
-    public supplier createSupplier(supplier supplier) {
-        String slug = generateUniqueSlug(supplier.getName());
-        supplier.setSlug(slug);
-
-        return supplierRepository.save(supplier);
+    // Create a supplier
+    public supplierDTO createSupplier(supplierDTO supplierDTO) {
+        supplier entity = supplierMapper.toEntity(supplierDTO);
+        String slug = generateUniqueSlug(supplierDTO.name());
+        entity.setSlug(slug);
+        supplier savedSupplier = supplierRepository.save(entity);
+        return supplierMapper.toDTO(savedSupplier);
     }
 
-    public supplier getSupplierBySlug(String slug) {
-        return supplierRepository.findBySlug(slug)
-                .orElseThrow(() -> new RuntimeException("Fournisseur not found with slug: " + slug));
+    // Get supplier by slug
+    public supplierDTO getSupplierBySlug(String slug) {
+        supplier supplier = supplierRepository.findBySlug(slug)
+                .orElseThrow(() -> new RuntimeException("Supplier not found with slug: " + slug));
+        return supplierMapper.toDTO(supplier);
     }
 
-    public supplier updateSupplierBySlug(String slug, supplier supplierDetails) {
-        supplier supplier = getSupplierBySlug(slug);
+    // Get all suppliers
+    public List<supplierDTO> getAllSuppliers() {
+        return supplierRepository.findAll().stream()
+                .map(supplierMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 
-        supplier.setName(supplierDetails.getName());
-        supplier.setEmail(supplierDetails.getEmail());
-        supplier.setTelephone(supplierDetails.getTelephone());
-        supplier.setAdresse(supplierDetails.getAdresse());
-        supplier.setContactPerson(supplierDetails.getContactPerson());
+    // Update supplier by slug
+    public supplierDTO updateSupplierBySlug(String slug, supplierDTO supplierDetails) {
+        supplier supplier = supplierRepository.findBySlug(slug)
+                .orElseThrow(() -> new RuntimeException("Supplier not found with slug: " + slug));
 
-        if (!supplier.getName().equals(supplierDetails.getName())) {
-            String newSlug = generateUniqueSlug(supplierDetails.getName());
+        supplier.setName(supplierDetails.name());
+        supplier.setEmail(supplierDetails.email());
+        supplier.setTelephone(supplierDetails.telephone());
+        supplier.setAdresse(supplierDetails.adresse());
+        supplier.setContactPerson(supplierDetails.contactPerson());
+
+        if (!supplier.getName().equals(supplierDetails.name())) {
+            String newSlug = generateUniqueSlug(supplierDetails.name());
             supplier.setSlug(newSlug);
         }
 
-        return supplierRepository.save(supplier);
+        supplier updatedSupplier = supplierRepository.save(supplier);
+        return supplierMapper.toDTO(updatedSupplier);
     }
 
+    // Soft delete a supplier by slug
     public void deleteSupplierBySlug(String slug) {
-        supplier supplier = getSupplierBySlug(slug);
-        supplier.setDeleted(true);}
+        supplier supplier = supplierRepository.findBySlug(slug)
+                .orElseThrow(() -> new RuntimeException("Supplier not found with slug: " + slug));
+        supplier.setDeleted(true);
+        supplierRepository.save(supplier);
+    }
 }

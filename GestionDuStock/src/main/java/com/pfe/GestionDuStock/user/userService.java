@@ -4,23 +4,30 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class userService {
 
     private final userRepository userRepository;
+    private final userMapper userMapper; // Inject userMapper
 
-    public User getUserById(Long id) {
-        return userRepository.findById(id)
+    public userDTO getUserById(Long id) {
+        var user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+        return userMapper.toDTO(user); // Convert to DTO
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<userDTO> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(userMapper::toDTO) // Convert each User to userDTO
+                .collect(Collectors.toList());
     }
 
-    public Optional<User> getuser(String username){
-        return userRepository.findByUsername(username);
+    public Optional<userDTO> getuser(String username) {
+        return userRepository.findByUsername(username)
+                .map(userMapper::toDTO); // Convert to DTO if found
     }
 }

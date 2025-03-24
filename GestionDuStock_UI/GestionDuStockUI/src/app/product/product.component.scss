@@ -1,0 +1,32 @@
+.container {
+  margin: 20px;
+}
+
+h1 {
+  text-align: center;
+}
+
+.category-section,
+.product-section {
+  margin-top: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+th {
+  background-color: #f4f4f4;
+}
+
+.no-products {
+  text-align: center;
+  margin-top: 20px;
+}

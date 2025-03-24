@@ -5,6 +5,7 @@ import { Router } from "@angular/router";
 import { TokenService } from "../token/token.service";
 import {UserControllerService} from "../services/services/user-controller.service"
 import {UserService} from "../user-service/user-service"
+import {User} from '../services/models/user';
 
 @Component({
   selector: 'app-login',
@@ -21,6 +22,7 @@ export class LoginComponent {
     private router: Router,
     private tokenService: TokenService,
     private userService: UserService,
+    private userController: UserControllerService,
   ) {
     if (this.authService.isAuthenticated()) {
     this.router.navigate(["/"]);
@@ -34,9 +36,12 @@ export class LoginComponent {
     this.authService.authentication({ body: this.authReq }).subscribe({
       next: (res) => {
         this.tokenService.token = res.accessToken as string;
-        var userDetails = this.authService.currentUserValue
+     this.userController.getCurrentUser().subscribe({
+          next: (res) => {
+           localStorage.setItem('user',JSON.stringify(res));
+          }
+        });
         console.log(this.authService.isAdmin());
-        localStorage.setItem('user', JSON.stringify(userDetails));
         this.router.navigate(['/']);
       },
       error: (err) => {

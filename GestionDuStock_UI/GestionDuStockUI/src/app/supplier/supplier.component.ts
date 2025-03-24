@@ -18,16 +18,16 @@ export class SupplierComponent implements OnInit {
   errorMessage: string = '';
 
   constructor(private supplierService: SupplierControllerService) {}
-
   ngOnInit(): void {
     this.loadSuppliers();
   }
 
   loadSuppliers(): void {
-    this.supplierService.getFournisseur({ slug: '' }).subscribe({
-      next: (data) => {
-        this.suppliers = [data]; // Adjust if multiple suppliers are returned
-      },
+    this.supplierService.getAllFournisseurs().subscribe({
+      next: (data:Supplier[]) => {
+        this.suppliers = data;
+        this.suppliers = data.filter(supplier => !supplier.deleted);
+        },
       error: (error) => {
         this.errorMessage = 'Failed to load suppliers.';
         console.error(error);
@@ -53,7 +53,8 @@ export class SupplierComponent implements OnInit {
     this.supplierService.createFournisseur({ body: this.newSupplier }).subscribe({
       next: (newSupplier) => {
         this.suppliers.push(newSupplier);
-        this.isAdding = false; // Hide the form after successful addition
+        this.isAdding = false;
+        this.loadSuppliers();
       },
       error: (error) => {
         this.errorMessage = 'Failed to create supplier.';
@@ -90,6 +91,7 @@ export class SupplierComponent implements OnInit {
     if (this.selectedSupplier) {
       this.supplierService.deleteFournisseur({ slug: this.selectedSupplier.slug! }).subscribe({
         next: () => {
+          console.log('Supplier deleted successfully');
           this.suppliers = this.suppliers.filter(s => s.slug !== this.selectedSupplier!.slug);
           this.selectedSupplier = null;
         },

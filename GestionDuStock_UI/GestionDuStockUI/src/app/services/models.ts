@@ -16,3 +16,4 @@ export { SaleItem } from './models/sale-item';
 export { SaleitemDto } from './models/saleitem-dto';
 export { Supplier } from './models/supplier';
 export { User } from './models/user';
+export { UserDto } from './models/user-dto';

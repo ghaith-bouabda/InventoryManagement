@@ -1,5 +1,8 @@
 package com.pfe.GestionDuStock.purchase;
 
+import com.pfe.GestionDuStock.supplier.supplier;
+import com.pfe.GestionDuStock.supplier.supplierDTO;
+import com.pfe.GestionDuStock.supplier.supplierService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,35 +17,38 @@ import java.util.Optional;
 public class purchaseController {
 
     private final purchaseService purchaseService;
+    private final supplierService supplierService;
 
+    // Create a new purchase
     @PostMapping
-    public ResponseEntity<purchase> createPurchase(@RequestBody Long supplierId,  purchase purchase) {
-        purchase savedPurchase = purchaseService.savePurchase(supplierId,purchase);
+    public ResponseEntity<purchaseDTO> createPurchase(@RequestBody purchaseDTO purchaseDTO) {
+        purchaseDTO savedPurchase = purchaseService.savePurchase(purchaseDTO);
         return new ResponseEntity<>(savedPurchase, HttpStatus.CREATED);
     }
 
     // Get all purchases
     @GetMapping
-    public ResponseEntity<List<purchase>> getAllPurchases() {
-        List<purchase> purchases = purchaseService.getAllPurchases();
+    public ResponseEntity<List<purchaseDTO>> getAllPurchases() {
+        List<purchaseDTO> purchases = purchaseService.getAllPurchases();
         return new ResponseEntity<>(purchases, HttpStatus.OK);
     }
 
-    // Get a purchase by ID
-    @GetMapping("/{id}")
-    public ResponseEntity<purchase> getPurchaseBySupplier(@PathVariable String  Slug)
-    {
-        Optional<purchase> purchase = purchaseService.getPurchaseBySupplierSlug(Slug);
+    // Get a purchase by supplier slug
+    @GetMapping("/{slug}")
+    public ResponseEntity<purchaseDTO> getPurchaseBySupplier(@PathVariable String slug) {
+        Optional<purchaseDTO> purchase = purchaseService.getPurchaseBySupplierSlug(slug);
         return purchase.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
+    // Get a purchase by invoice number
     @GetMapping("/invoice/{invoiceNumber}")
-    public ResponseEntity<purchase> getPurchaseByInvoiceNumber(@PathVariable String invoiceNumber) {
-        Optional<purchase> purchase = purchaseService.getPurchaseByInvoiceNumber(invoiceNumber);
+    public ResponseEntity<purchaseDTO> getPurchaseByInvoiceNumber(@PathVariable String invoiceNumber) {
+        Optional<purchaseDTO> purchase = purchaseService.getPurchaseByInvoiceNumber(invoiceNumber);
         return purchase.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePurchase(@PathVariable Long id) {

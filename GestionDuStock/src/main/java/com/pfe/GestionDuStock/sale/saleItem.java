@@ -4,6 +4,8 @@ import com.pfe.GestionDuStock.product.product;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Data
 @Builder
@@ -17,13 +19,15 @@ public class saleItem {
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
-    private product product; // The product being sold
+    private product product;  // Product being sold
 
-    private Long quantity;  // How many units of this product
+    @Column(nullable = false)
+    private Long quantity;  // Quantity of the product sold
 
-    private Long price;  // Price at which the product was sold
+    @Column(nullable = false)
+    private Long price;  // Price of the product at the time of sale
 
     @ManyToOne
     @JoinColumn(name = "sale_id", nullable = false)
-    private sale sale;  // Link to the sale this item belongs to
+    private sale sale;  // Reference to the sale
 }

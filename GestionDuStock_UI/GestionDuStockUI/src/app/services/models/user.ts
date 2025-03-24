@@ -6,7 +6,6 @@ import { GrantedAuthority } from '../models/granted-authority';
 export interface User {
   accountNonExpired?: boolean;
   accountNonLocked?: boolean;
-  admin?: boolean;
   authorities?: Array<GrantedAuthority>;
   credentialsNonExpired?: boolean;
   email?: string;

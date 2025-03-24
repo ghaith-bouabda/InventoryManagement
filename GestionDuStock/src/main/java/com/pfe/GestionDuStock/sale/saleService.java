@@ -6,7 +6,12 @@ import com.pfe.GestionDuStock.exception.CustomerNotFoundException;
 import com.pfe.GestionDuStock.exception.ProductNotFoundException;
 import com.pfe.GestionDuStock.exception.SaleNotFoundException;
 import com.pfe.GestionDuStock.product.product;
+import com.pfe.GestionDuStock.product.productDTO;
+import com.pfe.GestionDuStock.product.productMapper;
 import com.pfe.GestionDuStock.product.productService;
+import com.pfe.GestionDuStock.supplier.supplier;
+import com.pfe.GestionDuStock.supplier.supplierDTO;
+import com.pfe.GestionDuStock.supplier.supplierMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +27,8 @@ public class saleService {
     private final productService productService;
     private final saleRepository saleRepository;
     private final customerRepository customerRepository;
+    private final productMapper productMapper;
+    private final saleItemMapper saleItemMapper;
 
     @Transactional
     public sale registerSale(Long customerId, saleDTO saleDTO) {
@@ -41,8 +48,13 @@ public class saleService {
         sale sale = saleRepository.findById(saleId)
                 .orElseThrow(() -> new SaleNotFoundException("Sale with ID " + saleId + " not found"));
 
-        product product = productService.getProductById(productId)
+        productDTO productDTO = productService.getProductById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product with ID " + productId + " not found"));
+
+        supplierDTO supplierdto = productDTO.supplier();
+        supplier    supplier = supplierMapper.toEntity(supplierdto); // Get supplier (changed from supplierDTO)
+
+        product product = productMapper.toEntity(productDTO, supplier); // Convert DTO to entity with supplier
 
         if (product.getStockQuantity() < quantity) {
             throw new RuntimeException("Not enough stock for product: " + product.getName());
@@ -88,25 +100,29 @@ public class saleService {
         return saleRepository.findByInvoiceNumber(invoiceNumber);
     }
 
-
-
     private sale processSaleItems(saleDTO saleDTO, sale sale) {
         for (saleitemDTO itemDTO : saleDTO.saleItems()) {
-            product product = productService.getProductById(itemDTO.productId())
+            // Fetch productDTO from the service
+            productDTO productDTO = productService.getProductById(itemDTO.productId())
                     .orElseThrow(() -> new ProductNotFoundException("Product with ID " + itemDTO.productId() + " not found"));
 
+            supplierDTO supplierdto = productDTO.supplier();
+            supplier    supplier = supplierMapper.toEntity(supplierdto);
+            // Convert productDTO to product entity using supplier
+            product product = productMapper.toEntity(productDTO, supplier);
+
+            // Check stock availability
             if (product.getStockQuantity() < itemDTO.quantity()) {
                 throw new RuntimeException("Not enough stock for product: " + product.getName());
             }
 
+            // Reduce stock quantity
             productService.reduceProductQuantity(itemDTO.productId(), itemDTO.quantity());
 
-            saleItem saleItem = new saleItem();
-            saleItem.setProduct(product);
-            saleItem.setQuantity(itemDTO.quantity());
-            saleItem.setPrice(itemDTO.price());
-            saleItem.setSale(sale);
+            // Use saleItemMapper to map DTO to entity
+            saleItem saleItem = saleItemMapper.toEntity(itemDTO, product.getSupplier());
 
+            saleItem.setSale(sale); // Link saleItem to sale
             sale.getSaleItems().add(saleItem);
         }
 

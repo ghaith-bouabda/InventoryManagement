@@ -1,10 +1,13 @@
 package com.pfe.GestionDuStock.product;
 
+import com.pfe.GestionDuStock.supplier.supplier;
+import com.pfe.GestionDuStock.supplier.supplierRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -13,17 +16,26 @@ import java.util.stream.Collectors;
 public class productService {
 
     private final productRepository productRepository;
+    private final supplierRepository supplierRepository;  // Added to fetch supplier when needed
 
-    public product saveProduct(product product) {
-        return productRepository.save(product);
+    public productDTO saveProduct(productDTO dto) {
+        // Fetch the supplier by its ID in the DTO
+        supplier supplier = supplierRepository.findById(dto.supplier().id())
+                .orElseThrow(() -> new RuntimeException("Supplier not found"));
+
+        // Convert productDTO to product entity with the supplier
+        product product = productMapper.toEntity(dto, supplier);
+        return productMapper.toDTO(productRepository.save(product));
     }
 
-    public List<product> getAllProducts() {
-        return productRepository.findAll();
+    public List<productDTO> getAllProducts() {
+        return productRepository.findAll().stream()
+                .map(productMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
-    public Optional<product> getProductById(Long id) {
-        return productRepository.findById(id);
+    public Optional<productDTO> getProductById(Long id) {
+        return productRepository.findById(id).map(productMapper::toDTO);
     }
 
     public void deleteProduct(Long id) {
@@ -31,7 +43,7 @@ public class productService {
     }
 
     @Transactional
-    public product reduceProductQuantity(Long productId, Long quantitySold) {
+    public productDTO reduceProductQuantity(Long productId, Long quantitySold) {
         product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
@@ -40,37 +52,35 @@ public class productService {
         }
 
         product.setStockQuantity(product.getStockQuantity() - quantitySold);
-        return productRepository.save(product);
+        return productMapper.toDTO(productRepository.save(product));
     }
 
     @Transactional
-    public product increaseProductQuantity(Long productId, Long quantityPurchased) {
+    public productDTO increaseProductQuantity(Long productId, Long quantityPurchased) {
         product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
         product.setStockQuantity(product.getStockQuantity() + quantityPurchased);
-        return productRepository.save(product);
+        return productMapper.toDTO(productRepository.save(product));
     }
 
-
-    public List<product> getLowStockProducts() {
+    public List<productDTO> getLowStockProducts() {
         return productRepository.findAll().stream()
                 .filter(p -> p.getStockQuantity() > 0 && p.getStockQuantity() < p.getStockThreshold())
+                .map(productMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-
-    public List<product> getOutOfStockProducts() {
+    public List<productDTO> getOutOfStockProducts() {
         return productRepository.findAll().stream()
                 .filter(p -> p.getStockQuantity() == 0)
+                .map(productMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<ProductCategoryDTO> getProductsByCategoryCount() {
+    public Map<String, Long> getProductCountBySupplier() {
         return productRepository.findAll().stream()
-                .collect(Collectors.groupingBy(p -> p.getSupplier().getName(), Collectors.counting()))
-                .entrySet().stream()
-                .map(entry -> new ProductCategoryDTO(entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
+                .filter(p -> p.getSupplier() != null)
+                .collect(Collectors.groupingBy(p -> p.getSupplier().getName(), Collectors.counting()));
     }
 }

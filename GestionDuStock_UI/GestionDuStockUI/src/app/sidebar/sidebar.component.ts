@@ -12,6 +12,9 @@ export class SidebarComponent implements OnInit {
   constructor(private authService: AuthControllerService) {}
 
   ngOnInit(): void {
+     {
+      this.isAdmin = true
+    }
     this.isAdmin = this.authService.isAdmin()
   }
 }

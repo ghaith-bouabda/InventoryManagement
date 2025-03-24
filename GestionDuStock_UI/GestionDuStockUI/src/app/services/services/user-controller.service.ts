@@ -15,9 +15,11 @@ import { getAllUsers } from '../fn/user-controller/get-all-users';
 import { GetAllUsers$Params } from '../fn/user-controller/get-all-users';
 import { getCurrentUser } from '../fn/user-controller/get-current-user';
 import { GetCurrentUser$Params } from '../fn/user-controller/get-current-user';
+import { getuser } from '../fn/user-controller/getuser';
+import { Getuser$Params } from '../fn/user-controller/getuser';
 import { getUserById } from '../fn/user-controller/get-user-by-id';
 import { GetUserById$Params } from '../fn/user-controller/get-user-by-id';
-import { User } from '../models/user';
+import { UserDto } from '../models/user-dto';
 
 @Injectable({ providedIn: 'root' })
 export class UserControllerService extends BaseService {
@@ -34,7 +36,7 @@ export class UserControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getAllUsers$Response(params?: GetAllUsers$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<User>>> {
+  getAllUsers$Response(params?: GetAllUsers$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<UserDto>>> {
     return getAllUsers(this.http, this.rootUrl, params, context);
   }
 
@@ -44,9 +46,9 @@ export class UserControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getAllUsers(params?: GetAllUsers$Params, context?: HttpContext): Observable<Array<User>> {
+  getAllUsers(params?: GetAllUsers$Params, context?: HttpContext): Observable<Array<UserDto>> {
     return this.getAllUsers$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<User>>): Array<User> => r.body)
+      map((r: StrictHttpResponse<Array<UserDto>>): Array<UserDto> => r.body)
     );
   }
 
@@ -59,7 +61,7 @@ export class UserControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getUserById$Response(params: GetUserById$Params, context?: HttpContext): Observable<StrictHttpResponse<User>> {
+  getUserById$Response(params: GetUserById$Params, context?: HttpContext): Observable<StrictHttpResponse<UserDto>> {
     return getUserById(this.http, this.rootUrl, params, context);
   }
 
@@ -69,9 +71,9 @@ export class UserControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getUserById(params: GetUserById$Params, context?: HttpContext): Observable<User> {
+  getUserById(params: GetUserById$Params, context?: HttpContext): Observable<UserDto> {
     return this.getUserById$Response(params, context).pipe(
-      map((r: StrictHttpResponse<User>): User => r.body)
+      map((r: StrictHttpResponse<UserDto>): UserDto => r.body)
     );
   }
 
@@ -84,7 +86,7 @@ export class UserControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getCurrentUser$Response(params?: GetCurrentUser$Params, context?: HttpContext): Observable<StrictHttpResponse<User>> {
+  getCurrentUser$Response(params?: GetCurrentUser$Params, context?: HttpContext): Observable<StrictHttpResponse<UserDto>> {
     return getCurrentUser(this.http, this.rootUrl, params, context);
   }
 
@@ -94,9 +96,34 @@ export class UserControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getCurrentUser(params?: GetCurrentUser$Params, context?: HttpContext): Observable<User> {
+  getCurrentUser(params?: GetCurrentUser$Params, context?: HttpContext): Observable<UserDto> {
     return this.getCurrentUser$Response(params, context).pipe(
-      map((r: StrictHttpResponse<User>): User => r.body)
+      map((r: StrictHttpResponse<UserDto>): UserDto => r.body)
+    );
+  }
+
+  /** Path part for operation `getuser()` */
+  static readonly GetuserPath = '/api/users/getuser';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getuser()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getuser$Response(params: Getuser$Params, context?: HttpContext): Observable<StrictHttpResponse<UserDto>> {
+    return getuser(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getuser$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getuser(params: Getuser$Params, context?: HttpContext): Observable<UserDto> {
+    return this.getuser$Response(params, context).pipe(
+      map((r: StrictHttpResponse<UserDto>): UserDto => r.body)
     );
   }
 

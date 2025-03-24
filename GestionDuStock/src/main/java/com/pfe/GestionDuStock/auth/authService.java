@@ -44,7 +44,7 @@ public class authService {
                 .username(RegisterRequest.getUsername())
                 .password(passwordEncoder.encode(RegisterRequest.getPassword()))
                 .email(RegisterRequest.getEmail())
-                .role(Role.ADMIN)
+                .role(RegisterRequest.getRole())
                 .build();
 
         var savedUser = userRepository.save(user);

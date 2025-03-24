@@ -15,6 +15,8 @@ import { createFournisseur } from '../fn/supplier-controller/create-fournisseur'
 import { CreateFournisseur$Params } from '../fn/supplier-controller/create-fournisseur';
 import { deleteFournisseur } from '../fn/supplier-controller/delete-fournisseur';
 import { DeleteFournisseur$Params } from '../fn/supplier-controller/delete-fournisseur';
+import { getAllFournisseurs } from '../fn/supplier-controller/get-all-fournisseurs';
+import { GetAllFournisseurs$Params } from '../fn/supplier-controller/get-all-fournisseurs';
 import { getFournisseur } from '../fn/supplier-controller/get-fournisseur';
 import { GetFournisseur$Params } from '../fn/supplier-controller/get-fournisseur';
 import { Supplier } from '../models/supplier';
@@ -124,6 +126,31 @@ export class SupplierControllerService extends BaseService {
   createFournisseur(params: CreateFournisseur$Params, context?: HttpContext): Observable<Supplier> {
     return this.createFournisseur$Response(params, context).pipe(
       map((r: StrictHttpResponse<Supplier>): Supplier => r.body)
+    );
+  }
+
+  /** Path part for operation `getAllFournisseurs()` */
+  static readonly GetAllFournisseursPath = '/fournisseurs/';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getAllFournisseurs()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getAllFournisseurs$Response(params?: GetAllFournisseurs$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<Supplier>>> {
+    return getAllFournisseurs(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getAllFournisseurs$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getAllFournisseurs(params?: GetAllFournisseurs$Params, context?: HttpContext): Observable<Array<Supplier>> {
+    return this.getAllFournisseurs$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<Supplier>>): Array<Supplier> => r.body)
     );
   }
 

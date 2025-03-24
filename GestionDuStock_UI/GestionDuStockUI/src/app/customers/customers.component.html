@@ -1,0 +1,64 @@
+<div class="customer-container">
+  <h2>Customer Management</h2>
+
+  <button (click)="startAddingCustomer()">Add Customer</button>
+
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+  <!-- Form to Add a New Customer -->
+  <div *ngIf="isAdding">
+    <h3>Add New Customer</h3>
+    <form (ngSubmit)="addCustomer()">
+      <label for="name">Name:</label>
+      <input id="name" [(ngModel)]="newCustomer.customerName" name="customerName" required />
+
+      <label for="address">Address:</label>
+      <input id="address" [(ngModel)]="newCustomer.address" name="address" required />
+
+      <label for="email">Email:</label>
+      <input id="email" [(ngModel)]="newCustomer.email" name="email" type="email" required />
+
+      <label for="phone">Phone:</label>
+      <input id="phone" [(ngModel)]="newCustomer.phone" name="phone" required />
+
+      <button type="submit">Create Customer</button>
+      <button type="button" (click)="cancelAdding()">Cancel</button>
+    </form>
+  </div>
+
+  <!-- Existing Customers List -->
+  <div *ngIf="customers.length > 0">
+    <ul>
+      <li *ngFor="let customer of customers" (click)="selectCustomer(customer)">
+        {{ customer.customerName }} ({{ customer.email }})
+      </li>
+    </ul>
+  </div>
+
+  <div *ngIf="selectedCustomer">
+    <h3>Selected Customer: {{ selectedCustomer.customerName }}</h3>
+
+    <div *ngIf="isEditing">
+      <form >
+        <label for="name">Name:</label>
+        <input id="name" [(ngModel)]="selectedCustomer.customerName" name="customerName" required />
+
+        <label for="address">Address:</label>
+        <input id="address" [(ngModel)]="selectedCustomer.address" name="address" required />
+
+        <label for="email">Email:</label>
+        <input id="email" [(ngModel)]="selectedCustomer.email" name="email" required />
+
+        <label for="phone">Phone:</label>
+        <input id="phone" [(ngModel)]="selectedCustomer.phone" name="phone" required />
+
+        <button type="submit">Update Customer</button>
+      </form>
+    </div>
+
+    <div *ngIf="!isEditing">
+      <button (click)="editCustomer()">Edit</button>
+      <button (click)="deleteCustomer()">Delete</button>
+    </div>
+  </div>
+</div>

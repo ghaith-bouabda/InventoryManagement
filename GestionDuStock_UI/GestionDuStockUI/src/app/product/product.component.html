@@ -1,0 +1,53 @@
+<div class="container">
+  <h1>Products</h1>
+
+  <!-- Product Categories -->
+  <div *ngIf="productCategories.length > 0" class="category-section">
+    <h3>Product Categories</h3>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Supplier</th>
+        <th>Product Count</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let category of productCategories">
+        <td>{{ category.category }}</td>
+        <td>{{ category.count }}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Products List -->
+  <div *ngIf="products.length > 0" class="product-section">
+    <h3>Product List</h3>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Stock Quantity</th>
+        <th>Stock Threshold</th>
+        <th>Supplier</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let product of products">
+        <td>{{ product.id }}</td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.price | currency }}</td>
+        <td>{{ product.stockQuantity }}</td>
+        <td>{{ product.stockThreshold }}</td>
+        <td>{{ product.supplier?.name || 'No Supplier' }}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="products.length === 0" class="no-products">
+    <p>No products available.</p>
+  </div>
+</div>

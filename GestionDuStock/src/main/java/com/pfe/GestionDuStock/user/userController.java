@@ -13,23 +13,25 @@ import java.util.Optional;
 public class userController {
 
     private final userService userService;
+    private final userMapper userMapper;
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
+    public userDTO getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<userDTO> getAllUsers() {
         return userService.getAllUsers();
     }
+
     @GetMapping("/getuser")
-    public Optional<User> getuser(String Username) {
-        return userService.getuser(Username);
+    public Optional<userDTO> getuser(@RequestParam String username) {
+        return userService.getuser(username);
     }
 
     @GetMapping("/me")
-    public User getCurrentUser(@AuthenticationPrincipal User user) {
-        return user;
+    public userDTO getCurrentUser(@AuthenticationPrincipal User user) {
+        return userMapper.toDTO(user); // Convert authenticated User to DTO
     }
 }

@@ -30,6 +30,10 @@ import {AuthInterceptor} from './auth-interceptor.service';
 import { LandingComponent } from './landing/landing.component';
 import { AlertComponent } from './alert/alert.component';
 import { SupplierComponent } from './supplier/supplier.component';
+import { ProductComponent } from './product/product.component';
+import { PurchaseComponent } from './purchase/purchase.component';
+import { SalesComponent } from './sales/sales.component';
+import { CustomersComponent } from './customers/customers.component';
 
 
 
@@ -44,6 +48,10 @@ import { SupplierComponent } from './supplier/supplier.component';
     LandingComponent,
     AlertComponent,
     SupplierComponent,
+    ProductComponent,
+    PurchaseComponent,
+    SalesComponent,
+    CustomersComponent,
   ],
   imports: [
     BrowserModule,

@@ -6,4 +6,6 @@ import java.util.List;
 public interface productRepository extends JpaRepository<product, Long> {
     List<product> findByStockQuantityLessThanAndStockQuantityGreaterThan(Long threshold, Long zero);
     List<product> findByStockQuantity(Long quantity);
+
+
 }

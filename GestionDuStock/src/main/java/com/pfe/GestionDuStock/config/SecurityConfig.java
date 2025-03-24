@@ -28,7 +28,7 @@ public class SecurityConfig {
         http.csrf().disable()
                 .cors(withDefaults())
                 .authorizeRequests()
-                .requestMatchers("/api/auth/**",// Authentication endpoints
+                .requestMatchers("/api/auth/**","/api/purchases/**",// Authentication endpoints
                         "/swagger-ui/**", // Swagger UI
                         "/v3/api-docs", // OpenAPI JSON
                         "/v3/api-docs/**", // OpenAPI JSON

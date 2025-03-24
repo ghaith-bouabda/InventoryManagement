@@ -1,7 +1,6 @@
 package com.pfe.GestionDuStock.supplier;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pfe.GestionDuStock.product.product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,20 +19,21 @@ public class supplier {
 
     @Id
     @GeneratedValue
-        private Long id;
+    private Long id;
 
-        @Column(unique = true)
-        private String slug;
+    @Column(unique = true)
+    private String slug;
 
-        private String name;
-        private String email;
-        private String telephone;
-        private String adresse;
-        private String contactPerson;
+    private String name;
+    private String email;
+    private String telephone;
+    private String adresse;
+    private String contactPerson;
+
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<product> products; 
+    @JsonManagedReference("supplier-products")  // Named reference to prevent circular reference
+    private List<product> products;
 
-        @Column(name = "is_deleted", nullable = false)
-        private boolean isDeleted = false;
-    }
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+}
