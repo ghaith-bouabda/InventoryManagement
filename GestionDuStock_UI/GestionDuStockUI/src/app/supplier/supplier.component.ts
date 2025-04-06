@@ -14,7 +14,7 @@ export class SupplierComponent implements OnInit {
   selectedSupplier: Supplier | null = null;
   isEditing: boolean = false;
   isAdding: boolean = false;
-  newSupplier: Supplier = {}; // Object to bind form data
+  newSupplier: Supplier = {};
   errorMessage: string = '';
 
   constructor(private supplierService: SupplierControllerService) {}
@@ -36,13 +36,16 @@ export class SupplierComponent implements OnInit {
   }
 
   selectSupplier(supplier: Supplier): void {
-    this.selectedSupplier = supplier;
+    if(this.selectedSupplier ==null || this.selectedSupplier != supplier ) {
+        this.selectedSupplier= supplier;}
+    else
+      this.selectedSupplier=null;
     this.isEditing = false;
   }
 
   startAddingSupplier(): void {
     this.isAdding = true;
-    this.newSupplier = {}; // Reset the form data
+    this.newSupplier = {};
   }
 
   cancelAdding(): void {

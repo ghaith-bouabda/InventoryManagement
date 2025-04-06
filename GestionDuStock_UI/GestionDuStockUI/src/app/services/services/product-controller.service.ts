@@ -23,10 +23,9 @@ import { getOutOfStockProducts } from '../fn/product-controller/get-out-of-stock
 import { GetOutOfStockProducts$Params } from '../fn/product-controller/get-out-of-stock-products';
 import { getProductById } from '../fn/product-controller/get-product-by-id';
 import { GetProductById$Params } from '../fn/product-controller/get-product-by-id';
-import { getProductsByCategoryCount } from '../fn/product-controller/get-products-by-category-count';
-import { GetProductsByCategoryCount$Params } from '../fn/product-controller/get-products-by-category-count';
-import { Product } from '../models/product';
-import { ProductCategoryDto } from '../models/product-category-dto';
+import { getProductCountBySupplier } from '../fn/product-controller/get-product-count-by-supplier';
+import { GetProductCountBySupplier$Params } from '../fn/product-controller/get-product-count-by-supplier';
+import { ProductDto } from '../models/product-dto';
 
 @Injectable({ providedIn: 'root' })
 export class ProductControllerService extends BaseService {
@@ -43,7 +42,7 @@ export class ProductControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getAllProducts$Response(params?: GetAllProducts$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<Product>>> {
+  getAllProducts$Response(params?: GetAllProducts$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ProductDto>>> {
     return getAllProducts(this.http, this.rootUrl, params, context);
   }
 
@@ -53,9 +52,9 @@ export class ProductControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getAllProducts(params?: GetAllProducts$Params, context?: HttpContext): Observable<Array<Product>> {
+  getAllProducts(params?: GetAllProducts$Params, context?: HttpContext): Observable<Array<ProductDto>> {
     return this.getAllProducts$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<Product>>): Array<Product> => r.body)
+      map((r: StrictHttpResponse<Array<ProductDto>>): Array<ProductDto> => r.body)
     );
   }
 
@@ -68,7 +67,7 @@ export class ProductControllerService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  createProduct$Response(params: CreateProduct$Params, context?: HttpContext): Observable<StrictHttpResponse<Product>> {
+  createProduct$Response(params: CreateProduct$Params, context?: HttpContext): Observable<StrictHttpResponse<ProductDto>> {
     return createProduct(this.http, this.rootUrl, params, context);
   }
 
@@ -78,9 +77,9 @@ export class ProductControllerService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  createProduct(params: CreateProduct$Params, context?: HttpContext): Observable<Product> {
+  createProduct(params: CreateProduct$Params, context?: HttpContext): Observable<ProductDto> {
     return this.createProduct$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Product>): Product => r.body)
+      map((r: StrictHttpResponse<ProductDto>): ProductDto => r.body)
     );
   }
 
@@ -93,7 +92,7 @@ export class ProductControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getProductById$Response(params: GetProductById$Params, context?: HttpContext): Observable<StrictHttpResponse<Product>> {
+  getProductById$Response(params: GetProductById$Params, context?: HttpContext): Observable<StrictHttpResponse<ProductDto>> {
     return getProductById(this.http, this.rootUrl, params, context);
   }
 
@@ -103,9 +102,9 @@ export class ProductControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getProductById(params: GetProductById$Params, context?: HttpContext): Observable<Product> {
+  getProductById(params: GetProductById$Params, context?: HttpContext): Observable<ProductDto> {
     return this.getProductById$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Product>): Product => r.body)
+      map((r: StrictHttpResponse<ProductDto>): ProductDto => r.body)
     );
   }
 
@@ -134,6 +133,39 @@ export class ProductControllerService extends BaseService {
     );
   }
 
+  /** Path part for operation `getProductCountBySupplier()` */
+  static readonly GetProductCountBySupplierPath = '/api/products/supplier-count';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getProductCountBySupplier()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getProductCountBySupplier$Response(params?: GetProductCountBySupplier$Params, context?: HttpContext): Observable<StrictHttpResponse<{
+[key: string]: number;
+}>> {
+    return getProductCountBySupplier(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getProductCountBySupplier$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getProductCountBySupplier(params?: GetProductCountBySupplier$Params, context?: HttpContext): Observable<{
+[key: string]: number;
+}> {
+    return this.getProductCountBySupplier$Response(params, context).pipe(
+      map((r: StrictHttpResponse<{
+[key: string]: number;
+}>): {
+[key: string]: number;
+} => r.body)
+    );
+  }
+
   /** Path part for operation `getOutOfStockProducts()` */
   static readonly GetOutOfStockProductsPath = '/api/products/out-of-stock';
 
@@ -143,7 +175,7 @@ export class ProductControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getOutOfStockProducts$Response(params?: GetOutOfStockProducts$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<Product>>> {
+  getOutOfStockProducts$Response(params?: GetOutOfStockProducts$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ProductDto>>> {
     return getOutOfStockProducts(this.http, this.rootUrl, params, context);
   }
 
@@ -153,9 +185,9 @@ export class ProductControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getOutOfStockProducts(params?: GetOutOfStockProducts$Params, context?: HttpContext): Observable<Array<Product>> {
+  getOutOfStockProducts(params?: GetOutOfStockProducts$Params, context?: HttpContext): Observable<Array<ProductDto>> {
     return this.getOutOfStockProducts$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<Product>>): Array<Product> => r.body)
+      map((r: StrictHttpResponse<Array<ProductDto>>): Array<ProductDto> => r.body)
     );
   }
 
@@ -168,7 +200,7 @@ export class ProductControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getLowStockProducts$Response(params?: GetLowStockProducts$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<Product>>> {
+  getLowStockProducts$Response(params?: GetLowStockProducts$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ProductDto>>> {
     return getLowStockProducts(this.http, this.rootUrl, params, context);
   }
 
@@ -178,34 +210,9 @@ export class ProductControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getLowStockProducts(params?: GetLowStockProducts$Params, context?: HttpContext): Observable<Array<Product>> {
+  getLowStockProducts(params?: GetLowStockProducts$Params, context?: HttpContext): Observable<Array<ProductDto>> {
     return this.getLowStockProducts$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<Product>>): Array<Product> => r.body)
-    );
-  }
-
-  /** Path part for operation `getProductsByCategoryCount()` */
-  static readonly GetProductsByCategoryCountPath = '/api/products/category-count';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getProductsByCategoryCount()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getProductsByCategoryCount$Response(params?: GetProductsByCategoryCount$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ProductCategoryDto>>> {
-    return getProductsByCategoryCount(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getProductsByCategoryCount$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getProductsByCategoryCount(params?: GetProductsByCategoryCount$Params, context?: HttpContext): Observable<Array<ProductCategoryDto>> {
-    return this.getProductsByCategoryCount$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<ProductCategoryDto>>): Array<ProductCategoryDto> => r.body)
+      map((r: StrictHttpResponse<Array<ProductDto>>): Array<ProductDto> => r.body)
     );
   }
 

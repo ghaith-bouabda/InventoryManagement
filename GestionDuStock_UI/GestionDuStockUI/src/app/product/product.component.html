@@ -2,23 +2,6 @@
   <h1>Products</h1>
 
   <!-- Product Categories -->
-  <div *ngIf="productCategories.length > 0" class="category-section">
-    <h3>Product Categories</h3>
-    <table class="table">
-      <thead>
-      <tr>
-        <th>Supplier</th>
-        <th>Product Count</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let category of productCategories">
-        <td>{{ category.category }}</td>
-        <td>{{ category.count }}</td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
 
   <!-- Products List -->
   <div *ngIf="products.length > 0" class="product-section">

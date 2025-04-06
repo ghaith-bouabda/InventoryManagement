@@ -5,7 +5,7 @@
 
   <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
 
-  <!-- Form to Add a New Customer -->
+
   <div *ngIf="isAdding">
     <h3>Add New Customer</h3>
     <form (ngSubmit)="addCustomer()">
@@ -52,7 +52,7 @@
         <label for="phone">Phone:</label>
         <input id="phone" [(ngModel)]="selectedCustomer.phone" name="phone" required />
 
-        <button type="submit">Update Customer</button>
+        <button type="submit" (click)="UpdateCustomer()">Update Customer</button>
       </form>
     </div>
 

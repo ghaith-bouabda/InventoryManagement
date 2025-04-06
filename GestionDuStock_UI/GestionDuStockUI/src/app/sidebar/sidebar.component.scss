@@ -6,6 +6,12 @@
   overflow-y: auto;
   transition: width 0.3s;
 }
+.sidebar img {
+  width: 152px;
+  height: 52px;
+  object-fit: contain;
+  border-radius: 4px;
+}
 
 .sidebar-content {
   padding: 1.5rem 0;
@@ -83,4 +89,35 @@
 .navbar-brand i {
   font-size: 1.5rem;
   color: #2196f3;
+}
+.logout-section {
+  padding: 0 1.5rem;
+  padding-top: 10rem;
+}
+
+.logout-button {
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, #604e4e, #686039);
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background 0.3s ease, transform 0.2s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.logout-button:hover {
+  background: linear-gradient(135deg, #f85032, #e73827);
+  transform: scale(1.03);
+}
+
+.logout-button i {
+  font-size: 1.1rem;
 }

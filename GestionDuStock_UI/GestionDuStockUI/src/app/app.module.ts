@@ -34,7 +34,10 @@ import { ProductComponent } from './product/product.component';
 import { PurchaseComponent } from './purchase/purchase.component';
 import { SalesComponent } from './sales/sales.component';
 import { CustomersComponent } from './customers/customers.component';
-
+import {NgOptimizedImage} from "@angular/common";
+import {WebSocketService} from './socketservice/WebSocketService';
+import {provideToastr, ToastrModule} from 'ngx-toastr';
+import {BrowserAnimationsModule, provideAnimations} from '@angular/platform-browser/animations';
 
 
 
@@ -53,41 +56,45 @@ import { CustomersComponent } from './customers/customers.component';
     SalesComponent,
     CustomersComponent,
   ],
-  imports: [
-    BrowserModule,
-    HttpClientModule,
+    imports: [
+      BrowserAnimationsModule, // required animations module
+      ToastrModule.forRoot(),
+      BrowserModule,
+        HttpClientModule,
+        AppRoutingModule,
+        MatListItem,
+        MatSidenavContainer,
+        MatNavList,
+        MatSidenav,
+        MatSidenavModule,
+        MatListModule,
+        FormsModule,
+        ChartModule,
+        TableModule,
+        ButtonModule,
+        DialogModule,
+        InputTextModule,
+        DropdownModule,
+        ToastModule,
+        ConfirmDialogModule,
+        CardModule,
+        ProgressBarModule,
+        PanelModule,
+        Menu,
+        NgOptimizedImage,
 
-    AppRoutingModule,
-    MatListItem,
-    MatSidenavContainer,
-    MatNavList,
-    MatSidenav,
-    MatSidenavModule,
-    MatListModule,
-    FormsModule,
-    ChartModule,
-    TableModule,
-    ButtonModule,
-    DialogModule,
-    InputTextModule,
-    DropdownModule,
-    ToastModule,
-    ConfirmDialogModule,
-    CardModule,
-    ProgressBarModule,
-    PanelModule,
-    Menu,
-
-  ],
+    ],
   providers: [
     provideAnimationsAsync(),
+    provideAnimations(), // required animations providers
+    provideToastr(),
     MessageService,
     ConfirmationService, {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true,
     }
-  ],
+  ,WebSocketService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

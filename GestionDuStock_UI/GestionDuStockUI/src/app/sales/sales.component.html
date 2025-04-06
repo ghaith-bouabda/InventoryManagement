@@ -37,11 +37,9 @@
         (change)="onProductSelect()"
         required
       >
-        <option value="">-- Select Product --</option>
         <option *ngFor="let product of products" [value]="product.id">
           {{ product.name }} - ${{ product.price }}
         </option>
-        <option value="new">+ Add New Product</option>
       </select>
     </div>
 
@@ -76,10 +74,10 @@
         <input
           type="number"
           id="productQuantity"
-          [(ngModel)]="newProduct.quantity"
-          name="productQuantity"
-          min="1"
-          required
+          [(ngModel)]="newProduct.stockQuantity"
+        name="productQuantity"
+        min="1"
+        required
         />
       </div>
 
@@ -90,9 +88,9 @@
     <div>
       <h3>Sale List</h3>
       <ul>
-        <li *ngFor="let item of newSaleData.sale.products">
-          {{ item.product.name }} - ${{ item.product.price }} x {{ item.quantity }}
-          <button type="button" (click)="removeProductFromSale(item.product)">Remove</button>
+        <li *ngFor="let item of newSaleData.saleItems">
+          {{ item.productId }} - ${{ item.price }} x {{ item.quantity }}
+          <button type="button" (click)="removeProductFromSale(item.productId)">Remove</button>
         </li>
       </ul>
     </div>
@@ -111,9 +109,8 @@
     <!-- Submit Button -->
     <button
       type="submit"
-      [disabled]="!saleDate || !selectedCustomerId || newSaleData.sale.products.length === 0"
-    >
-      Create Sale
+      [disabled]="!saleDate || !selectedCustomerId || newSaleData.saleItems.length === 0" >
+    Create Sale
     </button>
   </form>
 </div>

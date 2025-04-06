@@ -8,13 +8,13 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { Supplier } from '../../models/supplier';
+import { SupplierDto } from '../../models/supplier-dto';
 
 export interface GetFournisseur$Params {
   slug: string;
 }
 
-export function getFournisseur(http: HttpClient, rootUrl: string, params: GetFournisseur$Params, context?: HttpContext): Observable<StrictHttpResponse<Supplier>> {
+export function getFournisseur(http: HttpClient, rootUrl: string, params: GetFournisseur$Params, context?: HttpContext): Observable<StrictHttpResponse<SupplierDto>> {
   const rb = new RequestBuilder(rootUrl, getFournisseur.PATH, 'get');
   if (params) {
     rb.path('slug', params.slug, {});
@@ -25,7 +25,7 @@ export function getFournisseur(http: HttpClient, rootUrl: string, params: GetFou
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<Supplier>;
+      return r as StrictHttpResponse<SupplierDto>;
     })
   );
 }

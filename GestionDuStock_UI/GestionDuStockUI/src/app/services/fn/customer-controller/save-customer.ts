@@ -8,13 +8,13 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { Customer } from '../../models/customer';
+import { CustomerDto } from '../../models/customer-dto';
 
 export interface SaveCustomer$Params {
-      body: Customer
+      body: CustomerDto
 }
 
-export function saveCustomer(http: HttpClient, rootUrl: string, params: SaveCustomer$Params, context?: HttpContext): Observable<StrictHttpResponse<Customer>> {
+export function saveCustomer(http: HttpClient, rootUrl: string, params: SaveCustomer$Params, context?: HttpContext): Observable<StrictHttpResponse<CustomerDto>> {
   const rb = new RequestBuilder(rootUrl, saveCustomer.PATH, 'post');
   if (params) {
     rb.body(params.body, 'application/json');
@@ -25,7 +25,7 @@ export function saveCustomer(http: HttpClient, rootUrl: string, params: SaveCust
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<Customer>;
+      return r as StrictHttpResponse<CustomerDto>;
     })
   );
 }

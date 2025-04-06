@@ -93,3 +93,85 @@ button:disabled {
   font-weight: bold;
   color: #333;
 }
+.purchase-container {
+  display: flex;
+  gap: 2rem;
+}
+
+.search-sidebar {
+  width: 250px;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.purchase-form {
+  flex-grow: 1;
+  padding: 1rem;
+}
+
+.search-sidebar form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.search-sidebar input,
+.search-sidebar select,
+.search-sidebar button {
+  padding: 0.5rem;
+  width: 100%;
+}
+
+.search-sidebar h4 {
+  margin-top: 1rem;
+}
+
+.search-sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.search-sidebar li {
+  margin-bottom: 0.5rem;
+}
+.filtered-result-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.filtered-result-item {
+  flex: 1;
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.result-window {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.result-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+button {
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 3px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}

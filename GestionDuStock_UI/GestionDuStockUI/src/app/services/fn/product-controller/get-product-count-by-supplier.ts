@@ -8,16 +8,15 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { CustomerDto } from '../../models/customer-dto';
 
-export interface GetCustomerByPhone$Params {
-  phone: string;
+export interface GetProductCountBySupplier$Params {
 }
 
-export function getCustomerByPhone(http: HttpClient, rootUrl: string, params: GetCustomerByPhone$Params, context?: HttpContext): Observable<StrictHttpResponse<CustomerDto>> {
-  const rb = new RequestBuilder(rootUrl, getCustomerByPhone.PATH, 'get');
+export function getProductCountBySupplier(http: HttpClient, rootUrl: string, params?: GetProductCountBySupplier$Params, context?: HttpContext): Observable<StrictHttpResponse<{
+[key: string]: number;
+}>> {
+  const rb = new RequestBuilder(rootUrl, getProductCountBySupplier.PATH, 'get');
   if (params) {
-    rb.path('phone', params.phone, {});
   }
 
   return http.request(
@@ -25,9 +24,11 @@ export function getCustomerByPhone(http: HttpClient, rootUrl: string, params: Ge
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<CustomerDto>;
+      return r as StrictHttpResponse<{
+      [key: string]: number;
+      }>;
     })
   );
 }
 
-getCustomerByPhone.PATH = '/api/customers/phone/{phone}';
+getProductCountBySupplier.PATH = '/api/products/supplier-count';

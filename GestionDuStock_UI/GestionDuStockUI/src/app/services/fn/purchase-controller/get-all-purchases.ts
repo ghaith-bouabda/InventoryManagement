@@ -8,12 +8,12 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { Purchase } from '../../models/purchase';
+import { PurchaseDto } from '../../models/purchase-dto';
 
 export interface GetAllPurchases$Params {
 }
 
-export function getAllPurchases(http: HttpClient, rootUrl: string, params?: GetAllPurchases$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<Purchase>>> {
+export function getAllPurchases(http: HttpClient, rootUrl: string, params?: GetAllPurchases$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<PurchaseDto>>> {
   const rb = new RequestBuilder(rootUrl, getAllPurchases.PATH, 'get');
   if (params) {
   }
@@ -23,7 +23,7 @@ export function getAllPurchases(http: HttpClient, rootUrl: string, params?: GetA
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<Array<Purchase>>;
+      return r as StrictHttpResponse<Array<PurchaseDto>>;
     })
   );
 }

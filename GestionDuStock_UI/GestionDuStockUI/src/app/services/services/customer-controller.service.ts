@@ -11,7 +11,7 @@ import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
-import { Customer } from '../models/customer';
+import { CustomerDto } from '../models/customer-dto';
 import { deleteCustomer } from '../fn/customer-controller/delete-customer';
 import { DeleteCustomer$Params } from '../fn/customer-controller/delete-customer';
 import { getAllCustomers } from '../fn/customer-controller/get-all-customers';
@@ -22,11 +22,38 @@ import { getCustomerByPhone } from '../fn/customer-controller/get-customer-by-ph
 import { GetCustomerByPhone$Params } from '../fn/customer-controller/get-customer-by-phone';
 import { saveCustomer } from '../fn/customer-controller/save-customer';
 import { SaveCustomer$Params } from '../fn/customer-controller/save-customer';
+import { updateCustomer } from '../fn/customer-controller/update-customer';
+import { UpdateCustomer$Params } from '../fn/customer-controller/update-customer';
 
 @Injectable({ providedIn: 'root' })
 export class CustomerControllerService extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
+  }
+
+  /** Path part for operation `updateCustomer()` */
+  static readonly UpdateCustomerPath = '/api/customers/edit';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateCustomer()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateCustomer$Response(params: UpdateCustomer$Params, context?: HttpContext): Observable<StrictHttpResponse<CustomerDto>> {
+    return updateCustomer(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateCustomer$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateCustomer(params: UpdateCustomer$Params, context?: HttpContext): Observable<CustomerDto> {
+    return this.updateCustomer$Response(params, context).pipe(
+      map((r: StrictHttpResponse<CustomerDto>): CustomerDto => r.body)
+    );
   }
 
   /** Path part for operation `getAllCustomers()` */
@@ -38,7 +65,7 @@ export class CustomerControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getAllCustomers$Response(params?: GetAllCustomers$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<Customer>>> {
+  getAllCustomers$Response(params?: GetAllCustomers$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<CustomerDto>>> {
     return getAllCustomers(this.http, this.rootUrl, params, context);
   }
 
@@ -48,9 +75,9 @@ export class CustomerControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getAllCustomers(params?: GetAllCustomers$Params, context?: HttpContext): Observable<Array<Customer>> {
+  getAllCustomers(params?: GetAllCustomers$Params, context?: HttpContext): Observable<Array<CustomerDto>> {
     return this.getAllCustomers$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<Customer>>): Array<Customer> => r.body)
+      map((r: StrictHttpResponse<Array<CustomerDto>>): Array<CustomerDto> => r.body)
     );
   }
 
@@ -63,7 +90,7 @@ export class CustomerControllerService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  saveCustomer$Response(params: SaveCustomer$Params, context?: HttpContext): Observable<StrictHttpResponse<Customer>> {
+  saveCustomer$Response(params: SaveCustomer$Params, context?: HttpContext): Observable<StrictHttpResponse<CustomerDto>> {
     return saveCustomer(this.http, this.rootUrl, params, context);
   }
 
@@ -73,9 +100,9 @@ export class CustomerControllerService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  saveCustomer(params: SaveCustomer$Params, context?: HttpContext): Observable<Customer> {
+  saveCustomer(params: SaveCustomer$Params, context?: HttpContext): Observable<CustomerDto> {
     return this.saveCustomer$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Customer>): Customer => r.body)
+      map((r: StrictHttpResponse<CustomerDto>): CustomerDto => r.body)
     );
   }
 
@@ -88,7 +115,7 @@ export class CustomerControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getCustomerByPhone$Response(params: GetCustomerByPhone$Params, context?: HttpContext): Observable<StrictHttpResponse<Customer>> {
+  getCustomerByPhone$Response(params: GetCustomerByPhone$Params, context?: HttpContext): Observable<StrictHttpResponse<CustomerDto>> {
     return getCustomerByPhone(this.http, this.rootUrl, params, context);
   }
 
@@ -98,9 +125,9 @@ export class CustomerControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getCustomerByPhone(params: GetCustomerByPhone$Params, context?: HttpContext): Observable<Customer> {
+  getCustomerByPhone(params: GetCustomerByPhone$Params, context?: HttpContext): Observable<CustomerDto> {
     return this.getCustomerByPhone$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Customer>): Customer => r.body)
+      map((r: StrictHttpResponse<CustomerDto>): CustomerDto => r.body)
     );
   }
 
@@ -113,7 +140,7 @@ export class CustomerControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getCustomerByEmail$Response(params: GetCustomerByEmail$Params, context?: HttpContext): Observable<StrictHttpResponse<Customer>> {
+  getCustomerByEmail$Response(params: GetCustomerByEmail$Params, context?: HttpContext): Observable<StrictHttpResponse<CustomerDto>> {
     return getCustomerByEmail(this.http, this.rootUrl, params, context);
   }
 
@@ -123,9 +150,9 @@ export class CustomerControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getCustomerByEmail(params: GetCustomerByEmail$Params, context?: HttpContext): Observable<Customer> {
+  getCustomerByEmail(params: GetCustomerByEmail$Params, context?: HttpContext): Observable<CustomerDto> {
     return this.getCustomerByEmail$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Customer>): Customer => r.body)
+      map((r: StrictHttpResponse<CustomerDto>): CustomerDto => r.body)
     );
   }
 

@@ -1,10 +1,13 @@
 import { Component,  OnInit } from "@angular/core"
-import { ProductControllerService } from "../services/services/product-controller.service";  // Remove 'type'
+import { ProductControllerService } from "../services/services/product-controller.service";
 import  { SupplierControllerService } from "../services/services/supplier-controller.service"
 import  { SaleControllerService } from "../services/services/sale-controller.service"
 import  { AuthControllerService } from "../services/services/auth-controller.service"
 import  { User } from "../services/models/user"
 import  { Product } from "../services/models/product"
+import {WebSocketService} from '../socketservice/WebSocketService';
+import {MessageService} from 'primeng/api';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: "app-dashboard",
@@ -34,14 +37,21 @@ export class DashboardComponent implements OnInit {
     private supplierService: SupplierControllerService,
     private saleService: SaleControllerService,
     private authService: AuthControllerService,
-  ) {
+    private webSocketService: WebSocketService,
+private toastr: ToastrService) {}
 
+  showSuccess() {
+    this.toastr.success('Hello world!', 'Toastr fun!');
   }
+
 
   ngOnInit(): void {
     this.loadDashboardData()
+    this.webSocketService.connect();
   }
-
+  ngOnDestroy(): void {
+    this.webSocketService.disconnect();
+  }
   loadDashboardData(): void {
     this.loading = true
 
@@ -49,7 +59,6 @@ export class DashboardComponent implements OnInit {
     this.productService.getAllProducts().subscribe((products) => {
       this.products = products
       this.productStats.total = products.length
-      this.prepareChartData()
       this.loading = false
     })
 
@@ -65,56 +74,7 @@ export class DashboardComponent implements OnInit {
     })
 
     // Get product category distribution for chart
-    this.productService.getProductsByCategoryCount().subscribe((data) => {
-      this.prepareProductCategoryChart(data)
-    })
-  }
 
-  prepareChartData(): void {
-    // Prepare stock status chart data
-    this.stockStatusData = {
-      labels: ["Normal", "Low Stock", "Out of Stock"],
-      datasets: [
-        {
-          data: [
-            this.productStats.total - this.productStats.lowStock - this.productStats.outOfStock,
-            this.productStats.lowStock,
-            this.productStats.outOfStock,
-          ],
-          backgroundColor: ["#4caf50", "#ff9800", "#f44336"],
-          hoverBackgroundColor: ["#81c784", "#ffb74d", "#e57373"],
-        },
-      ],
-    }
-  }
 
-  prepareProductCategoryChart(data: any[]): void {
-    const labels = data.map((item) => item.category)
-    const values = data.map((item) => item.count)
-
-    this.productCategoryData = {
-      labels: labels,
-      datasets: [
-        {
-          label: "Products by Category",
-          data: values,
-          backgroundColor: [
-            "#3f51b5",
-            "#2196f3",
-            "#03a9f4",
-            "#00bcd4",
-            "#009688",
-            "#4caf50",
-            "#8bc34a",
-            "#cddc39",
-            "#ffeb3b",
-            "#ffc107",
-            "#ff9800",
-            "#ff5722",
-          ],
-        },
-      ],
-    }
   }
 }
-

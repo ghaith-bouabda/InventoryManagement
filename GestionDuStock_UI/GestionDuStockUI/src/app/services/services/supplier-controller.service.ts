@@ -19,7 +19,7 @@ import { getAllFournisseurs } from '../fn/supplier-controller/get-all-fournisseu
 import { GetAllFournisseurs$Params } from '../fn/supplier-controller/get-all-fournisseurs';
 import { getFournisseur } from '../fn/supplier-controller/get-fournisseur';
 import { GetFournisseur$Params } from '../fn/supplier-controller/get-fournisseur';
-import { Supplier } from '../models/supplier';
+import { SupplierDto } from '../models/supplier-dto';
 import { updateFournisseur } from '../fn/supplier-controller/update-fournisseur';
 import { UpdateFournisseur$Params } from '../fn/supplier-controller/update-fournisseur';
 
@@ -38,7 +38,7 @@ export class SupplierControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getFournisseur$Response(params: GetFournisseur$Params, context?: HttpContext): Observable<StrictHttpResponse<Supplier>> {
+  getFournisseur$Response(params: GetFournisseur$Params, context?: HttpContext): Observable<StrictHttpResponse<SupplierDto>> {
     return getFournisseur(this.http, this.rootUrl, params, context);
   }
 
@@ -48,9 +48,9 @@ export class SupplierControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getFournisseur(params: GetFournisseur$Params, context?: HttpContext): Observable<Supplier> {
+  getFournisseur(params: GetFournisseur$Params, context?: HttpContext): Observable<SupplierDto> {
     return this.getFournisseur$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Supplier>): Supplier => r.body)
+      map((r: StrictHttpResponse<SupplierDto>): SupplierDto => r.body)
     );
   }
 
@@ -63,7 +63,7 @@ export class SupplierControllerService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateFournisseur$Response(params: UpdateFournisseur$Params, context?: HttpContext): Observable<StrictHttpResponse<Supplier>> {
+  updateFournisseur$Response(params: UpdateFournisseur$Params, context?: HttpContext): Observable<StrictHttpResponse<SupplierDto>> {
     return updateFournisseur(this.http, this.rootUrl, params, context);
   }
 
@@ -73,9 +73,9 @@ export class SupplierControllerService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateFournisseur(params: UpdateFournisseur$Params, context?: HttpContext): Observable<Supplier> {
+  updateFournisseur(params: UpdateFournisseur$Params, context?: HttpContext): Observable<SupplierDto> {
     return this.updateFournisseur$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Supplier>): Supplier => r.body)
+      map((r: StrictHttpResponse<SupplierDto>): SupplierDto => r.body)
     );
   }
 
@@ -113,7 +113,7 @@ export class SupplierControllerService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  createFournisseur$Response(params: CreateFournisseur$Params, context?: HttpContext): Observable<StrictHttpResponse<Supplier>> {
+  createFournisseur$Response(params: CreateFournisseur$Params, context?: HttpContext): Observable<StrictHttpResponse<SupplierDto>> {
     return createFournisseur(this.http, this.rootUrl, params, context);
   }
 
@@ -123,9 +123,9 @@ export class SupplierControllerService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  createFournisseur(params: CreateFournisseur$Params, context?: HttpContext): Observable<Supplier> {
+  createFournisseur(params: CreateFournisseur$Params, context?: HttpContext): Observable<SupplierDto> {
     return this.createFournisseur$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Supplier>): Supplier => r.body)
+      map((r: StrictHttpResponse<SupplierDto>): SupplierDto => r.body)
     );
   }
 
@@ -138,7 +138,7 @@ export class SupplierControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getAllFournisseurs$Response(params?: GetAllFournisseurs$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<Supplier>>> {
+  getAllFournisseurs$Response(params?: GetAllFournisseurs$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<SupplierDto>>> {
     return getAllFournisseurs(this.http, this.rootUrl, params, context);
   }
 
@@ -148,9 +148,9 @@ export class SupplierControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getAllFournisseurs(params?: GetAllFournisseurs$Params, context?: HttpContext): Observable<Array<Supplier>> {
+  getAllFournisseurs(params?: GetAllFournisseurs$Params, context?: HttpContext): Observable<Array<SupplierDto>> {
     return this.getAllFournisseurs$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<Supplier>>): Array<Supplier> => r.body)
+      map((r: StrictHttpResponse<Array<SupplierDto>>): Array<SupplierDto> => r.body)
     );
   }
 

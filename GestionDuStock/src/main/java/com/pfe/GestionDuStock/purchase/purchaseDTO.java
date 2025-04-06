@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 public record purchaseDTO(
-        Long id,                    // Purchase ID
         Long supplierId,            // Supplier ID associated with the purchase
         List<purchaseItemDTO> purchaseItems,   // List of purchaseItemDTOs, each containing a product ID and quantity
         Double totalAmount,         // Total amount of the purchase (calculated in service)

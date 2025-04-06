@@ -8,13 +8,13 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { Purchase } from '../../models/purchase';
+import { PurchaseDto } from '../../models/purchase-dto';
 
 export interface GetPurchaseByInvoiceNumber$Params {
   invoiceNumber: string;
 }
 
-export function getPurchaseByInvoiceNumber(http: HttpClient, rootUrl: string, params: GetPurchaseByInvoiceNumber$Params, context?: HttpContext): Observable<StrictHttpResponse<Purchase>> {
+export function getPurchaseByInvoiceNumber(http: HttpClient, rootUrl: string, params: GetPurchaseByInvoiceNumber$Params, context?: HttpContext): Observable<StrictHttpResponse<PurchaseDto>> {
   const rb = new RequestBuilder(rootUrl, getPurchaseByInvoiceNumber.PATH, 'get');
   if (params) {
     rb.path('invoiceNumber', params.invoiceNumber, {});
@@ -25,7 +25,7 @@ export function getPurchaseByInvoiceNumber(http: HttpClient, rootUrl: string, pa
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<Purchase>;
+      return r as StrictHttpResponse<PurchaseDto>;
     })
   );
 }

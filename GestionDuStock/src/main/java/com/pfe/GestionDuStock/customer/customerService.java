@@ -26,7 +26,24 @@ public class customerService {
 
         return customerMapper.toDTO(savedCustomer);
     }
+    @Transactional
+    public customerDTO UpdateCustomer(customerDTO customerDTO) {
+        customer customer = customerRepository.findById(customerDTO.id()).orElseThrow(
+                () -> new CustomerNotFoundException("Customer not found")
+        );
+        if (customerRepository.findByEmail(customerDTO.email())
+                .filter(existingCustomer -> !existingCustomer.getId().equals(customerDTO.id()))
+                .isPresent()) {
+            throw new DuplicateEmailException("Email " + customerDTO.email() + " is already in use");
+        }
+        customer.setCustomerName(customerDTO.customerName());
+        customer.setEmail(customerDTO.email());
+        customer.setAddress(customerDTO.address());
+        customer.setPhone(customerDTO.phone());
+        customer savedCustomer = customerRepository.save(customer);
+        return customerMapper.toDTO(savedCustomer);
 
+}
     // Get all customers
     public List<customerDTO> getAllCustomers() {
         List<customer> customers = customerRepository.findAll();

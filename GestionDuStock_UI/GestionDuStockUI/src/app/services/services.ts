@@ -4,8 +4,8 @@
 
 export { SupplierControllerService } from './services/supplier-controller.service';
 export { SaleControllerService } from './services/sale-controller.service';
+export { CustomerControllerService } from './services/customer-controller.service';
 export { PurchaseControllerService } from './services/purchase-controller.service';
 export { ProductControllerService } from './services/product-controller.service';
-export { CustomerControllerService } from './services/customer-controller.service';
 export { AuthControllerService } from './services/auth-controller.service';
 export { UserControllerService } from './services/user-controller.service';

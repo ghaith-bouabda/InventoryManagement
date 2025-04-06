@@ -1,6 +1,7 @@
 package com.pfe.GestionDuStock.purchase;
 
 import com.pfe.GestionDuStock.product.product;
+import com.pfe.GestionDuStock.product.productMapper;
 import com.pfe.GestionDuStock.product.productRepository;
 import com.pfe.GestionDuStock.supplier.supplier;
 import com.pfe.GestionDuStock.supplier.supplierRepository;
@@ -21,86 +22,101 @@ public class purchaseService {
     private final productRepository productRepository;
     private final supplierRepository supplierRepository;
     private final purchaseItemRepository purchaseItemRepository;
+    private final productMapper productMapper;
+    private final com.pfe.GestionDuStock.product.productService productService;
 
     @Transactional
     public purchaseDTO savePurchase(purchaseDTO dto) {
-        // Find the supplier by ID
+        // Validate that the supplier exists
         supplier supplier = supplierRepository.findById(dto.supplierId())
                 .orElseThrow(() -> new RuntimeException("Supplier not found"));
 
-        // Fetch products by product IDs
-        List<product> products = productRepository.findAllById(
-                dto.purchaseItems().stream().map(purchaseItemDTO::productId).collect(Collectors.toList())
-        );
+        // Create new purchase
+        purchase purchase = new purchase();
+        purchase.setSupplier(supplier);
+        purchase.setPurchaseDate(dto.purchaseDate());
+        purchase.setInvoiceNumber(dto.invoiceNumber() != null ? dto.invoiceNumber() : generateInvoiceNumber());
+        purchase.setApproved(false);
+        purchase.setStatus("Pending");
 
-        if (products.size() != dto.purchaseItems().size()) {
-            throw new RuntimeException("One or more products not found");
-        }
-
-        // Create purchase entity from DTO and map the supplier and products
-        purchase purchase = purchaseMapper.toEntity(dto, supplier, products);
-        purchase.setInvoiceNumber(generateInvoiceNumber());
-
-        // List of PurchaseItems that will be added to the purchase
         List<purchaseItem> purchaseItems = new ArrayList<>();
         double totalAmount = 0;
 
-        // Loop over each purchaseItemDTO
-        for (int i = 0; i < dto.purchaseItems().size(); i++) {
-            purchaseItemDTO itemDTO = dto.purchaseItems().get(i);
-            product product = products.get(i);
-            int quantity = itemDTO.quantity();
-            double price = itemDTO.price();  // Now using the price from the DTO
+        for (purchaseItemDTO itemDTO : dto.purchaseItems()) {
+            product product = productRepository.findByNameAndSupplierId(itemDTO.name(), supplier.getId())
+                    .orElseGet(() -> createNewProduct(itemDTO, supplier));
 
-            // Create a PurchaseItem for each product in the purchase
-            purchaseItem purchaseItem = new purchaseItem();
-            purchaseItem.setProduct(product);
-            purchaseItem.setQuantity(quantity);
-            purchaseItem.setPrice(price);
-            purchaseItem.setPurchase(purchase);
+            // Create and add purchase item
+            purchaseItem item = new purchaseItem();
+            item.setProduct(product);
+            item.setName(itemDTO.name());
+            item.setStockThreshold(itemDTO.stockThreshold());
+            item.setQuantity(itemDTO.quantity());
+            item.setPrice(itemDTO.price());
+            item.setPurchase(purchase);
+            purchaseItems.add(item);
 
-            // Add to list of purchase items
-            purchaseItems.add(purchaseItem);
-
-            // Update total amount of the purchase
-            totalAmount += price * quantity;
-
-            // Update product stock quantity
-            product.setStockQuantity(product.getStockQuantity() + quantity);
+            totalAmount += itemDTO.quantity() * itemDTO.price();
         }
 
-        // Set the purchase items and total amount
-        purchase.setPurchaseItems(purchaseItems);
+        // Save the purchase first
         purchase.setTotalAmount(totalAmount);
-        purchase.setQuantity(purchaseItems.stream().mapToInt(purchaseItem::getQuantity).sum());
-
-        // Save the purchase and associated items
+        purchase.setQuantity((int) purchaseItems.stream().mapToLong(purchaseItem::getQuantity).sum());
         purchaseRepository.save(purchase);
 
-        // Return the saved purchase DTO
+        // Save purchase items separately
+        purchaseItemRepository.saveAll(purchaseItems);
+
+        // Update stock quantities *after* saving the purchase
+        for (purchaseItem item : purchaseItems) {
+            product product = item.getProduct();
+            product.setStockQuantity(product.getStockQuantity() + item.getQuantity());
+            product.setStockThreshold(product.getStockThreshold());
+            productRepository.save(product);
+        }
+
         return purchaseMapper.toDTO(purchase);
     }
 
+    // Helper method to create new product if not found
+    private product createNewProduct(purchaseItemDTO itemDTO, supplier supplier) {
+        product newProduct = new product();
+        newProduct.setName(itemDTO.name());
+        newProduct.setPrice(itemDTO.price());
+        newProduct.setStockQuantity(0L); // Initial quantity
+        newProduct.setStockThreshold(itemDTO.stockThreshold()); // Default threshold
+        newProduct.setSupplier(supplier);
+        productRepository.save(newProduct);
+        return newProduct;
+         // Save new product
+    }
+
+    // Get all purchases
     public List<purchaseDTO> getAllPurchases() {
         return purchaseRepository.findAll().stream()
                 .map(purchaseMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    public Optional<purchaseDTO> getPurchaseBySupplierSlug(String slug) {
+    public List<purchaseDTO> getPurchaseBySupplierSlug(String slug) {
         return purchaseRepository.findBySupplierSlug(slug)
-                .map(purchaseMapper::toDTO);
+                .stream()  // You need to convert the result to a stream
+                .map(purchaseMapper::toDTO)  // Map each result to a DTO
+                .collect(Collectors.toList());  // Collect the results into a list
     }
 
+    // Get purchase by invoice number
     public Optional<purchaseDTO> getPurchaseByInvoiceNumber(String invoiceNumber) {
         return purchaseRepository.findByInvoiceNumber(invoiceNumber)
                 .map(purchaseMapper::toDTO);
     }
 
+    // Delete purchase by id
     public void deletePurchase(Long id) {
         purchaseRepository.deleteById(id);
     }
 
+    // Generate a new invoice number (simple timestamp approach)
     private String generateInvoiceNumber() {
         return "INV-" + System.currentTimeMillis();
     }

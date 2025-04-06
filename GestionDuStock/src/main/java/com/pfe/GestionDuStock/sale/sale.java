@@ -1,5 +1,6 @@
 package com.pfe.GestionDuStock.sale;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pfe.GestionDuStock.customer.customer;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,9 +32,11 @@ public class sale {
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
+    @JsonIgnore
     private customer customer;  // Customer associated with the sale
 
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<saleItem> saleItems = new ArrayList<>();  // List of sale items in the sale
 
     // Helper method to add a sale item to the sale

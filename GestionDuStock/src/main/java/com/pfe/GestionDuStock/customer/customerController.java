@@ -52,4 +52,8 @@ public class customerController {
         customerService.deleteCustomer(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+    @PutMapping("/edit")
+    public customerDTO UpdateCustomer(@RequestBody customerDTO customerDTO) {
+        return customerService.UpdateCustomer(customerDTO);
+    }
 }

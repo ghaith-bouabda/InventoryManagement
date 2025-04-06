@@ -37,6 +37,8 @@ public class saleService {
 
         sale sale = new sale();
         sale.setSaleDate(LocalDateTime.now());
+        sale.setAmount(saleDTO.amount());
+        sale.setInvoiceNumber(saleDTO.invoiceNumber());
         sale.setSaleItems(new ArrayList<>());
         sale.setCustomer(customer);
 

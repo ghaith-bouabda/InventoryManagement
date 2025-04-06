@@ -33,12 +33,15 @@ public class purchaseController {
         return new ResponseEntity<>(purchases, HttpStatus.OK);
     }
 
-    // Get a purchase by supplier slug
+    // Get purchases by supplier slug
     @GetMapping("/{slug}")
-    public ResponseEntity<purchaseDTO> getPurchaseBySupplier(@PathVariable String slug) {
-        Optional<purchaseDTO> purchase = purchaseService.getPurchaseBySupplierSlug(slug);
-        return purchase.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    public ResponseEntity<List<purchaseDTO>> getPurchaseBySupplier(@PathVariable String slug) {
+        List<purchaseDTO> purchases = purchaseService.getPurchaseBySupplierSlug(slug);
+        if (purchases.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();  // If no purchases found
+        } else {
+            return ResponseEntity.ok(purchases);  // If purchases are found, return them with status 200
+        }
     }
 
     // Get a purchase by invoice number

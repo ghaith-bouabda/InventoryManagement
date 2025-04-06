@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {MessageService} from 'primeng/api';
 
 @Component({
   selector: 'app-root',
@@ -6,9 +7,11 @@ import { Component } from '@angular/core';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
+  constructor() {}
   title = 'GestionDuStockUI';
   get isLoggedIn(): boolean {
     return localStorage.getItem("token") !== null
 
   }
+
 }

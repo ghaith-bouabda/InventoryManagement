@@ -21,7 +21,7 @@ import { getPurchaseByInvoiceNumber } from '../fn/purchase-controller/get-purcha
 import { GetPurchaseByInvoiceNumber$Params } from '../fn/purchase-controller/get-purchase-by-invoice-number';
 import { getPurchaseBySupplier } from '../fn/purchase-controller/get-purchase-by-supplier';
 import { GetPurchaseBySupplier$Params } from '../fn/purchase-controller/get-purchase-by-supplier';
-import { Purchase } from '../models/purchase';
+import { PurchaseDto } from '../models/purchase-dto';
 
 @Injectable({ providedIn: 'root' })
 export class PurchaseControllerService extends BaseService {
@@ -38,7 +38,7 @@ export class PurchaseControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getAllPurchases$Response(params?: GetAllPurchases$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<Purchase>>> {
+  getAllPurchases$Response(params?: GetAllPurchases$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<PurchaseDto>>> {
     return getAllPurchases(this.http, this.rootUrl, params, context);
   }
 
@@ -48,9 +48,9 @@ export class PurchaseControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getAllPurchases(params?: GetAllPurchases$Params, context?: HttpContext): Observable<Array<Purchase>> {
+  getAllPurchases(params?: GetAllPurchases$Params, context?: HttpContext): Observable<Array<PurchaseDto>> {
     return this.getAllPurchases$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<Purchase>>): Array<Purchase> => r.body)
+      map((r: StrictHttpResponse<Array<PurchaseDto>>): Array<PurchaseDto> => r.body)
     );
   }
 
@@ -63,7 +63,7 @@ export class PurchaseControllerService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  createPurchase$Response(params: CreatePurchase$Params, context?: HttpContext): Observable<StrictHttpResponse<Purchase>> {
+  createPurchase$Response(params: CreatePurchase$Params, context?: HttpContext): Observable<StrictHttpResponse<PurchaseDto>> {
     return createPurchase(this.http, this.rootUrl, params, context);
   }
 
@@ -73,14 +73,14 @@ export class PurchaseControllerService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  createPurchase(params: CreatePurchase$Params, context?: HttpContext): Observable<Purchase> {
+  createPurchase(params: CreatePurchase$Params, context?: HttpContext): Observable<PurchaseDto> {
     return this.createPurchase$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Purchase>): Purchase => r.body)
+      map((r: StrictHttpResponse<PurchaseDto>): PurchaseDto => r.body)
     );
   }
 
   /** Path part for operation `getPurchaseBySupplier()` */
-  static readonly GetPurchaseBySupplierPath = '/api/purchases/{id}';
+  static readonly GetPurchaseBySupplierPath = '/api/purchases/{slug}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -88,7 +88,7 @@ export class PurchaseControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getPurchaseBySupplier$Response(params?: GetPurchaseBySupplier$Params, context?: HttpContext): Observable<StrictHttpResponse<Purchase>> {
+  getPurchaseBySupplier$Response(params: GetPurchaseBySupplier$Params, context?: HttpContext): Observable<StrictHttpResponse<PurchaseDto>> {
     return getPurchaseBySupplier(this.http, this.rootUrl, params, context);
   }
 
@@ -98,9 +98,34 @@ export class PurchaseControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getPurchaseBySupplier(params?: GetPurchaseBySupplier$Params, context?: HttpContext): Observable<Purchase> {
+  getPurchaseBySupplier(params: GetPurchaseBySupplier$Params, context?: HttpContext): Observable<PurchaseDto> {
     return this.getPurchaseBySupplier$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Purchase>): Purchase => r.body)
+      map((r: StrictHttpResponse<PurchaseDto>): PurchaseDto => r.body)
+    );
+  }
+
+  /** Path part for operation `getPurchaseByInvoiceNumber()` */
+  static readonly GetPurchaseByInvoiceNumberPath = '/api/purchases/invoice/{invoiceNumber}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getPurchaseByInvoiceNumber()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getPurchaseByInvoiceNumber$Response(params: GetPurchaseByInvoiceNumber$Params, context?: HttpContext): Observable<StrictHttpResponse<PurchaseDto>> {
+    return getPurchaseByInvoiceNumber(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getPurchaseByInvoiceNumber$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getPurchaseByInvoiceNumber(params: GetPurchaseByInvoiceNumber$Params, context?: HttpContext): Observable<PurchaseDto> {
+    return this.getPurchaseByInvoiceNumber$Response(params, context).pipe(
+      map((r: StrictHttpResponse<PurchaseDto>): PurchaseDto => r.body)
     );
   }
 
@@ -126,31 +151,6 @@ export class PurchaseControllerService extends BaseService {
   deletePurchase(params: DeletePurchase$Params, context?: HttpContext): Observable<void> {
     return this.deletePurchase$Response(params, context).pipe(
       map((r: StrictHttpResponse<void>): void => r.body)
-    );
-  }
-
-  /** Path part for operation `getPurchaseByInvoiceNumber()` */
-  static readonly GetPurchaseByInvoiceNumberPath = '/api/purchases/invoice/{invoiceNumber}';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getPurchaseByInvoiceNumber()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getPurchaseByInvoiceNumber$Response(params: GetPurchaseByInvoiceNumber$Params, context?: HttpContext): Observable<StrictHttpResponse<Purchase>> {
-    return getPurchaseByInvoiceNumber(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getPurchaseByInvoiceNumber$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getPurchaseByInvoiceNumber(params: GetPurchaseByInvoiceNumber$Params, context?: HttpContext): Observable<Purchase> {
-    return this.getPurchaseByInvoiceNumber$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Purchase>): Purchase => r.body)
     );
   }
 

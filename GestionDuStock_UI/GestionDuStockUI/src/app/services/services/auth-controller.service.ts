@@ -21,6 +21,7 @@ import { Refresh$Params } from '../fn/auth-controller/refresh';
 import { register } from '../fn/auth-controller/register';
 import { Register$Params } from '../fn/auth-controller/register';
 import { User } from '../models/user';
+import {logout, Logout$Params} from '../fn/auth-controller/logout';
 
 @Injectable({ providedIn: 'root' })
 export class AuthControllerService extends BaseService {
@@ -132,6 +133,15 @@ export class AuthControllerService extends BaseService {
   getCurrentUser1(params?: GetCurrentUser1$Params, context?: HttpContext): Observable<User> {
     return this.getCurrentUser1$Response(params, context).pipe(
       map((r: StrictHttpResponse<User>): User => r.body)
+    );
+  }
+  logout$Response(params?: Logout$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return logout(this.http, this.rootUrl, params, context);
+  }
+
+  logout(params?: Logout$Params, context?: HttpContext): Observable<void> {
+    return this.logout$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
 

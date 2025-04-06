@@ -8,13 +8,13 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { Customer } from '../../models/customer';
+import { CustomerDto } from '../../models/customer-dto';
 
 export interface GetCustomerByEmail$Params {
   email: string;
 }
 
-export function getCustomerByEmail(http: HttpClient, rootUrl: string, params: GetCustomerByEmail$Params, context?: HttpContext): Observable<StrictHttpResponse<Customer>> {
+export function getCustomerByEmail(http: HttpClient, rootUrl: string, params: GetCustomerByEmail$Params, context?: HttpContext): Observable<StrictHttpResponse<CustomerDto>> {
   const rb = new RequestBuilder(rootUrl, getCustomerByEmail.PATH, 'get');
   if (params) {
     rb.path('email', params.email, {});
@@ -25,7 +25,7 @@ export function getCustomerByEmail(http: HttpClient, rootUrl: string, params: Ge
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<Customer>;
+      return r as StrictHttpResponse<CustomerDto>;
     })
   );
 }

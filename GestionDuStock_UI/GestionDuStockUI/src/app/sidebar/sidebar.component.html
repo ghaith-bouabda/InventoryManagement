@@ -1,9 +1,11 @@
 <div class="sidebar">
+
   <div class="navbar-brand">
     <a [routerLink]="['/']">
       <i class="pi pi-box"></i>
-      <span>Stock Management</span>
+      <img ngSrc="assets/supply.png" width="20" height="20" alt="Supply Image" />
     </a>
+
   </div>
   <div class="sidebar-content">
     <div class="menu-section">
@@ -68,6 +70,16 @@
             <i class="pi pi-cog"></i>
             <span>Settings</span>
           </a>
+        </li>
+      </ul>
+    </div>
+    <div class="menu-section logout-section">
+      <ul>
+        <li>
+          <button class="logout-button" (click)="logout()">
+            <i class="pi pi-sign-out"></i>
+            Logout
+          </button>
         </li>
       </ul>
     </div>

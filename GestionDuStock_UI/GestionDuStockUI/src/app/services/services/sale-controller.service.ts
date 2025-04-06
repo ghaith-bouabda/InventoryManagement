@@ -154,7 +154,4 @@ export class SaleControllerService extends BaseService {
     );
   }
 
-  getAllSales() {
-
-  }
 }

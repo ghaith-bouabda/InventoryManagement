@@ -8,14 +8,16 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { ProductCategoryDto } from '../../models/product-category-dto';
+import { CustomerDto } from '../../models/customer-dto';
 
-export interface GetProductsByCategoryCount$Params {
+export interface UpdateCustomer$Params {
+      body: CustomerDto
 }
 
-export function getProductsByCategoryCount(http: HttpClient, rootUrl: string, params?: GetProductsByCategoryCount$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ProductCategoryDto>>> {
-  const rb = new RequestBuilder(rootUrl, getProductsByCategoryCount.PATH, 'get');
+export function updateCustomer(http: HttpClient, rootUrl: string, params: UpdateCustomer$Params, context?: HttpContext): Observable<StrictHttpResponse<CustomerDto>> {
+  const rb = new RequestBuilder(rootUrl, updateCustomer.PATH, 'put');
   if (params) {
+    rb.body(params.body, 'application/json');
   }
 
   return http.request(
@@ -23,9 +25,9 @@ export function getProductsByCategoryCount(http: HttpClient, rootUrl: string, pa
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<Array<ProductCategoryDto>>;
+      return r as StrictHttpResponse<CustomerDto>;
     })
   );
 }
 
-getProductsByCategoryCount.PATH = '/api/products/category-count';
+updateCustomer.PATH = '/api/customers/edit';

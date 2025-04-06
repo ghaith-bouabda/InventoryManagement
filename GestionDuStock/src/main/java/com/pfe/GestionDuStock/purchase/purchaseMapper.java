@@ -11,7 +11,6 @@ public class purchaseMapper {
     // Convert purchase entity to purchaseDTO
     public static purchaseDTO toDTO(purchase entity) {
         return new purchaseDTO(
-                entity.getId(),
                 entity.getSupplier() != null ? entity.getSupplier().getId() : null,  // Convert supplier to its ID
                 entity.getPurchaseItems() != null ?
                         entity.getPurchaseItems().stream()
@@ -26,9 +25,8 @@ public class purchaseMapper {
     }
 
     // Convert purchaseDTO to purchase entity
-    public static purchase toEntity(purchaseDTO dto, supplier supplier, List<product> products) {
+    public static purchase toEntity(purchaseDTO dto, supplier supplier, product products) {
         purchase entity = new purchase();
-        entity.setId(dto.id());
         entity.setSupplier(supplier);  // Set supplier directly
         entity.setPurchaseDate(dto.purchaseDate());  // Set purchase date
         entity.setInvoiceNumber(dto.invoiceNumber());  // Set invoice number

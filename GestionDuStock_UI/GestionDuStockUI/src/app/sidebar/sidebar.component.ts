@@ -1,5 +1,6 @@
 import { Component, type OnInit } from "@angular/core"
 import { AuthControllerService } from "../services/services/auth-controller.service"
+import {Router} from '@angular/router';
 
 @Component({
   selector: "app-sidebar",
@@ -9,13 +10,24 @@ import { AuthControllerService } from "../services/services/auth-controller.serv
 export class SidebarComponent implements OnInit {
   isAdmin = false
 
-  constructor(private authService: AuthControllerService) {}
+  constructor(private router: Router ,private authService: AuthControllerService) {
+  }
 
   ngOnInit(): void {
-     {
+    {
       this.isAdmin = true
     }
     this.isAdmin = this.authService.isAdmin()
   }
+
+  logout() {
+  this.authService.logout().subscribe({
+    next: () => {
+      localStorage.clear();
+      this.router.navigate(['/login']); // Redirect to login page
+    }});
+
+  }
 }
+
 

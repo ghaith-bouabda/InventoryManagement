@@ -8,13 +8,13 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { Product } from '../../models/product';
+import { ProductDto } from '../../models/product-dto';
 
 export interface GetProductById$Params {
   id: number;
 }
 
-export function getProductById(http: HttpClient, rootUrl: string, params: GetProductById$Params, context?: HttpContext): Observable<StrictHttpResponse<Product>> {
+export function getProductById(http: HttpClient, rootUrl: string, params: GetProductById$Params, context?: HttpContext): Observable<StrictHttpResponse<ProductDto>> {
   const rb = new RequestBuilder(rootUrl, getProductById.PATH, 'get');
   if (params) {
     rb.path('id', params.id, {});
@@ -25,7 +25,7 @@ export function getProductById(http: HttpClient, rootUrl: string, params: GetPro
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<Product>;
+      return r as StrictHttpResponse<ProductDto>;
     })
   );
 }

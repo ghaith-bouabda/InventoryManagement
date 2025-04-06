@@ -28,6 +28,7 @@ export class CustomersComponent  implements OnInit {
     this.customerService.getAllCustomers().subscribe({
       next: (data: Customer[]) => {
         this.customers = data;
+        this.errorMessage='';
       },
       error: (error) => {
         this.errorMessage = 'Failed to load customers.';
@@ -37,7 +38,10 @@ export class CustomersComponent  implements OnInit {
   }
 
   selectCustomer(customer: Customer): void {
-    this.selectedCustomer = customer;
+    if(this.selectedCustomer == null || this.selectedCustomer != customer)
+      this.selectedCustomer = customer;
+    else
+      this.selectedCustomer=null;
     this.isEditing = false;
   }
 
@@ -67,6 +71,17 @@ export class CustomersComponent  implements OnInit {
   editCustomer(): void {
     if (this.selectedCustomer) {
       this.isEditing = true;
+
+    }
+  }
+  UpdateCustomer(): void {
+    if (this.selectedCustomer) {
+      this.customerService.updateCustomer({body: this.selectedCustomer}).subscribe({
+        next: (newCustomer) => {
+          console.log(newCustomer, "jawa bhy");
+          console.log(this.selectedCustomer)
+        }
+      })
     }
   }
 

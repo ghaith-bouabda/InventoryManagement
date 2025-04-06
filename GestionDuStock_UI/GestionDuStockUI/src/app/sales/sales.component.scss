@@ -1,0 +1,114 @@
+.sales-form {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+}
+
+.sales-form h3 {
+  margin-top: 1.5rem;
+  font-size: 1.2rem;
+  color: #222;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 0.5rem;
+}
+
+.sales-form form > div {
+  margin-bottom: 1.2rem;
+}
+
+.sales-form label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.sales-form input[type="text"],
+.sales-form input[type="number"],
+.sales-form input[type="date"],
+.sales-form select {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: border 0.2s;
+}
+
+.sales-form input:focus,
+.sales-form select:focus {
+  border-color: #2d87f0;
+  outline: none;
+}
+
+.sales-form ul {
+  padding-left: 1.2rem;
+}
+
+.sales-form li {
+  margin-bottom: 0.6rem;
+  background: #f9f9f9;
+  padding: 0.6rem;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sales-form button {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s, transform 0.2s;
+}
+
+/* Add to Sale Button */
+.sales-form button[type="button"] {
+  background-color: #2d87f0;
+  color: white;
+  margin-top: 0.5rem;
+}
+
+.sales-form button[type="button"]:hover {
+  background-color: #1f6cd4;
+  transform: translateY(-2px);
+}
+
+/* Remove Button */
+.sales-form li button {
+  background-color: #ff5c5c;
+  color: white;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.9rem;
+  border-radius: 20px;
+}
+
+.sales-form li button:hover {
+  background-color: #e64848;
+}
+
+/* Submit Button */
+.sales-form button[type="submit"] {
+  background-color: #28c76f;
+  color: white;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.sales-form button[type="submit"]:hover {
+  background-color: #22a95d;
+  transform: translateY(-2px);
+}
+
+.sales-form button[disabled] {
+  background-color: #ccc !important;
+  cursor: not-allowed;
+  transform: none;
+}

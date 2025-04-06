@@ -8,9 +8,9 @@ import { ApiConfiguration, ApiConfigurationParams } from './api-configuration';
 
 import { SupplierControllerService } from './services/supplier-controller.service';
 import { SaleControllerService } from './services/sale-controller.service';
+import { CustomerControllerService } from './services/customer-controller.service';
 import { PurchaseControllerService } from './services/purchase-controller.service';
 import { ProductControllerService } from './services/product-controller.service';
-import { CustomerControllerService } from './services/customer-controller.service';
 import { AuthControllerService } from './services/auth-controller.service';
 import { UserControllerService } from './services/user-controller.service';
 
@@ -24,9 +24,9 @@ import { UserControllerService } from './services/user-controller.service';
   providers: [
     SupplierControllerService,
     SaleControllerService,
+    CustomerControllerService,
     PurchaseControllerService,
     ProductControllerService,
-    CustomerControllerService,
     AuthControllerService,
     UserControllerService,
     ApiConfiguration

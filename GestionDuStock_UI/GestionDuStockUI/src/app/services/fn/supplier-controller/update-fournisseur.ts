@@ -8,14 +8,14 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { Supplier } from '../../models/supplier';
+import { SupplierDto } from '../../models/supplier-dto';
 
 export interface UpdateFournisseur$Params {
   slug: string;
-      body: Supplier
+      body: SupplierDto
 }
 
-export function updateFournisseur(http: HttpClient, rootUrl: string, params: UpdateFournisseur$Params, context?: HttpContext): Observable<StrictHttpResponse<Supplier>> {
+export function updateFournisseur(http: HttpClient, rootUrl: string, params: UpdateFournisseur$Params, context?: HttpContext): Observable<StrictHttpResponse<SupplierDto>> {
   const rb = new RequestBuilder(rootUrl, updateFournisseur.PATH, 'put');
   if (params) {
     rb.path('slug', params.slug, {});
@@ -27,7 +27,7 @@ export function updateFournisseur(http: HttpClient, rootUrl: string, params: Upd
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<Supplier>;
+      return r as StrictHttpResponse<SupplierDto>;
     })
   );
 }
