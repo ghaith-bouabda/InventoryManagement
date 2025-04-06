@@ -207,12 +207,19 @@ export class PurchaseComponent implements OnInit {
     this.purchaseService.getPurchaseBySupplier({ slug }).subscribe({
       next: (purchase) => {
         console.log('Purchase fetched by supplier:', purchase);
+        // If purchase is an array, assign it directly to filteredResults
+        if (Array.isArray(purchase)) {
+          this.filteredResults = purchase;
+        } else {
+          this.filteredResults = [purchase]; // Ensure it's an array
+        }
       },
       error: (err) => {
         console.error('Error fetching purchase by supplier', err);
       }
     });
   }
+
 
   // Fetch purchase by invoice number
   getPurchaseByInvoice(invoiceNumber: string) {

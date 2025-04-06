@@ -153,5 +153,8 @@ export class PurchaseControllerService extends BaseService {
       map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
+  getTotalPurchases(): Observable<number> {
+    return this.http.get<number>(`${this.rootUrl}/api/purchases/total-purchases`);
+  }
 
 }

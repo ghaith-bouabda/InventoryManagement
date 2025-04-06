@@ -43,7 +43,10 @@ public class purchaseController {
             return ResponseEntity.ok(purchases);  // If purchases are found, return them with status 200
         }
     }
-
+    @GetMapping("/total-purchases")
+    public Long getTotalPurchases() {
+        return purchaseService.getTotalPurchases();
+    }
     // Get a purchase by invoice number
     @GetMapping("/invoice/{invoiceNumber}")
     public ResponseEntity<purchaseDTO> getPurchaseByInvoiceNumber(@PathVariable String invoiceNumber) {

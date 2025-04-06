@@ -130,4 +130,7 @@ public class saleService {
 
         return saleRepository.save(sale);
     }
+    public Long getTotalSales() {
+        return saleRepository.sumTotalAmount();
+    }
 }

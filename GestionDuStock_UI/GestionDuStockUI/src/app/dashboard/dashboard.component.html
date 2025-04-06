@@ -7,8 +7,8 @@
   </div>
 
   <div *ngIf="!loading" class="dashboard-content">
-
     <div class="stats-cards">
+      <!-- Existing stats cards for Products -->
       <p-card styleClass="stats-card">
         <div class="stat-content">
           <div class="stat-icon">
@@ -41,6 +41,31 @@
           <div class="stat-info">
             <div class="stat-value">{{ productStats.outOfStock }}</div>
             <div class="stat-label">Out of Stock</div>
+          </div>
+        </div>
+      </p-card>
+
+      <!-- New stats cards for Purchases and Sales -->
+      <p-card styleClass="stats-card">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="pi pi-money-bill"></i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ totalPurchases | currency }}</div>
+            <div class="stat-label">Total Purchases (Expenditure)</div>
+          </div>
+        </div>
+      </p-card>
+
+      <p-card styleClass="stats-card success">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="pi pi-chart-line"></i>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ totalSales | currency }}</div>
+            <div class="stat-label">Total Sales (Revenue)</div>
           </div>
         </div>
       </p-card>
@@ -101,4 +126,3 @@
     </p-card>
   </div>
 </div>
-

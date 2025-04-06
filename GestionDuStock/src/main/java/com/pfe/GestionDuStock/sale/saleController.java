@@ -42,4 +42,8 @@ public class saleController {
     public sale updateSale(@PathVariable Long saleId, @RequestBody saleDTO updatedSaleDTO) {
         return saleService.updateSale(saleId, updatedSaleDTO);
     }
+    @GetMapping("/total-sales")
+    public Long getTotalSales() {
+        return saleService.getTotalSales();
+    }
 }

@@ -104,7 +104,9 @@ public class purchaseService {
                 .map(purchaseMapper::toDTO)  // Map each result to a DTO
                 .collect(Collectors.toList());  // Collect the results into a list
     }
-
+    public Long getTotalPurchases() {
+        return purchaseRepository.sumTotalAmount();
+    }
     // Get purchase by invoice number
     public Optional<purchaseDTO> getPurchaseByInvoiceNumber(String invoiceNumber) {
         return purchaseRepository.findByInvoiceNumber(invoiceNumber)

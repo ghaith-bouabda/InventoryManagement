@@ -8,6 +8,7 @@ import  { Product } from "../services/models/product"
 import {WebSocketService} from '../socketservice/WebSocketService';
 import {MessageService} from 'primeng/api';
 import {ToastrService} from 'ngx-toastr';
+import {PurchaseControllerService} from '../services/services/purchase-controller.service';
 
 @Component({
   selector: "app-dashboard",
@@ -31,27 +32,30 @@ export class DashboardComponent implements OnInit {
   stockStatusData: any
 
   loading = true
-
+ totalSales: number | undefined;
+   totalPurchases: number | undefined;
   constructor(
     private productService: ProductControllerService,
     private supplierService: SupplierControllerService,
     private saleService: SaleControllerService,
     private authService: AuthControllerService,
     private webSocketService: WebSocketService,
+private purchaseService: PurchaseControllerService,
 private toastr: ToastrService) {}
 
-  showSuccess() {
-    this.toastr.success('Hello world!', 'Toastr fun!');
-  }
+
 
 
   ngOnInit(): void {
     this.loadDashboardData()
     this.webSocketService.connect();
+    this.fetchTotalPurchases();
+    this.fetchTotalSales();
   }
   ngOnDestroy(): void {
     this.webSocketService.disconnect();
   }
+
   loadDashboardData(): void {
     this.loading = true
 
@@ -67,14 +71,35 @@ private toastr: ToastrService) {}
       this.lowStockProducts = products
       this.productStats.lowStock = products.length
     })
-
     // Get out of stock products
     this.productService.getOutOfStockProducts().subscribe((products) => {
       this.productStats.outOfStock = products.length
     })
 
+
     // Get product category distribution for chart
 
 
+  }
+  fetchTotalPurchases(): void {
+    this.purchaseService.getTotalPurchases().subscribe({
+      next: (data) => {
+        this.totalPurchases = data;
+      },
+      error: (err) => {
+        console.error('Error fetching total purchases', err);
+      }
+    });
+  }
+
+  fetchTotalSales(): void {
+    this.saleService.getTotalSales().subscribe({
+      next: (data) => {
+        this.totalSales = data;
+      },
+      error: (err) => {
+        console.error('Error fetching total sales', err);
+      }
+    });
   }
 }
