@@ -7,6 +7,7 @@ import { Supplier } from '../services/models/supplier';
 import { ProductControllerService } from '../services/services/product-controller.service';
 import { ProductDto } from '../services/models/product-dto';
 import { ToastrService } from 'ngx-toastr';
+import {SupplierDto} from '../services/models/supplier-dto';
 
 @Component({
   selector: 'app-purchase',
@@ -16,7 +17,7 @@ import { ToastrService } from 'ngx-toastr';
 export class PurchaseComponent implements OnInit {
   purchases: PurchaseDto[] = [];
   products: ProductDto[] = [];
-  suppliers: Supplier[] = [];
+  suppliers: SupplierDto[] = [];
   selectedSupplierId: string = '';
   purchaseDate: string = '';
   selectedProductId: string = '';
@@ -45,14 +46,26 @@ export class PurchaseComponent implements OnInit {
   ngOnInit(): void {
     this.getAllPurchases();
     this.getAvailableProducts();
-    this.supplierService.getAllFournisseurs().subscribe({
-      next: (data: Supplier[]) => {
-        this.suppliers = data;
-      }
-    });
-  }
 
-  getAllPurchases(): void {
+
+      this.supplierService.getAllFournisseurs().subscribe({
+        next: (data: SupplierDto[]) => {
+          this.suppliers = data.filter(s => !s.isDeleted);
+          const supplierMap = new Map(data.map(s => [s.id, s.name]));
+
+          // Now fetch purchases and attach supplier name
+          this.purchaseService.getAllPurchases().subscribe(purchases => {
+            this.purchases = purchases.map(p => ({
+              ...p,
+              supplierName: supplierMap.get(p.supplierId)
+            }));
+          });
+        }
+      });
+    }
+
+
+    getAllPurchases(): void {
     this.purchaseService.getAllPurchases().subscribe(purchases => {
       this.purchases = purchases;
     });
@@ -92,13 +105,36 @@ export class PurchaseComponent implements OnInit {
       )
     };
 
-    console.log("Sending Purchase Request:", { purchase: requestData });
-
     this.purchaseService.createPurchase({ body: requestData }).subscribe({
       next: (purchase) => {
-        console.log("Purchase created successfully:", purchase);
+        const supplier = this.suppliers.find(s => s.id === purchase.supplierId);
+        const enrichedPurchase = {
+          ...purchase,
+          supplierName: supplier?.name || 'Unknown'
+        };
+
+        // Add the newly created purchase to the list
+        this.purchases.unshift(enrichedPurchase);
+
+        // If any new products were involved in the purchase, add them to the product list
+        purchase.purchaseItems.forEach((item: any) => {
+          const newProduct = this.products.find(p => p.id === item.productId);
+          if (!newProduct) {
+            const newProductItem = {
+              id: item.productId,
+              name: item.name,
+              price: item.price,
+              stockQuantity: item.quantity,
+              stockThreshold: item.stockThreshold
+            };
+            this.products.push(newProductItem); // Add new product to the list
+          }
+        });
+
         this.resetPurchaseForm();
         this.showSuccess();
+        this.getAllPurchases();
+        this.getAvailableProducts();
       },
       error: (error) => {
         console.error("Error creating purchase:", error);
@@ -106,6 +142,7 @@ export class PurchaseComponent implements OnInit {
       }
     });
   }
+
 
   // Handle product selection
   onProductSelect(): void {
@@ -200,18 +237,37 @@ export class PurchaseComponent implements OnInit {
       this.filteredResults = this.purchases.filter(purchase =>
         purchase.purchaseItems.some(item => item.productId)
       );
+
+      // Ensure new products are not included in the filteredResults immediately
+      console.log("Filtered Results (Product Search):", this.filteredResults);
     }
   }
 
   getPurchaseBySupplier(slug: string) {
     this.purchaseService.getPurchaseBySupplier({ slug }).subscribe({
-      next: (purchase) => {
-        console.log('Purchase fetched by supplier:', purchase);
-        // If purchase is an array, assign it directly to filteredResults
-        if (Array.isArray(purchase)) {
-          this.filteredResults = purchase;
+      next: (purchases) => {
+        console.log('Purchase fetched by supplier:', purchases);
+
+        if (Array.isArray(purchases)) {
+          this.filteredResults = purchases.map(p => {
+            // Apply the same filter for non-deleted suppliers
+            const supplier = this.suppliers.find(s => s.id === p.supplierId && s.isDeleted || !s.isDeleted);
+            console.log(`Supplier ID: ${p.supplierId}, Found Supplier ID: ${supplier?.id}`);
+            console.log('Available Suppliers:', this.suppliers);
+
+            return {
+              ...p,
+              supplierName: supplier?.name || 'Unknown'
+            };
+          });
         } else {
-          this.filteredResults = [purchase]; // Ensure it's an array
+          const supplier = this.suppliers.find(s => s.id === purchases.supplierId && !s.isDeleted);
+          console.log(`Supplier ID: ${purchases.supplierId}, Found Supplier ID: ${supplier?.id}`);
+
+          this.filteredResults = [{
+            ...purchases,
+            supplierName: supplier?.name || 'Unknown'
+          }];
         }
       },
       error: (err) => {
@@ -221,12 +277,20 @@ export class PurchaseComponent implements OnInit {
   }
 
 
+
   // Fetch purchase by invoice number
   getPurchaseByInvoice(invoiceNumber: string) {
     this.purchaseService.getPurchaseByInvoiceNumber({ invoiceNumber }).subscribe({
-      next: (purchase) => {
-        console.log('Purchase fetched by invoice number:', purchase);
-        this.filteredResults.push(JSON.stringify(purchase))
+      next: (purchases) => {
+        console.log('Purchase fetched by invoice number:', purchases);
+
+        if (purchases) {
+          const supplier = this.suppliers.find(s => s.id === purchases.supplierId&& s.isDeleted || !s.isDeleted);
+          this.filteredResults = [{
+            ...purchases,
+            supplierName: supplier ? supplier.name : 'Unknown'
+          }];
+        }
       },
       error: (err) => {
         console.error('Error fetching purchase by invoice number', err);
@@ -234,17 +298,23 @@ export class PurchaseComponent implements OnInit {
     });
   }
 
-  deletePurchase(id: number) {
-    this.purchaseService.deletePurchase({ id }).subscribe({
+
+
+  deletePurchase(purchaseInvoice: string) {
+    this.purchaseService.deletePurchase({ invoice: purchaseInvoice }).subscribe({
       next: () => {
-        this.purchases = this.purchases.filter(purchase => purchase.id !== id);
+        this.purchases = this.purchases.filter(p => p.invoiceNumber !== purchaseInvoice);
+        this.filteredResults = this.filteredResults.filter(p => p.invoiceNumber !== purchaseInvoice);
         console.log('Purchase deleted successfully');
+        this.toastr.success('Purchase deleted');
       },
       error: (err) => {
         console.error('Error deleting purchase', err);
+        this.toastr.error('Failed to delete purchase');
       }
     });
   }
+
 
   editPurchase(result: any) {
 

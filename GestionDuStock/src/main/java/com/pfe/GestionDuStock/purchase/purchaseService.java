@@ -113,9 +113,9 @@ public class purchaseService {
                 .map(purchaseMapper::toDTO);
     }
 
-    // Delete purchase by id
-    public void deletePurchase(Long id) {
-        purchaseRepository.deleteById(id);
+    @Transactional
+    public void deletePurchase(String invoiceNumber) {
+        purchaseRepository.deleteByInvoiceNumber(invoiceNumber);
     }
 
     // Generate a new invoice number (simple timestamp approach)

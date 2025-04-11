@@ -6,25 +6,33 @@
     </div>
 
     <form class="auth-form">
-      <div class="mb-3">
+      <div class="input-group">
         <label for="username">Username</label>
-        <input class="w-full p-inputtext-lg" [(ngModel)]="authReq.username"
-               type="text" id="username" name="Username"
-               placeholder="Enter your Username" required />
+        <div class="input-with-icon">
+          <i class="pi pi-user"></i>
+          <input [(ngModel)]="authReq.username"
+                 type="text" id="username" name="username"
+                 placeholder="Enter your Username" required />
+        </div>
       </div>
 
-      <div class="mb-4">
+      <div class="input-group">
         <label for="password">Password</label>
-        <input class="w-full p-inputtext-lg" [(ngModel)]="authReq.password"
-               type="password" id="password" name="password"
-               placeholder="Enter your password" required />
+        <div class="input-with-icon">
+          <i class="pi pi-lock"></i>
+          <input [(ngModel)]="authReq.password"
+                 type="password" id="password" name="password"
+                 placeholder="Enter your password" required />
+        </div>
       </div>
 
-      <button class="w-full p-inputtext-lg d-grid mt-3" (click)="login()" type="submit">Login</button>
+      <button type="submit" (click)="login()">Login</button>
 
-      <div class="text-center mt-3">
-        <a class="form-link" (click)="register()">Create an Account</a>
+      <div class="auth-links text-center mt-3">
+        <a (click)="register()">Create an Account</a>
       </div>
     </form>
+
+
   </div>
 </div>

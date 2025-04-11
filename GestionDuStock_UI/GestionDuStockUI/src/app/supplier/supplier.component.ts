@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SupplierControllerService } from '../services/services/supplier-controller.service';
-import { Supplier } from '../services/models/supplier';
-
-import { catchError, throwError } from 'rxjs';
+import { SupplierDto } from '../services/models/supplier-dto';
 
 @Component({
   selector: 'app-supplier',
@@ -10,42 +8,38 @@ import { catchError, throwError } from 'rxjs';
   styleUrls: ['./supplier.component.scss']
 })
 export class SupplierComponent implements OnInit {
-  suppliers: Supplier[] = [];
-  selectedSupplier: Supplier | null = null;
-  isEditing: boolean = false;
-  isAdding: boolean = false;
-  newSupplier: Supplier = {};
-  errorMessage: string = '';
+  suppliers: SupplierDto[] = [];
+  filteredSuppliers: SupplierDto[] = [];
+  selectedSupplier: SupplierDto | null = null;
+  isEditing = false;
+  isAdding = false;
+  newSupplier: SupplierDto = {} as SupplierDto;
+  errorMessage = '';
 
   constructor(private supplierService: SupplierControllerService) {}
+
   ngOnInit(): void {
     this.loadSuppliers();
   }
 
   loadSuppliers(): void {
     this.supplierService.getAllFournisseurs().subscribe({
-      next: (data:Supplier[]) => {
+      next: (data: SupplierDto[]) => {
         this.suppliers = data;
-        this.suppliers = data.filter(supplier => !supplier.deleted);
-        },
-      error: (error) => {
-        this.errorMessage = 'Failed to load suppliers.';
-        console.error(error);
-      }
+        this.filteredSuppliers = this.suppliers.filter(supplier => !supplier.isDeleted);
+      },
+      error: (error) => this.handleError('Failed to load suppliers.', error),
     });
   }
 
-  selectSupplier(supplier: Supplier): void {
-    if(this.selectedSupplier ==null || this.selectedSupplier != supplier ) {
-        this.selectedSupplier= supplier;}
-    else
-      this.selectedSupplier=null;
+  selectSupplier(supplier: SupplierDto): void {
+    this.selectedSupplier = this.selectedSupplier === supplier ? null : supplier;
     this.isEditing = false;
   }
 
   startAddingSupplier(): void {
     this.isAdding = true;
-    this.newSupplier = {};
+    this.newSupplier = {} as SupplierDto;
   }
 
   cancelAdding(): void {
@@ -56,13 +50,10 @@ export class SupplierComponent implements OnInit {
     this.supplierService.createFournisseur({ body: this.newSupplier }).subscribe({
       next: (newSupplier) => {
         this.suppliers.push(newSupplier);
+        this.updateFilteredSuppliers();
         this.isAdding = false;
-        this.loadSuppliers();
       },
-      error: (error) => {
-        this.errorMessage = 'Failed to create supplier.';
-        console.error(error);
-      }
+      error: (error) => this.handleError('Failed to create supplier.', error),
     });
   }
 
@@ -80,12 +71,9 @@ export class SupplierComponent implements OnInit {
       }).subscribe({
         next: () => {
           this.isEditing = false;
-          this.loadSuppliers();
+          this.loadSuppliers(); // Reload and filter again
         },
-        error: (error) => {
-          this.errorMessage = 'Failed to update supplier.';
-          console.error(error);
-        }
+        error: (error) => this.handleError('Failed to update supplier.', error),
       });
     }
   }
@@ -94,15 +82,21 @@ export class SupplierComponent implements OnInit {
     if (this.selectedSupplier) {
       this.supplierService.deleteFournisseur({ slug: this.selectedSupplier.slug! }).subscribe({
         next: () => {
-          console.log('Supplier deleted successfully');
           this.suppliers = this.suppliers.filter(s => s.slug !== this.selectedSupplier!.slug);
+          this.updateFilteredSuppliers();
           this.selectedSupplier = null;
         },
-        error: (error) => {
-          this.errorMessage = 'Failed to delete supplier.';
-          console.error(error);
-        }
+        error: (error) => this.handleError('Failed to delete supplier.', error),
       });
     }
+  }
+
+  private updateFilteredSuppliers(): void {
+    this.filteredSuppliers = this.suppliers.filter(supplier => !supplier.isDeleted);
+  }
+
+  private handleError(message: string, error: any): void {
+    this.errorMessage = message;
+    console.error(error);
   }
 }

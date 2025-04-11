@@ -56,9 +56,9 @@ public class purchaseController {
     }
 
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePurchase(@PathVariable Long id) {
-        purchaseService.deletePurchase(id);
+    @DeleteMapping("/delete/{invoice}")
+    public ResponseEntity<Void> deletePurchase(@PathVariable("invoice") String invoiceNumber) {
+        purchaseService.deletePurchase(invoiceNumber);
         return ResponseEntity.noContent().build();
     }
 }

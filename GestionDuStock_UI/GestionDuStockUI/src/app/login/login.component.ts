@@ -39,6 +39,7 @@ export class LoginComponent {
      this.userController.getCurrentUser().subscribe({
           next: (res) => {
            localStorage.setItem('user',JSON.stringify(res));
+
           }
         });
         console.log(this.authService.isAdmin());

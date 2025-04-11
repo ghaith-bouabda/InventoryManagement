@@ -1,7 +1,6 @@
 <div class="supplier-container">
   <h2>Supplier Management</h2>
 
-
   <button (click)="startAddingSupplier()">Add Supplier</button>
 
   <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
@@ -31,14 +30,15 @@
   </div>
 
   <!-- Existing Suppliers List -->
-  <div *ngIf="suppliers.length > 0">
+  <div *ngIf="filteredSuppliers.length > 0">
     <ul>
-      <li *ngFor="let supplier of suppliers" (click)="selectSupplier(supplier)">
+      <li *ngFor="let supplier of filteredSuppliers" (click)="selectSupplier(supplier)">
         {{ supplier.name }} ({{ supplier.slug }})
       </li>
     </ul>
   </div>
-<div>
+
+  <!-- Selected Supplier Details -->
   <div *ngIf="selectedSupplier">
     <h3>Selected Supplier: {{ selectedSupplier.name }}</h3>
 
@@ -68,5 +68,4 @@
       <button (click)="deleteSupplier()">Delete</button>
     </div>
   </div>
-</div>
 </div>

@@ -10,17 +10,17 @@ import { RequestBuilder } from '../../request-builder';
 
 
 export interface DeletePurchase$Params {
-  id: number;
+  invoice: string;
 }
 
 export function deletePurchase(http: HttpClient, rootUrl: string, params: DeletePurchase$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
   const rb = new RequestBuilder(rootUrl, deletePurchase.PATH, 'delete');
   if (params) {
-    rb.path('id', params.id, {});
+    rb.path('invoice', params.invoice, {});
   }
 
   return http.request(
-    rb.build({ responseType: 'text', accept: '*/*', context })
+    rb.build({ responseType: 'json', accept: '*/*', context })
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
@@ -29,4 +29,4 @@ export function deletePurchase(http: HttpClient, rootUrl: string, params: Delete
   );
 }
 
-deletePurchase.PATH = '/api/purchases/{id}';
+deletePurchase.PATH = '/api/purchases/delete/{invoice}';

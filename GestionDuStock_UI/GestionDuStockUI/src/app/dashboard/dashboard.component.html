@@ -52,7 +52,7 @@
             <i class="pi pi-money-bill"></i>
           </div>
           <div class="stat-info">
-            <div class="stat-value">{{ totalPurchases | currency }}</div>
+            <div class="stat-value">{{ totalPurchases|| 0 | currency }}</div>
             <div class="stat-label">Total Purchases (Expenditure)</div>
           </div>
         </div>
@@ -64,65 +64,24 @@
             <i class="pi pi-chart-line"></i>
           </div>
           <div class="stat-info">
-            <div class="stat-value">{{ totalSales | currency }}</div>
+            <div class="stat-value">{{ totalSales|| 0 | currency }}</div>
             <div class="stat-label">Total Sales (Revenue)</div>
           </div>
         </div>
       </p-card>
     </div>
 
-    <!-- Charts section -->
     <div class="charts-container">
       <p-card header="Stock Status Distribution" styleClass="chart-card">
         <p-chart type="pie" [data]="stockStatusData" [options]="{ responsive: true }"></p-chart>
       </p-card>
 
-      <p-card header="Products by Category" styleClass="chart-card">
-        <p-chart type="bar" [data]="productCategoryData" [options]="{ responsive: true }"></p-chart>
+      <!-- New Suppliers Graph -->
+      <p-card header="Products by Supplier" styleClass="chart-card">
+        <p-chart type="bar" [data]="suppliersData" [options]="{ responsive: true }"></p-chart>
       </p-card>
     </div>
 
-    <!-- Alert Products Table -->
-    <p-card header="Low Stock Products" styleClass="alert-table">
-      <p-table [value]="lowStockProducts" [paginator]="true" [rows]="5" styleClass="p-datatable-sm">
-        <ng-template pTemplate="header">
-          <tr>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Quantity</th>
-            <th>Threshold</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-product>
-          <tr>
-            <td>{{ product.name }}</td>
-            <td>{{ product.category }}</td>
-            <td>{{ product.quantity }}</td>
-            <td>{{ product.threshold }}</td>
-            <td>
-              <span class="status-badge" [ngClass]="{
-                'status-low': product.status === 'LOW',
-                'status-out': product.status === 'OUT_OF_STOCK'
-              }">
-                {{ product.status }}
-              </span>
-            </td>
-            <td>
-              <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm"
-                      [routerLink]="['/products/edit', product.id]"></button>
-            </td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="6" class="text-center">
-              No products with low stock found
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </p-card>
+
   </div>
 </div>

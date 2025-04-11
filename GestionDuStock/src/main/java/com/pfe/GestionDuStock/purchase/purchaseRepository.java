@@ -11,4 +11,7 @@ public interface purchaseRepository extends JpaRepository<purchase, Long> {
    List<purchase> findBySupplierSlug(String slug);
     @Query("SELECT SUM(p.totalAmount) FROM purchase p")
     Long sumTotalAmount();
+
+
+    void deleteByInvoiceNumber(String invoiceNumber);
 }

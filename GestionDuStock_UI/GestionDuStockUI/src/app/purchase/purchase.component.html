@@ -14,17 +14,20 @@
 
       <div>
         <label for="searchInput">Search:</label>
-        <input
-          type="text"
-          id="searchInput"
-          [(ngModel)]="searchText"
-          name="searchInput"
-          placeholder="Enter search query"
-          required
-        />
+        <div class="input-with-icon">
+          <i class="pi pi-search"></i> <!-- PrimeIcon Search Icon -->
+          <input
+            type="text"
+            id="searchInput"
+            [(ngModel)]="searchText"
+            name="searchInput"
+            placeholder="Enter search query"
+            required
+          />
+        </div>
       </div>
 
-      <button type="submit">Search</button>
+      <button type="submit"><i class="pi pi-search"></i> Search</button>
     </form>
 
     <!-- Display filtered results here -->
@@ -38,16 +41,16 @@
           <div class="result-window">
             <!-- Customize to show necessary information -->
             <p><strong>Invoice Number:</strong> {{ result.invoiceNumber }}</p>
-            <p><strong>Supplier:</strong> {{ result.supplier }}</p>
+            <p><strong>Supplier:</strong> {{ result.supplierName }}</p>
             <p><strong>Total Amount:</strong> ${{ result.totalAmount }}</p>
 
             <!-- Edit and Delete Buttons -->
             <div class="result-actions">
               <button type="button" (click)="editPurchase(result)">
-                Edit
+                <i class="pi pi-pencil"></i> Edit
               </button>
-              <button type="button" (click)="deletePurchase(result.id)">
-                Delete
+              <button type="button" (click)="deletePurchase(result.invoiceNumber)">
+                <i class="pi pi-trash"></i> Delete
               </button>
             </div>
           </div>
@@ -74,87 +77,105 @@
       <!-- Supplier Selection Dropdown -->
       <div>
         <label for="supplierId">Supplier:</label>
-        <select
-          id="supplierId"
-          [(ngModel)]="selectedSupplierId"
-          name="supplierId"
-          required
-        >
-          <option *ngFor="let supplier of suppliers" [value]="supplier.id">
-            {{ supplier.name }}
-          </option>
-        </select>
+        <div class="input-with-icon">
+          <i class="pi pi-briefcase"></i> <!-- PrimeIcon Supplier Icon -->
+          <select
+            id="supplierId"
+            [(ngModel)]="selectedSupplierId"
+            name="supplierId"
+            required
+          >
+            <option *ngFor="let supplier of suppliers" [value]="supplier.id">
+              {{ supplier.name }}
+            </option>
+          </select>
+        </div>
       </div>
 
       <!-- Product Selection -->
       <div>
         <label for="productSelect">Product:</label>
-        <select
-          id="productSelect"
-          [(ngModel)]="selectedProductId"
-          name="productSelect"
-          (change)="onProductSelect()"
-          required
-        >
-          <option value="">-- Select Product --</option>
-          <option *ngFor="let product of products" [value]="product.id">
-            {{ product.name }} - ${{ product.price }}
-          </option>
-          <option value="new">+ Add New Product</option>
-        </select>
+        <div class="input-with-icon">
+          <i class="pi pi-cog"></i> <!-- PrimeIcon Product Icon -->
+          <select
+            id="productSelect"
+            [(ngModel)]="selectedProductId"
+            name="productSelect"
+            (change)="onProductSelect()"
+            required
+          >
+            <option value="">-- Select Product --</option>
+            <option *ngFor="let product of products" [value]="product.id">
+              {{ product.name }} - ${{ product.price }}
+            </option>
+            <option value="new">+ Add New Product</option>
+          </select>
+        </div>
       </div>
 
       <!-- Product Details (For Selected or New Product) -->
       <div *ngIf="selectedProductId">
         <div>
           <label for="productName">Product Name:</label>
-          <input
-            type="text"
-            id="productName"
-            [(ngModel)]="newProduct.name"
-            name="productName"
-            [readonly]="selectedProductId !== 'new'"
-            required
-          />
+          <div class="input-with-icon">
+            <i class="pi pi-tag"></i> <!-- PrimeIcon Tag Icon -->
+            <input
+              type="text"
+              id="productName"
+              [(ngModel)]="newProduct.name"
+              name="productName"
+              [readonly]="selectedProductId !== 'new'"
+              required
+            />
+          </div>
         </div>
 
         <div>
           <label for="productPrice">Product Price ($):</label>
-          <input
-            type="number"
-            id="productPrice"
-            [(ngModel)]="newProduct.price"
-            name="productPrice"
-            [readonly]="selectedProductId !== 'new'"
-            required
-          />
+          <div class="input-with-icon">
+            <i class="pi pi-dollar"></i> <!-- PrimeIcon Dollar Icon -->
+            <input
+              type="number"
+              id="productPrice"
+              [(ngModel)]="newProduct.price"
+              name="productPrice"
+              [readonly]="selectedProductId !== 'new'"
+              required
+            />
+          </div>
         </div>
 
         <div>
           <label for="stockThreshold">Stock Threshold:</label>
-          <input
-            type="number"
-            id="StockThreshold"
-            [(ngModel)]="newProduct.stockThreshold"
-            name="stockThreshold"
-            [readonly]="selectedProductId !== 'new'"
-            required
-          />
+          <div class="input-with-icon">
+            <i class="pi pi-arrow-down"></i> <!-- PrimeIcon Arrow Down Icon -->
+            <input
+              type="number"
+              id="StockThreshold"
+              [(ngModel)]="newProduct.stockThreshold"
+              name="stockThreshold"
+              [readonly]="selectedProductId !== 'new'"
+              required
+            />
+          </div>
         </div>
 
         <div>
           <label for="productQuantity">Quantity:</label>
-          <input
-            type="number"
-            id="productQuantity"
-            [(ngModel)]="newProduct.stockQuantity"
-            name="productQuantity"
-            min="1"
-            required
-          />
+          <div class="input-with-icon">
+            <i class="pi pi-caret-up"></i> <!-- PrimeIcon Quantity Icon -->
+            <input
+              type="number"
+              id="productQuantity"
+              [(ngModel)]="newProduct.stockQuantity"
+              name="productQuantity"
+              min="1"
+              required
+            />
+          </div>
         </div>
 
-        <button type="button" (click)="addProductToPurchase()">Add to Purchase</button>
+        <button type="button" (click)="addProductToPurchase()"><i class="pi pi-plus"></i> Add to Purchase</button>
       </div>
 
       <!-- List of Added Products -->
@@ -163,7 +184,9 @@
         <ul>
           <li *ngFor="let item of newPurchaseData.purchase.products">
             {{ item.product.name }} - ${{ item.product.price }} x {{ item.quantity }}
-            <button type="button" (click)="removeProductFromPurchase(item.product)">Remove</button>
+            <button type="button" (click)="removeProductFromPurchase(item.product)">
+              <i class="pi pi-trash"></i> Remove
+            </button>
           </li>
         </ul>
       </div>
@@ -184,7 +207,7 @@
         type="submit"
         [disabled]="!purchaseDate || !selectedSupplierId || newPurchaseData.purchase.products.length === 0"
       >
-        Create Purchase
+        <i class="pi pi-check"></i> Create Purchase
       </button>
     </form>
   </div>
