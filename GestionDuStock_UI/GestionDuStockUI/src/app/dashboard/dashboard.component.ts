@@ -53,6 +53,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.authService.isAdmin()
     this.loadDashboardData();
     this.webSocketService.connect();
     this.fetchTotalPurchases();

@@ -7,7 +7,8 @@ import { Supplier } from '../services/models/supplier';
 import { ProductControllerService } from '../services/services/product-controller.service';
 import { ProductDto } from '../services/models/product-dto';
 import { ToastrService } from 'ngx-toastr';
-import {SupplierDto} from '../services/models/supplier-dto';
+import { SupplierDto } from '../services/models/supplier-dto';
+import {PurchaseItemDto} from '../services/models/purchase-item-dto';
 
 @Component({
   selector: 'app-purchase',
@@ -18,15 +19,16 @@ export class PurchaseComponent implements OnInit {
   purchases: PurchaseDto[] = [];
   products: ProductDto[] = [];
   suppliers: SupplierDto[] = [];
+  activeSuppliers: SupplierDto[] = [];
+
   selectedSupplierId: string = '';
   purchaseDate: string = '';
   selectedProductId: string = '';
-  newProduct: Product = { name: '', price: 0, stockQuantity: 1, stockThreshold: 1 };
+  newProduct: Product = {name: '', price: 0, stockQuantity: 1, stockThreshold: 1};
 
-  // Fields for Search
-  searchType: string = 'invoice'; // Default search type
+  searchType: string = 'invoice';
   searchText: string = '';
-  filteredResults: any[] = []; // This will hold the filtered search results
+  filteredResults: any[] = [];
 
   newPurchaseData: any = {
     purchase: {
@@ -36,36 +38,36 @@ export class PurchaseComponent implements OnInit {
     }
   };
 
+  editingPurchase: any = null;
+
   constructor(
     private purchaseService: PurchaseControllerService,
     private supplierService: SupplierControllerService,
     private productService: ProductControllerService,
     private toastr: ToastrService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.getAllPurchases();
     this.getAvailableProducts();
 
+    this.supplierService.getAllFournisseurs().subscribe({
+      next: (data: SupplierDto[]) => {
+        this.suppliers = data;
+        const supplierMap = new Map(data.map(s => [s.id, s.name]));
+        this.activeSuppliers = data.filter(s => !s.isDeleted);
+        this.purchaseService.getAllPurchases().subscribe(purchases => {
+          this.purchases = purchases.map(p => ({
+            ...p,
+            supplierName: supplierMap.get(p.supplierId) || 'Unknown'
+          }));
+        });
+      }
+    });
+  }
 
-      this.supplierService.getAllFournisseurs().subscribe({
-        next: (data: SupplierDto[]) => {
-          this.suppliers = data.filter(s => !s.isDeleted);
-          const supplierMap = new Map(data.map(s => [s.id, s.name]));
-
-          // Now fetch purchases and attach supplier name
-          this.purchaseService.getAllPurchases().subscribe(purchases => {
-            this.purchases = purchases.map(p => ({
-              ...p,
-              supplierName: supplierMap.get(p.supplierId)
-            }));
-          });
-        }
-      });
-    }
-
-
-    getAllPurchases(): void {
+  getAllPurchases(): void {
     this.purchaseService.getAllPurchases().subscribe(purchases => {
       this.purchases = purchases;
     });
@@ -83,19 +85,12 @@ export class PurchaseComponent implements OnInit {
       return;
     }
 
-    let quantity = 0;
-    this.newPurchaseData.purchase.products.forEach((item: { quantity: number }) => {
-      if (item.quantity) {
-        quantity += item.quantity;
-      }
-    });
-
     const requestData = {
       supplierId: parseInt(this.selectedSupplierId, 10),
       purchaseDate: new Date(this.purchaseDate).toISOString(),
       status: "pending",
       purchaseItems: this.newPurchaseData.purchase.products.map(
-        (item: { product: { id: number; name: string; price: number; stockThreshold: number }; quantity: number }) => ({
+        (item: { product: Product; quantity: number }) => ({
           productId: item.product.id,
           name: item.product.name,
           quantity: item.quantity,
@@ -105,7 +100,7 @@ export class PurchaseComponent implements OnInit {
       )
     };
 
-    this.purchaseService.createPurchase({ body: requestData }).subscribe({
+    this.purchaseService.createPurchase({body: requestData}).subscribe({
       next: (purchase) => {
         const supplier = this.suppliers.find(s => s.id === purchase.supplierId);
         const enrichedPurchase = {
@@ -113,10 +108,8 @@ export class PurchaseComponent implements OnInit {
           supplierName: supplier?.name || 'Unknown'
         };
 
-        // Add the newly created purchase to the list
         this.purchases.unshift(enrichedPurchase);
 
-        // If any new products were involved in the purchase, add them to the product list
         purchase.purchaseItems.forEach((item: any) => {
           const newProduct = this.products.find(p => p.id === item.productId);
           if (!newProduct) {
@@ -127,7 +120,7 @@ export class PurchaseComponent implements OnInit {
               stockQuantity: item.quantity,
               stockThreshold: item.stockThreshold
             };
-            this.products.push(newProductItem); // Add new product to the list
+            this.products.push(newProductItem);
           }
         });
 
@@ -138,16 +131,14 @@ export class PurchaseComponent implements OnInit {
       },
       error: (error) => {
         console.error("Error creating purchase:", error);
-        this.showError();
+        this.showError("Error creating purchase!");
       }
     });
   }
 
-
-  // Handle product selection
   onProductSelect(): void {
     if (this.selectedProductId === 'new') {
-      this.newProduct = { name: '', price: 0, stockQuantity: 1, stockThreshold: 1 };
+      this.newProduct = {name: '', price: 0, stockQuantity: 1, stockThreshold: 1};
     } else {
       const selectedProduct = this.products.find(product => product.id === parseInt(this.selectedProductId, 10));
       if (selectedProduct) {
@@ -162,33 +153,43 @@ export class PurchaseComponent implements OnInit {
     }
   }
 
-  // Add selected product to purchase list
   addProductToPurchase(): void {
-    if (!this.newProduct || this.newProduct.stockQuantity <= 0) return;
-
-    const existingProduct = this.newPurchaseData.purchase.products.find(
-      (item: { product: Product }) => item.product.id === this.newProduct.id
-    );
-
-    if (existingProduct) {
-      existingProduct.quantity += this.newProduct.stockQuantity;
-    } else {
-      this.newPurchaseData.purchase.products.push({
-        product: { ...this.newProduct },
-        quantity: this.newProduct.stockQuantity
-      });
+    if (!this.newProduct || !this.newProduct.name || this.newProduct.stockQuantity <= 0) {
+      return;
     }
 
-    console.log("Updated Purchase Products:", this.newPurchaseData.purchase.products);
+    const newName = this.newProduct.name.trim().toLowerCase();
 
-    this.calculateTotalAmount();
+    this.productService.getAllProducts().subscribe(products => {
+      this.products = products;
 
-    // Reset input fields
-    this.newProduct = { name: '', price: 0, stockQuantity: 1, stockThreshold: 1 };
-    this.selectedProductId = '';
+      const isDuplicate = products.some(product =>
+        product.name!.trim().toLowerCase() === newName
+      );
+
+      if (isDuplicate && this.selectedProductId === 'new') {
+        this.toastr.warning('This product already exists in the system!');
+        return;
+      }
+      // Add the product if it's not a duplicate
+      this.newPurchaseData.purchase.products.push({
+        product: {...this.newProduct},
+        quantity: this.newProduct.stockQuantity
+      });
+
+      this.calculateTotalAmount();
+      this.resetProductForm();
+    });
   }
 
-  // Remove product from purchase list
+
+  private resetProductForm(): void {
+    this.newProduct = {name: '', price: 0, stockQuantity: 1, stockThreshold: 1};
+    setTimeout(() => {
+      this.selectedProductId = '';
+    }, 0);
+  }
+
   removeProductFromPurchase(product: Product): void {
     const index = this.newPurchaseData.purchase.products.findIndex(
       (item: { product: Product }) => item.product.id === product.id
@@ -199,71 +200,80 @@ export class PurchaseComponent implements OnInit {
     }
   }
 
-  // Calculate total amount for the purchase
   calculateTotalAmount(): number {
     let total = 0;
     this.newPurchaseData.purchase.products.forEach((item: { product: Product; quantity: number }) => {
-      const quantity = item.quantity || 0;
-      const price = item.product.price || 0;
-      total += price * quantity;
+      total += (item.product.price || 0) * (item.quantity || 0);
     });
     this.newPurchaseData.purchase.totalAmount = total;
     return total;
   }
 
-  // Reset purchase form after successful creation
-  private resetPurchaseForm() {
+  resetPurchaseForm() {
+    this.editingPurchase = null;
     this.selectedProductId = '';
     this.purchaseDate = '';
     this.selectedSupplierId = '';
     this.newPurchaseData = { purchase: { purchaseDate: '', totalAmount: 0, products: [] } };
+    this.newProduct = { name: '', price: 0, stockQuantity: 1, stockThreshold: 1 };
   }
-
   showSuccess() {
     this.toastr.success('Purchase Created Successfully!');
   }
 
-  showError() {
-    this.toastr.error('Error creating purchase!');
+  showError(msg: string) {
+    this.toastr.error(msg);
   }
 
-  // Search functionality (filter results)
   search(): void {
     if (this.searchType === 'invoice') {
       this.getPurchaseByInvoice(this.searchText);
     } else if (this.searchType === 'supplier') {
       this.getPurchaseBySupplier(this.searchText);
     } else if (this.searchType === 'product') {
-      this.filteredResults = this.purchases.filter(purchase =>
-        purchase.purchaseItems.some(item => item.productId)
-      );
+      const search = this.searchText.toLowerCase().trim();
 
-      // Ensure new products are not included in the filteredResults immediately
-      console.log("Filtered Results (Product Search):", this.filteredResults);
+      this.purchaseService.getAllPurchases().subscribe({
+        next: (purchases) => {
+          this.filteredResults = purchases.filter(purchase =>
+            purchase.purchaseItems.some(item => {
+              const product = this.products.find(p => p.id === item.productId);
+              return product && product.name?.toLowerCase().includes(search);
+            })
+          ).map(purchase => {
+            const supplier = this.suppliers.find(s => s.id === purchase.supplierId);
+            return {
+              ...purchase,
+              supplierName: supplier?.name || 'Unknown'
+            };
+          });
+
+          if (this.filteredResults.length === 0) {
+            this.showError("No purchase was found!");
+            this.filteredResults = [];
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching all purchases:', err);
+          this.filteredResults = [];
+        }
+      });
     }
   }
 
   getPurchaseBySupplier(slug: string) {
-    this.purchaseService.getPurchaseBySupplier({ slug }).subscribe({
+    this.purchaseService.getPurchaseBySupplier({slug}).subscribe({
       next: (purchases) => {
-        console.log('Purchase fetched by supplier:', purchases);
-
         if (Array.isArray(purchases)) {
           this.filteredResults = purchases.map(p => {
-            // Apply the same filter for non-deleted suppliers
-            const supplier = this.suppliers.find(s => s.id === p.supplierId && s.isDeleted || !s.isDeleted);
-            console.log(`Supplier ID: ${p.supplierId}, Found Supplier ID: ${supplier?.id}`);
-            console.log('Available Suppliers:', this.suppliers);
-
+            const supplier = this.suppliers.find(s => s.id === p.supplierId);
             return {
               ...p,
               supplierName: supplier?.name || 'Unknown'
             };
           });
         } else {
-          const supplier = this.suppliers.find(s => s.id === purchases.supplierId && !s.isDeleted);
-          console.log(`Supplier ID: ${purchases.supplierId}, Found Supplier ID: ${supplier?.id}`);
-
+          const supplier = this.suppliers.find(s => s.id === purchases.supplierId);
           this.filteredResults = [{
             ...purchases,
             supplierName: supplier?.name || 'Unknown'
@@ -276,21 +286,14 @@ export class PurchaseComponent implements OnInit {
     });
   }
 
-
-
-  // Fetch purchase by invoice number
   getPurchaseByInvoice(invoiceNumber: string) {
-    this.purchaseService.getPurchaseByInvoiceNumber({ invoiceNumber }).subscribe({
+    this.purchaseService.getPurchaseByInvoiceNumber({invoiceNumber}).subscribe({
       next: (purchases) => {
-        console.log('Purchase fetched by invoice number:', purchases);
-
-        if (purchases) {
-          const supplier = this.suppliers.find(s => s.id === purchases.supplierId&& s.isDeleted || !s.isDeleted);
-          this.filteredResults = [{
-            ...purchases,
-            supplierName: supplier ? supplier.name : 'Unknown'
-          }];
-        }
+        const supplier = this.suppliers.find(s => s.id === purchases.supplierId);
+        this.filteredResults = [{
+          ...purchases,
+          supplierName: supplier?.name || 'Unknown'
+        }];
       },
       error: (err) => {
         console.error('Error fetching purchase by invoice number', err);
@@ -298,14 +301,11 @@ export class PurchaseComponent implements OnInit {
     });
   }
 
-
-
   deletePurchase(purchaseInvoice: string) {
-    this.purchaseService.deletePurchase({ invoice: purchaseInvoice }).subscribe({
+    this.purchaseService.deletePurchase({invoice: purchaseInvoice}).subscribe({
       next: () => {
         this.purchases = this.purchases.filter(p => p.invoiceNumber !== purchaseInvoice);
         this.filteredResults = this.filteredResults.filter(p => p.invoiceNumber !== purchaseInvoice);
-        console.log('Purchase deleted successfully');
         this.toastr.success('Purchase deleted');
       },
       error: (err) => {
@@ -314,9 +314,117 @@ export class PurchaseComponent implements OnInit {
       }
     });
   }
+  editPurchase(purchase: PurchaseDto): void {
+    console.log('Editing purchase:', purchase);
+    this.editingPurchase = {};  // Initialize as an object, not an array
+
+    this.purchaseService.getPurchaseByInvoiceNumber({ invoiceNumber: purchase.invoiceNumber! }).subscribe({
+      next: (purchaseData) => {
+        this.editingPurchase = purchaseData;
+        console.log('Editing purchase:', this.editingPurchase);
+
+        // Ensure purchaseItems exists
+        if (!this.editingPurchase.purchaseItems) {
+          console.error("No purchase items available for this purchase");
+          return;
+        }
+
+        // Initialize the purchase data
+        this.selectedSupplierId = purchase.supplierId?.toString() || '';
+        this.purchaseDate = purchase.purchaseDate?.split('T')[0] || '';
+
+        // Clear existing products in new purchase data
+        this.newPurchaseData.purchase.products = [];
+
+        // Add each purchase item to the form
+        this.editingPurchase.purchaseItems.forEach((item: PurchaseItemDto) => {
+          const product = this.products.find(p => p.id === item.productId);
+            console.log(item)
+          if (product) {
+            const productQuantity = item.quantity || product.stockQuantity;  // Use existing product stock if quantity is not provided
+
+            this.newPurchaseData.purchase.products.push({
+              product: {
+                id: product.id,
+                name: product.name,
+                price: item.price, // Use item price if available
+                stockQuantity: productQuantity, // Ensure quantity is coming from item, or default to product stock
+                stockThreshold: item.stockThreshold // Use product's actual threshold
+              },
+              quantity: productQuantity  // Use the same quantity logic here
+            });
+          }
+        });
 
 
-  editPurchase(result: any) {
-
+        this.calculateTotalAmount();
+        console.log('Form data after edit:', this.newPurchaseData); // Debug log
+      },
+      error: (error) => {
+        console.error('Error fetching purchase details:', error);
+      }
+    });
   }
+  updatePurchase(): void {
+    if (!this.editingPurchase.invoiceNumber) {
+      this.showError("No purchase selected for update");
+      return;
+    }
+
+    if (!this.selectedSupplierId || !this.purchaseDate || this.newPurchaseData.purchase.products.length === 0) {
+      this.showError("Missing required fields: Supplier, Date, or Products");
+      return;
+    }
+
+    const requestData = {
+      supplierId: parseInt(this.selectedSupplierId, 10),
+      purchaseDate: new Date(this.purchaseDate).toISOString(),
+      status: "pending",
+      purchaseItems: this.newPurchaseData.purchase.products.map(
+        (item: { product: Product; quantity: number }) => ({
+          productId: item.product.id,
+          name: item.product.name,
+          quantity: item.quantity,
+          stockThreshold: item.product.stockThreshold,
+          price: item.product.price
+        })
+      )
+    };
+
+    // Call the service to update the purchase
+    this.purchaseService.updatePurchase({
+      invoiceNumber: this.editingPurchase.invoiceNumber,
+      body: requestData
+    }).subscribe({
+      next: (updatedPurchase) => {
+        const supplier = this.suppliers.find(s => s.id === updatedPurchase.supplierId);
+        const enrichedPurchase = {
+          ...updatedPurchase,
+          supplierName: supplier?.name || 'Unknown'
+        };
+
+        // Only update the purchase being edited
+        this.purchases = this.purchases.map(p =>
+          p.invoiceNumber === updatedPurchase.invoiceNumber ? enrichedPurchase : p
+        );
+
+        // Update filtered results if needed
+        if (this.filteredResults.length > 0) {
+          this.filteredResults = this.filteredResults.map(p =>
+            p.invoiceNumber === updatedPurchase.invoiceNumber ? enrichedPurchase : p
+          );
+        }
+
+        // Reset the form after successful update
+        this.resetPurchaseForm();
+        this.showSuccess();
+        this.editingPurchase = null; // Close the editing form
+      },
+      error: (error) => {
+        console.log("Error updating purchase:", error);
+        this.showError("Error updating purchase!");
+      }
+    });
+  }
+
 }

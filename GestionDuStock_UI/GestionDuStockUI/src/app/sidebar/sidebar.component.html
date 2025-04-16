@@ -50,11 +50,11 @@
       </ul>
     </div>
 
-    <div class="menu-section" *ngIf="isAdmin">
+    <div class="menu-section"[class.hidden]="!isAdmin" >
       <h3 class="menu-header">Administration</h3>
-      <ul class="menu-items">
+      <ul class="menu-items" >
         <li>
-          <a routerLink="/users" routerLinkActive="active">
+          <a routerLink="/usermanagement" routerLinkActive="active">
             <i class="pi pi-user-edit"></i>
             <span>User Management</span>
           </a>

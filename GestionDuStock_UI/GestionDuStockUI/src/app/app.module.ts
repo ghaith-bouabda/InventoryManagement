@@ -6,7 +6,6 @@ import {SidebarComponent} from "./sidebar/sidebar.component";
 import {DashboardComponent} from "./dashboard/dashboard.component";
 import {AppRoutingModule} from "./app-routing.module";
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
-
 import {provideAnimationsAsync} from "@angular/platform-browser/animations/async";
 import {MatSidenav, MatSidenavContainer, MatSidenavModule} from "@angular/material/sidenav";
 import {MatListItem, MatListModule, MatNavList} from "@angular/material/list";
@@ -24,7 +23,7 @@ import { ProgressBarModule } from "primeng/progressbar"
 import { PanelModule } from "primeng/panel"
 
 import { LoginComponent } from './login/login.component';
-import {FormsModule} from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import {Menu} from 'primeng/menu';
 import {AuthInterceptor} from './auth-interceptor.service';
 import { LandingComponent } from './landing/landing.component';
@@ -38,6 +37,7 @@ import {NgOptimizedImage} from "@angular/common";
 import {WebSocketService} from './socketservice/WebSocketService';
 import {provideToastr, ToastrModule} from 'ngx-toastr';
 import {BrowserAnimationsModule, provideAnimations} from '@angular/platform-browser/animations';
+import { UsermanagementComponent } from './usermanagement/usermanagement.component';
 
 
 
@@ -55,6 +55,7 @@ import {BrowserAnimationsModule, provideAnimations} from '@angular/platform-brow
     PurchaseComponent,
     SalesComponent,
     CustomersComponent,
+    UsermanagementComponent,
   ],
     imports: [
       BrowserAnimationsModule, // required animations module
@@ -69,6 +70,7 @@ import {BrowserAnimationsModule, provideAnimations} from '@angular/platform-brow
         MatSidenavModule,
         MatListModule,
         FormsModule,
+      ReactiveFormsModule,
         ChartModule,
         TableModule,
         ButtonModule,

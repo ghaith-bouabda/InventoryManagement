@@ -1,33 +1,65 @@
 <div class="customer-container">
-  <h2>Customer Management</h2>
+  <h2>
+    Customer Management
+    <img src="assets/client.png" alt="Customer Icon" style="height: 30px; width: 30px" />
+  </h2>
 
-  <button (click)="startAddingCustomer()">Add Customer</button>
+  <button (click)="startAddingCustomer()" class="primary-btn">
+    <i class="pi pi-plus"></i> Add Customer
+  </button>
 
   <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
 
-
-  <div *ngIf="isAdding">
+  <!-- Add Customer Form -->
+  <div *ngIf="isAdding" class="form-section">
     <h3>Add New Customer</h3>
-    <form (ngSubmit)="addCustomer()">
-      <label for="name">Name:</label>
-      <input id="name" [(ngModel)]="newCustomer.customerName" name="customerName" required />
+    <form [formGroup]="customerForm" (ngSubmit)="addCustomer()">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input id="name" formControlName="customerName" class="form-control" />
+        <div *ngIf="customerForm.get('customerName')?.invalid && customerForm.get('customerName')?.touched" class="error-msg">
+          Name is required.
+        </div>
+      </div>
 
-      <label for="address">Address:</label>
-      <input id="address" [(ngModel)]="newCustomer.address" name="address" required />
+      <div class="form-group">
+        <label for="address">Address</label>
+        <input id="address" formControlName="address" class="form-control" />
+        <div *ngIf="customerForm.get('address')?.invalid && customerForm.get('address')?.touched" class="error-msg">
+          Address is required.
+        </div>
+      </div>
 
-      <label for="email">Email:</label>
-      <input id="email" [(ngModel)]="newCustomer.email" name="email" type="email" required />
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" formControlName="email" class="form-control" />
+        <div *ngIf="customerForm.get('email')?.invalid && customerForm.get('email')?.touched" class="error-msg">
+          Valid email is required.
+        </div>
+      </div>
 
-      <label for="phone">Phone:</label>
-      <input id="phone" [(ngModel)]="newCustomer.phone" name="phone" required />
+      <div class="form-group">
+        <label for="phone">Phone</label>
+        <input id="phone" formControlName="phone" class="form-control" />
+        <div *ngIf="customerForm.get('phone')?.invalid && customerForm.get('phone')?.touched" class="error-msg">
+          Phone must be 8-15 digits.
+        </div>
+      </div>
 
-      <button type="submit">Create Customer</button>
-      <button type="button" (click)="cancelAdding()">Cancel</button>
+      <div class="button-group">
+        <button type="submit" [disabled]="customerForm.invalid" class="primary-btn">
+          <i class="pi pi-check"></i> Create
+        </button>
+        <button type="button" (click)="cancelAdding()" class="secondary-btn">
+          <i class="pi pi-times"></i> Cancel
+        </button>
+      </div>
     </form>
   </div>
 
-  <!-- Existing Customers List -->
-  <div *ngIf="customers.length > 0">
+  <!-- Customer List -->
+  <div *ngIf="customers.length > 0" class="customer-list">
+    <h3>Customers</h3>
     <ul>
       <li *ngFor="let customer of customers" (click)="selectCustomer(customer)">
         {{ customer.customerName }} ({{ customer.email }})
@@ -35,30 +67,57 @@
     </ul>
   </div>
 
-  <div *ngIf="selectedCustomer">
-    <h3>Selected Customer: {{ selectedCustomer.customerName }}</h3>
+  <!-- Selected Customer Details -->
+  <div *ngIf="selectedCustomer" class="selected-customer">
+    <h3>Selected: {{ selectedCustomer.customerName }}</h3>
 
-    <div *ngIf="isEditing">
-      <form >
-        <label for="name">Name:</label>
-        <input id="name" [(ngModel)]="selectedCustomer.customerName" name="customerName" required />
+    <form *ngIf="isEditing" [formGroup]="editForm" (ngSubmit)="updateCustomer()">
+      <div class="form-group">
+        <label for="editName">Name</label>
+        <input id="editName" formControlName="customerName" class="form-control" />
+        <div *ngIf="editForm.get('customerName')?.invalid && editForm.get('customerName')?.touched" class="error-msg">
+          Name is required.
+        </div>
+      </div>
 
-        <label for="address">Address:</label>
-        <input id="address" [(ngModel)]="selectedCustomer.address" name="address" required />
+      <div class="form-group">
+        <label for="editAddress">Address</label>
+        <input id="editAddress" formControlName="address" class="form-control" />
+        <div *ngIf="editForm.get('address')?.invalid && editForm.get('address')?.touched" class="error-msg">
+          Address is required.
+        </div>
+      </div>
 
-        <label for="email">Email:</label>
-        <input id="email" [(ngModel)]="selectedCustomer.email" name="email" required />
+      <div class="form-group">
+        <label for="editEmail">Email</label>
+        <input id="editEmail" formControlName="email" class="form-control" />
+        <div *ngIf="editForm.get('email')?.invalid && editForm.get('email')?.touched" class="error-msg">
+          Valid email is required.
+        </div>
+      </div>
 
-        <label for="phone">Phone:</label>
-        <input id="phone" [(ngModel)]="selectedCustomer.phone" name="phone" required />
+      <div class="form-group">
+        <label for="editPhone">Phone</label>
+        <input id="editPhone" formControlName="phone" class="form-control" />
+        <div *ngIf="editForm.get('phone')?.invalid && editForm.get('phone')?.touched" class="error-msg">
+          Phone must be 8-15 digits.
+        </div>
+      </div>
 
-        <button type="submit" (click)="UpdateCustomer()">Update Customer</button>
-      </form>
-    </div>
+      <div class="button-group">
+        <button type="submit" [disabled]="editForm.invalid" class="primary-btn">
+          <i class="pi pi-save"></i> Save
+        </button>
+      </div>
+    </form>
 
-    <div *ngIf="!isEditing">
-      <button (click)="editCustomer()">Edit</button>
-      <button (click)="deleteCustomer()">Delete</button>
+    <div *ngIf="!isEditing" class="action-buttons">
+      <button class="edit-button" (click)="editCustomer()">
+        <i class="pi pi-pencil"></i> Edit
+      </button>
+      <button class="delete-button" (click)="deleteCustomer()">
+        <i class="pi pi-trash"></i> Delete
+      </button>
     </div>
   </div>
 </div>

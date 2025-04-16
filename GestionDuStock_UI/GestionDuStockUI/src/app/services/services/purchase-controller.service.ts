@@ -153,8 +153,121 @@ export class PurchaseControllerService extends BaseService {
       map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
-  getTotalPurchases(): Observable<number> {
-    return this.http.get<number>(`${this.rootUrl}/api/purchases/total-purchases`);
+
+  /** Path part for operation `getTotalPurchases()` */
+  static readonly GetTotalPurchasesPath = '/api/purchases/total-purchases';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getTotalPurchases()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  /** Path part for operation `getTotalPurchases()` */
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getTotalPurchases()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getTotalPurchases$Response(context?: HttpContext): Observable<StrictHttpResponse<number>> {
+    return this.http.get<number>(
+      this.rootUrl + '/api/purchases/total-purchases',
+      {
+        observe: 'response',
+        responseType: 'json',
+        context: context
+      }
+    ) as Observable<StrictHttpResponse<number>>;
   }
 
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getTotalPurchases$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getTotalPurchases(context?: HttpContext): Observable<number> {
+    return this.getTotalPurchases$Response(context).pipe(
+      map((r: StrictHttpResponse<number>): number => r.body)
+    );
+  }
+
+  /** Path part for operation `updatePurchase()` */
+  static readonly UpdatePurchasePath = '/api/purchases/{purchaseId}';
+
+
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updatePurchase()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updatePurchase$Response(params: {
+    invoiceNumber: string;
+    body: PurchaseDto
+  }, context?: HttpContext): Observable<StrictHttpResponse<PurchaseDto>> {
+    return this.http.put<PurchaseDto>(
+      this.rootUrl + `/api/purchases/${params.invoiceNumber}`,
+      params.body,
+      {
+        observe: 'response',
+        responseType: 'json',
+        context: context
+      }
+    ) as Observable<StrictHttpResponse<PurchaseDto>>;
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updatePurchase$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updatePurchase(params: {
+    invoiceNumber: string;
+    body: PurchaseDto
+  }, context?: HttpContext): Observable<PurchaseDto> {
+    return this.updatePurchase$Response(params, context).pipe(
+      map((r: StrictHttpResponse<PurchaseDto>): PurchaseDto => r.body)
+    );
+  }
+
+  /** Path part for operation `getPurchaseById()` */
+  static readonly GetPurchaseByIdPath = '/api/purchases/{purchaseId}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getPurchaseById()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getPurchaseById$Response(params: {
+    purchaseId: number;
+  }, context?: HttpContext): Observable<StrictHttpResponse<PurchaseDto>> {
+    return this.http.get<PurchaseDto>(
+      this.rootUrl + `/api/purchases/${params.purchaseId}`,
+      {
+        observe: 'response',
+        responseType: 'json',
+        context: context
+      }
+    ) as Observable<StrictHttpResponse<PurchaseDto>>;
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getPurchaseById$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getPurchaseById(params: {
+    purchaseId: number;
+  }, context?: HttpContext): Observable<PurchaseDto> {
+    return this.getPurchaseById$Response(params, context).pipe(
+      map((r: StrictHttpResponse<PurchaseDto>): PurchaseDto => r.body)
+    );
+  }
 }

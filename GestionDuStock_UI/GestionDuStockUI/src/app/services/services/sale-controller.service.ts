@@ -22,6 +22,7 @@ import { RemoveSaleItem$Params } from '../fn/sale-controller/remove-sale-item';
 import { Sale } from '../models/sale';
 import { updateSale } from '../fn/sale-controller/update-sale';
 import { UpdateSale$Params } from '../fn/sale-controller/update-sale';
+import {SaleDto} from '../models/sale-dto';
 
 @Injectable({ providedIn: 'root' })
 export class SaleControllerService extends BaseService {
@@ -156,5 +157,7 @@ export class SaleControllerService extends BaseService {
   getTotalSales(): Observable<number> {
     return this.http.get<number>(`${this.rootUrl}/api/sales/total-sales`);
   }
-
+  getAllSales(): Observable<SaleDto[]> {
+    return this.http.get<SaleDto[]>(`${this.rootUrl}/api/sales/getall`);
+  }
 }

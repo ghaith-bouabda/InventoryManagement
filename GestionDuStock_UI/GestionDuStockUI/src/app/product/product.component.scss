@@ -1,32 +1,121 @@
+/* Base Container */
 .container {
-  margin: 20px;
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+  background-color: #f9fafb;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
 }
 
+/* Main Heading */
 h1 {
   text-align: center;
+  font-size: 2.25rem;
+  font-weight: 600;
+  color: #1e293b; /* Slate-800 */
+  width: 100%;
 }
 
+/* Section Spacing */
 .category-section,
 .product-section {
-  margin-top: 20px;
+  margin-top: 1rem;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+/* Product Grid Layout */
+.filtered-result-container {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-th, td {
-  padding: 10px;
-  border: 1px solid #ddd;
-  text-align: left;
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.75rem;
 }
 
-th {
-  background-color: #f4f4f4;
+/* Section Titles */
+h3 {
+  font-size: 1.5rem;
+  font-weight: 900; /* Black weight */
+  color: #0f172a; /* Black-900 */
+  margin-bottom: 0.5rem;
 }
 
+/* Card Styles */
+.result-window {
+  background: #ffffff;
+  border: 15px solid #000000; /* Slate-200 */
+  border-radius: 12px;
+  padding: 1.25rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.04);
+}
+
+.result-window:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06);
+}
+
+.result-window h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #0f172a; /* Slate-900 */
+  margin-bottom: 0.5rem;
+  margin-left: 5rem;
+}
+
+.result-window p {
+  margin: 0.3rem 0;
+  color: #475569; /* Slate-600 */
+  font-size: 0.95rem;
+}
+
+/* Action Buttons */
+.result-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.result-actions button {
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.result-actions button:first-child {
+  background: #4f46e5; /* Indigo-600 */
+}
+
+.result-actions button:last-child {
+  background: #ef4444; /* Red-500 */
+}
+
+.result-actions button:hover {
+  opacity: 0.95;
+}
+
+/* Empty State */
 .no-products {
   text-align: center;
-  margin-top: 20px;
+  color: #64748b; /* Slate-500 */
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px dashed #cbd5e1; /* Slate-300 */
+  margin-top: 1rem;
+  font-size: 1rem;
+  font-weight: 500;
 }

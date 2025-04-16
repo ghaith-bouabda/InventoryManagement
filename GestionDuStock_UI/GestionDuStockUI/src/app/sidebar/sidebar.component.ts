@@ -14,10 +14,11 @@ export class SidebarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
-
-    this.isAdmin = this.authService.isAdmin()
+    this.authService.isAdmin$.subscribe(status => {
+      this.isAdmin = status;
+    });
   }
+
 
   logout() {
   this.authService.logout().subscribe({

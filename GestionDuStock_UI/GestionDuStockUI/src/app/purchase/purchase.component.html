@@ -5,17 +5,19 @@
     <form (ngSubmit)="search()">
       <div>
         <label for="searchQuery">Search by:</label>
-        <select id="searchQuery" [(ngModel)]="searchType" name="searchQuery" required>
-          <option value="invoice">Invoice Number</option>
-          <option value="supplier">Supplier</option>
-          <option value="product">Product</option>
-        </select>
+        <div class="input-with-icon">
+          <i class="pi pi-search-plus"></i>
+          <select id="searchQuery" [(ngModel)]="searchType" name="searchQuery" required>
+            <option value="invoice">Invoice Number</option>
+            <option value="supplier">Supplier</option>
+            <option value="product">Product</option>
+          </select>
+        </div>
       </div>
-
       <div>
         <label for="searchInput">Search:</label>
         <div class="input-with-icon">
-          <i class="pi pi-search"></i> <!-- PrimeIcon Search Icon -->
+          <i class="pi pi-search"></i>
           <input
             type="text"
             id="searchInput"
@@ -30,21 +32,15 @@
       <button type="submit"><i class="pi pi-search"></i> Search</button>
     </form>
 
-    <!-- Display filtered results here -->
     <div *ngIf="filteredResults.length > 0">
       <h4>Search Results:</h4>
       <div class="filtered-result-container">
-        <div
-          *ngFor="let result of filteredResults"
-          class="filtered-result-item"
-        >
+        <div *ngFor="let result of filteredResults" class="filtered-result-item">
           <div class="result-window">
-            <!-- Customize to show necessary information -->
             <p><strong>Invoice Number:</strong> {{ result.invoiceNumber }}</p>
             <p><strong>Supplier:</strong> {{ result.supplierName }}</p>
             <p><strong>Total Amount:</strong> ${{ result.totalAmount }}</p>
 
-            <!-- Edit and Delete Buttons -->
             <div class="result-actions">
               <button type="button" (click)="editPurchase(result)">
                 <i class="pi pi-pencil"></i> Edit
@@ -61,42 +57,44 @@
 
   <!-- Purchase Form -->
   <div class="purchase-form">
-    <form (ngSubmit)="createPurchase()">
-      <!-- Purchase Date Input -->
+    <h2>{{ editingPurchase ? 'Edit Purchase' : 'Create New Purchase' }}</h2>
+    <form (ngSubmit)="editingPurchase ? updatePurchase() : createPurchase()">
       <div>
         <label for="purchaseDate">Purchase Date:</label>
-        <input
-          type="date"
-          id="purchaseDate"
-          [(ngModel)]="purchaseDate"
-          name="purchaseDate"
-          required
-        />
+        <div class="input-with-icon">
+          <i class="pi pi-calendar-clock"></i>
+          <input
+            type="date"
+            id="purchaseDate"
+            [(ngModel)]="purchaseDate"
+            name="purchaseDate"
+            required
+          />
+        </div>
       </div>
 
-      <!-- Supplier Selection Dropdown -->
       <div>
         <label for="supplierId">Supplier:</label>
         <div class="input-with-icon">
-          <i class="pi pi-briefcase"></i> <!-- PrimeIcon Supplier Icon -->
+          <i class="pi pi-briefcase"></i>
           <select
             id="supplierId"
             [(ngModel)]="selectedSupplierId"
             name="supplierId"
             required
           >
-            <option *ngFor="let supplier of suppliers" [value]="supplier.id">
+            <option value="">-- Select Supplier --</option>
+            <option *ngFor="let supplier of activeSuppliers" [value]="supplier.id">
               {{ supplier.name }}
             </option>
           </select>
         </div>
       </div>
 
-      <!-- Product Selection -->
       <div>
         <label for="productSelect">Product:</label>
         <div class="input-with-icon">
-          <i class="pi pi-cog"></i> <!-- PrimeIcon Product Icon -->
+          <i class="pi pi-cog"></i>
           <select
             id="productSelect"
             [(ngModel)]="selectedProductId"
@@ -113,12 +111,11 @@
         </div>
       </div>
 
-      <!-- Product Details (For Selected or New Product) -->
       <div *ngIf="selectedProductId">
         <div>
           <label for="productName">Product Name:</label>
           <div class="input-with-icon">
-            <i class="pi pi-tag"></i> <!-- PrimeIcon Tag Icon -->
+            <i class="pi pi-tag"></i>
             <input
               type="text"
               id="productName"
@@ -133,7 +130,7 @@
         <div>
           <label for="productPrice">Product Price ($):</label>
           <div class="input-with-icon">
-            <i class="pi pi-dollar"></i> <!-- PrimeIcon Dollar Icon -->
+            <i class="pi pi-dollar"></i>
             <input
               type="number"
               id="productPrice"
@@ -141,6 +138,8 @@
               name="productPrice"
               [readonly]="selectedProductId !== 'new'"
               required
+              min="0.01"
+              step="0.01"
             />
           </div>
         </div>
@@ -148,14 +147,15 @@
         <div>
           <label for="stockThreshold">Stock Threshold:</label>
           <div class="input-with-icon">
-            <i class="pi pi-arrow-down"></i> <!-- PrimeIcon Arrow Down Icon -->
+            <i class="pi pi-arrow-down"></i>
             <input
               type="number"
-              id="StockThreshold"
+              id="stockThreshold"
               [(ngModel)]="newProduct.stockThreshold"
               name="stockThreshold"
               [readonly]="selectedProductId !== 'new'"
               required
+              min="1"
             />
           </div>
         </div>
@@ -163,7 +163,7 @@
         <div>
           <label for="productQuantity">Quantity:</label>
           <div class="input-with-icon">
-            <i class="pi pi-caret-up"></i> <!-- PrimeIcon Quantity Icon -->
+            <i class="pi pi-caret-up"></i>
             <input
               type="number"
               id="productQuantity"
@@ -175,40 +175,41 @@
           </div>
         </div>
 
-        <button type="button" (click)="addProductToPurchase()"><i class="pi pi-plus"></i> Add to Purchase</button>
+        <button type="button" (click)="addProductToPurchase()">
+          <i class="pi pi-plus"></i> Add to Purchase
+        </button>
       </div>
 
-      <!-- List of Added Products -->
-      <div>
-        <h3>Purchase List</h3>
-        <ul>
-          <li *ngFor="let item of newPurchaseData.purchase.products">
-            {{ item.product.name }} - ${{ item.product.price }} x {{ item.quantity }}
-            <button type="button" (click)="removeProductFromPurchase(item.product)">
-              <i class="pi pi-trash"></i> Remove
+      <div *ngIf="newPurchaseData.purchase.products.length > 0">
+        <h3>Purchase Items</h3>
+        <ul class="purchase-items-list">
+          <li *ngFor="let item of newPurchaseData.purchase.products" class="purchase-item">
+            <span class="item-name">{{ item.product.name }}</span>
+            <span class="item-details">
+              ${{ item.product.price | number:'1.2-2' }} × {{ item.quantity }} =
+              ${{ (item.product.price * item.quantity) | number:'1.2-2' }}
+            </span>
+            <button type="button" (click)="removeProductFromPurchase(item.product)" class="remove-item">
+              <i class="pi pi-trash"></i>
             </button>
           </li>
         </ul>
       </div>
 
-      <!-- Total Amount -->
-      <div>
-        <label for="totalAmount">Total Amount:</label>
-        <input
-          type="text"
-          id="totalAmount"
-          [value]="calculateTotalAmount()"
-          readonly
-        />
+      <div class="total-amount">
+        <label>Total Amount:</label>
+        <span>${{ calculateTotalAmount() | number:'1.2-2' }}</span>
       </div>
 
-      <!-- Submit Button -->
-      <button
-        type="submit"
-        [disabled]="!purchaseDate || !selectedSupplierId || newPurchaseData.purchase.products.length === 0"
-      >
-        <i class="pi pi-check"></i> Create Purchase
-      </button>
+      <div class="form-actions">
+        <button type="submit" [disabled]="!purchaseDate || !selectedSupplierId || newPurchaseData.purchase.products.length === 0">
+          <i class="pi pi-check"></i> {{ editingPurchase ? 'Update' : 'Create' }} Purchase
+        </button>
+
+        <button *ngIf="editingPurchase" type="button" (click)="resetPurchaseForm()" class="cancel-button">
+          <i class="pi pi-times"></i> Cancel
+        </button>
+      </div>
     </form>
   </div>
 </div>

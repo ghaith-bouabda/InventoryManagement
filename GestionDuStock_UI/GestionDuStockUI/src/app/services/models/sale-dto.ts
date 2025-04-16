@@ -8,7 +8,7 @@ export interface SaleDto {
   amount: number;
   customer?: CustomerDto;
   id?: number;
-  invoiceNumber: string;
+  invoiceNumber?: string;
   saleDate: string;
   saleItems: Array<SaleitemDto>;
 }

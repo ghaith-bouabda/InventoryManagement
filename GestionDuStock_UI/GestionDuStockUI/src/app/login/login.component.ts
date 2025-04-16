@@ -39,10 +39,10 @@ export class LoginComponent {
      this.userController.getCurrentUser().subscribe({
           next: (res) => {
            localStorage.setItem('user',JSON.stringify(res));
+            this.authService.setCurrentUser(res);
 
           }
         });
-        console.log(this.authService.isAdmin());
         this.router.navigate(['/']);
       },
       error: (err) => {
@@ -51,7 +51,5 @@ export class LoginComponent {
     });
   }
 
-  register() {
-    this.router.navigate(['register']);
-  }
+
 }

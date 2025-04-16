@@ -27,6 +27,8 @@ import {logout, Logout$Params} from '../fn/auth-controller/logout';
 export class AuthControllerService extends BaseService {
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>;
+  private isAdminSubject = new BehaviorSubject<boolean>(false);
+  public isAdmin$ = this.isAdminSubject.asObservable();
   private apiUrl = `localhost:8080/auth/auth`;
 
   constructor(config: ApiConfiguration, http: HttpClient) {
@@ -34,8 +36,12 @@ export class AuthControllerService extends BaseService {
     const storedUser = localStorage.getItem("user")
     this.currentUserSubject = new BehaviorSubject<User | null>(storedUser ? JSON.parse(storedUser) : null)
     this.currentUser = this.currentUserSubject.asObservable()
+    this.updateAdminStatus(); // Initialize admin status
   }
-
+  updateAdminStatus() {
+    const isAdmin = this.isAdmin();
+    this.isAdminSubject.next(isAdmin);
+  }
   /** Path part for operation `register()` */
   static readonly RegisterPath = '/api/auth/register';
 
@@ -143,6 +149,10 @@ export class AuthControllerService extends BaseService {
     return this.logout$Response(params, context).pipe(
       map((r: StrictHttpResponse<void>): void => r.body)
     );
+  }
+  setCurrentUser(user: User) {
+    this.currentUserSubject.next(user);
+    this.updateAdminStatus();
   }
 
   public get currentUserValue(): User | null {

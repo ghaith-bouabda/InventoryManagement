@@ -1,177 +1,226 @@
-.purchase-form {
-  max-width: 600px;
-  margin: 2rem auto;
-  padding: 1.5rem;
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.purchase-form h3 {
-  text-align: center;
-  color: #333;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #555;
-  display: block;
-  margin-bottom: 0.5rem;
-}
-
-input,
-select {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 1rem;
-}
-
-input:focus,
-select:focus {
-  border-color: #2196f3;
-  outline: none;
-  box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
-}
-
-button {
-  background: #2196f3;
-  color: #fff;
-  border: none;
-  padding: 0.75rem;
-  font-size: 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-button:hover {
-  background: #1976d2;
-}
-
-button:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-}
-
-.purchase-list {
-  list-style: none;
-  padding: 0;
-}
-
-.purchase-list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #f9f9f9;
-  padding: 0.75rem;
-  border-radius: 6px;
-  margin-bottom: 0.5rem;
-}
-
-.purchase-list button {
-  background: #f44336;
-  padding: 0.5rem;
-  font-size: 0.875rem;
-}
-
-.purchase-list button:hover {
-  background: #d32f2f;
-}
-
-.total-amount {
-  text-align: right;
-  font-size: 1.25rem;
-  font-weight: bold;
-  color: #333;
-}
 .purchase-container {
   display: flex;
   gap: 2rem;
+  padding: 2rem;
+  background-color: #f4f6f8;
+  min-height: 100vh;
 }
 
 .search-sidebar {
-  width: 250px;
-  padding: 1rem;
-  border: 1px solid #ddd;
+  width: 280px;
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+.search-sidebar h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.search-sidebar select,
+.search-sidebar input {
+  width: 100%; /* Make full width */
   border-radius: 8px;
+  padding: 0.75rem; /* Increased padding */
+  border: 1px solid #ddd;
+  background-color: #fafafa;
+  margin-top: 0.5rem; /* Added spacing */
 }
 
-.purchase-form {
-  flex-grow: 1;
-  padding: 1rem;
+.search-sidebar button {
+  margin-top: 1rem;
+  background-color: #4f46e5;
+  color: white;
+  padding: 0.75rem; /* Increased padding */
+  border-radius: 8px;
+  font-weight: 600;
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
-.search-sidebar form {
+.search-sidebar button:hover {
+  background-color: #4338ca;
+}
+
+.filtered-result-container {
+  margin-top: 1rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.search-sidebar input,
-.search-sidebar select,
-.search-sidebar button {
-  padding: 0.5rem;
-  width: 100%;
-}
-
-.search-sidebar h4 {
-  margin-top: 1rem;
-}
-
-.search-sidebar ul {
-  list-style: none;
-  padding: 0;
-}
-
-.search-sidebar li {
-  margin-bottom: 0.5rem;
-}
-.filtered-result-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.filtered-result-item {
-  flex: 1;
-  min-width: 200px;
-  max-width: 300px;
-}
-
 .result-window {
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  background: #fefefe;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
   padding: 1rem;
-  background-color: #f9f9f9;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.result-window:hover {
+  transform: translateY(-2px);
 }
 
 .result-actions {
   display: flex;
-  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937; /* Slate-800 */
+  margin-bottom: 0.75rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.result-window h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827; /* Gray-900 */
+  margin-bottom: 0.5rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+.result-actions button {
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 0.8rem; /* Slightly larger */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+}
+
+.result-actions button:first-child {
+  background: #6366f1;
+}
+
+.result-actions button:last-child {
+  background: #ef4444;
+}
+
+.result-actions button:hover {
+  opacity: 0.9;
+}
+
+.purchase-form {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 600px;
+}
+
+.purchase-form h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #111827;
+}
+
+.input-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem; /* Added consistent spacing */
+}
+
+.input-with-icon i {
+  color: #6b7280;
+}
+
+/* Updated input/select styles to match sales form */
+.purchase-form input,
+.purchase-form select {
+  width: 100%;
+  padding: 0.75rem; /* Larger padding */
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  flex-grow: 1; /* Allow to fill space */
+}
+
+.purchase-form input:focus,
+.purchase-form select:focus {
+  border-color: #6366f1;
+  outline: none;
+}
+
+.purchase-form button[type="submit"],
+.purchase-form button[type="button"] {
+  background: #10b981;
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background 0.3s;
+}
+
+.purchase-form button[type="submit"]:hover,
+.purchase-form button[type="button"]:hover {
+  background: #059669;
+}
+
+/* Grouping & visual balance */
+.purchase-form form > div {
+  margin-bottom: 1.5rem;
+}
+
+/* Styled purchase list */
+.purchase-form ul {
+  background: #f9fafb;
+  border: 1px dashed #d1d5db;
+  padding: 1rem;
+  border-radius: 8px;
+  list-style-type: none;
   margin-top: 1rem;
 }
 
-button {
-  padding: 0.5rem;
-  font-size: 0.9rem;
-  cursor: pointer;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  border-radius: 3px;
-  transition: background-color 0.3s ease;
+.purchase-form ul li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  color: #374151;
 }
 
-button:hover {
-  background-color: #0056b3;
+.purchase-form ul li button {
+  background: transparent;
+  color: #ef4444;
+  border: none;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.purchase-form ul li button:hover {
+  text-decoration: underline;
+}
+
+/* Disabled button look */
+button[disabled] {
+  background-color: #d1d5db !important;
+  cursor: not-allowed;
 }

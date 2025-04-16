@@ -1,116 +1,188 @@
-<div class="sales-form">
-  <form (ngSubmit)="createSale()">
-    <!-- Sale Date Input -->
-    <div>
-      <label for="saleDate">Sale Date:</label>
-      <input
-        type="date"
-        id="saleDate"
-        [(ngModel)]="saleDate"
-        name="saleDate"
-        required
-      />
-    </div>
-
-    <!-- Customer Selection Dropdown -->
-    <div>
-      <label for="customerId">Customer:</label>
-      <select
-        id="customerId"
-        [(ngModel)]="selectedCustomerId"
-        name="customerId"
-        required
-      >
-        <option *ngFor="let customer of customers" [value]="customer.id">
-          {{ customer.customerName }}
-        </option>
-      </select>
-    </div>
-
-    <!-- Product Selection -->
-    <div>
-      <label for="productSelect">Product:</label>
-      <select
-        id="productSelect"
-        [(ngModel)]="selectedProductId"
-        name="productSelect"
-        (change)="onProductSelect()"
-        required
-      >
-        <option *ngFor="let product of products" [value]="product.id">
-          {{ product.name }} - ${{ product.price }}
-        </option>
-      </select>
-    </div>
-
-    <!-- Product Details (For Selected or New Product) -->
-    <div *ngIf="selectedProductId">
+<div class="sales-container">
+  <!-- Sidebar with Search -->
+  <div class="search-sidebar">
+    <h3>Search Sales</h3>
+    <form (ngSubmit)="search()">
       <div>
-        <label for="productName">Product Name:</label>
+        <label for="searchQuery">Search by:</label>
+        <div class="input-with-icon">
+          <i class="pi pi-search-plus"></i>
+          <select id="searchQuery" [(ngModel)]="searchType" name="searchQuery" required>
+            <option value="invoice">Invoice Number</option>
+            <option value="customer">Customer</option>
+            <option value="product">Product</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label for="searchInput">Search:</label>
+        <div class="input-with-icon">
+          <i class="pi pi-search"></i>
+          <input
+            type="text"
+            id="searchInput"
+            [(ngModel)]="searchText"
+            name="searchInput"
+            placeholder="Enter search query"
+            required
+          />
+        </div>
+      </div>
+
+      <button type="submit"><i class="pi pi-search"></i> Search</button>
+    </form>
+
+    <div *ngIf="filteredResults.length > 0">
+      <h4>Search Results:</h4>
+      <div class="filtered-result-container">
+        <div *ngFor="let sale of filteredResults" class="filtered-result-item">
+          <div class="result-window">
+            <p><strong>Invoice:</strong> {{ sale.invoiceNumber }}</p>
+            <p><strong>Date:</strong> {{ sale.saleDate | date }}</p>
+            <p><strong>Customer:</strong> {{ sale.customer?.customerName || 'Unknown' }}</p>
+            <p><strong>Total:</strong> {{ sale.amount | currency }}</p>
+
+            <div class="result-actions">
+              <button type="button" (click)="editsale(sale)">
+                <i class="pi pi-file-edit"></i> edit
+              </button>
+              <button type="button" (click)="deleteSale(sale.invoiceNumber!)">
+                <i class="pi pi-trash"></i> Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sales Form -->
+  <div class="sales-form">
+    <form (ngSubmit)="isEditMode ? updateSale() : createSale()">      <div>
+        <label for="saleDate">Sale Date:</label>
+        <div class="input-with-icon">
+          <i class="pi pi-calendar-clock"></i>
+          <input
+            type="date"
+            id="saleDate"
+            [(ngModel)]="saleDate"
+            name="saleDate"
+            required
+          />
+        </div>
+      </div>
+
+      <div>
+        <label for="customerId">Customer:</label>
+        <div class="input-with-icon">
+          <i class="pi pi-users"></i>
+          <select id="customerId" name="customerId" [(ngModel)]="selectedCustomerId" required>
+            <option *ngFor="let customer of customers" [value]="customer.id">
+              {{ customer.customerName }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label for="productSelect">Product:</label>
+        <div class="input-with-icon">
+          <i class="pi pi-cog"></i>
+          <select
+            id="productSelect"
+            name="productSelect"
+            [(ngModel)]="selectedProductId"
+            (change)="onProductSelect()"
+            required
+          >
+            <option value="">-- Select Product --</option>
+            <option *ngFor="let product of filteredProducts()" [value]="product.id">
+              {{ product.name }} - {{ product.price | currency }}
+            </option>
+            <option value="new">+ Add New Product</option>
+          </select>
+        </div>
+      </div>
+
+      <div *ngIf="selectedProductId">
+        <div>
+          <label for="productName">Product Name:</label>
+          <div class="input-with-icon">
+            <i class="pi pi-tag"></i>
+            <input
+              type="text"
+              id="productName"
+              [(ngModel)]="newProduct.name"
+              name="productName"
+              [readonly]="selectedProductId !== 'new'"
+              required
+            />
+          </div>
+        </div>
+
+        <div>
+          <label for="productPrice">Price:</label>
+          <div class="input-with-icon">
+            <i class="pi pi-dollar"></i>
+            <input
+              type="number"
+              id="productPrice"
+              [(ngModel)]="newProduct.price"
+              name="productPrice"
+              [readonly]="selectedProductId !== 'new'"
+              required
+            />
+          </div>
+        </div>
+
+        <div>
+          <label for="productQuantity">Quantity:</label>
+          <div class="input-with-icon">
+            <i class="pi pi-caret-up"></i>
+            <input
+              type="number"
+              id="productQuantity"
+              [(ngModel)]="newProduct.stockQuantity"
+              name="productQuantity"
+              min="1"
+              required
+            />
+          </div>
+        </div>
+
+        <button type="button" (click)="addProductToSale()">
+          <i class="pi pi-plus"></i> Add to Sale
+        </button>
+      </div>
+
+      <div>
+        <h3>Sale Items</h3>
+        <ul>
+          <li *ngFor="let item of newSaleData.saleItems">
+            {{ getProductName(item.productId) }} - {{ item.price | currency }} × {{ item.quantity }}
+            <button type="button" (click)="removeProductFromSale(item.productId)">
+              <i class="pi pi-trash"></i> Remove
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <label for="totalAmount">Total Amount:</label>
         <input
           type="text"
-          id="productName"
-          [(ngModel)]="newProduct.name"
-          name="productName"
-          [readonly]="selectedProductId !== 'new'"
-          required
+          id="totalAmount"
+          [value]="calculateTotalAmount() | currency"
+          readonly
         />
       </div>
 
-      <div>
-        <label for="productPrice">Product Price ($):</label>
-        <input
-          type="number"
-          id="productPrice"
-          [(ngModel)]="newProduct.price"
-          name="productPrice"
-          [readonly]="selectedProductId !== 'new'"
-          required
-        />
-      </div>
-
-      <div>
-        <label for="productQuantity">Quantity:</label>
-        <input
-          type="number"
-          id="productQuantity"
-          [(ngModel)]="newProduct.stockQuantity"
-        name="productQuantity"
-        min="1"
-        required
-        />
-      </div>
-
-      <button type="button" (click)="addProductToSale()">Add to Sale</button>
-    </div>
-
-    <!-- List of Added Products -->
-    <div>
-      <h3>Sale List</h3>
-      <ul>
-        <li *ngFor="let item of newSaleData.saleItems">
-          {{ item.productId }} - ${{ item.price }} x {{ item.quantity }}
-          <button type="button" (click)="removeProductFromSale(item.productId)">Remove</button>
-        </li>
-      </ul>
-    </div>
-
-    <!-- Total Amount -->
-    <div>
-      <label for="totalAmount">Total Amount:</label>
-      <input
-        type="text"
-        id="totalAmount"
-        [value]="calculateTotalAmount()"
-        readonly
-      />
-    </div>
-
-    <!-- Submit Button -->
-    <button
-      type="submit"
-      [disabled]="!saleDate || !selectedCustomerId || newSaleData.saleItems.length === 0" >
-    Create Sale
-    </button>
-  </form>
+      <button
+        type="submit"
+        [disabled]="!saleDate || !selectedCustomerId || newSaleData.saleItems.length === 0"
+      >
+        <i class="pi pi-check"></i>       {{ isEditMode ? 'Update Sale' : 'Create Sale' }}
+      </button>
+    </form>
+  </div>
 </div>

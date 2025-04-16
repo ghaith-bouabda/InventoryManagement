@@ -48,18 +48,21 @@ export class WebSocketService {
     }
   }
 
-  checkLowStock(product: any): void {
+  checkLowStock(product: any): String {
     if (product.stockQuantity <= product.stockThreshold) {
-      console.log('Low stock detected:', product.name); // Log to console
       if (this.stompClient && this.stompClient.connected) {
         this.stompClient.publish({
           destination: '/app/check-low-stock',
           body: JSON.stringify(product) // Send product data for low stock check
         });
+
       } else {
         console.warn('STOMP client is not connected');
+
       }
     }
+    return('Low stock detected:'+ product.name);
   }
+
 
 }

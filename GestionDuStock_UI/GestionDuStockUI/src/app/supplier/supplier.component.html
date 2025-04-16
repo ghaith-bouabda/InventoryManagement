@@ -1,36 +1,57 @@
 <div class="supplier-container">
-  <h2>Supplier Management</h2>
+  <h2>Supplier Management <img src="assets/supplier.png" style="height: 30px; width: 30px"> </h2>
 
-  <button (click)="startAddingSupplier()">Add Supplier</button>
+  <button (click)="startAddingSupplier()">
+    <i class="pi pi-plus"></i> Add Supplier
+  </button>
 
   <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
 
   <!-- Form to Add a New Supplier -->
   <div *ngIf="isAdding">
     <h3>Add New Supplier</h3>
-    <form (ngSubmit)="addSupplier()">
+    <form (ngSubmit)="addSupplier()" #supplierForm="ngForm" novalidate>
       <label for="name">Name:</label>
-      <input id="name" [(ngModel)]="newSupplier.name" name="name" required />
+      <input id="name" name="name" required [(ngModel)]="newSupplier.name" #name="ngModel" />
+      <div *ngIf="name.invalid && name.touched" class="error-msg">
+        Name is required.
+      </div>
 
       <label for="adresse">Address:</label>
-      <input id="adresse" [(ngModel)]="newSupplier.adresse" name="adresse" required />
+      <input id="adresse" name="adresse" required [(ngModel)]="newSupplier.adresse" #adresse="ngModel" />
+      <div *ngIf="adresse.invalid && adresse.touched" class="error-msg">
+        Address is required.
+      </div>
 
       <label for="email">Email:</label>
-      <input id="email" [(ngModel)]="newSupplier.email" name="email" type="email" required />
+      <input id="email" name="email" required email [(ngModel)]="newSupplier.email" #email="ngModel" />
+      <div *ngIf="email.invalid && email.touched" class="error-msg">
+        Valid email is required.
+      </div>
 
       <label for="telephone">Telephone:</label>
-      <input id="telephone" [(ngModel)]="newSupplier.telephone" name="telephone" required />
+      <input id="telephone" name="telephone" required pattern="^[0-9]{8,15}$"
+             [(ngModel)]="newSupplier.telephone" #telephone="ngModel" />
+      <div *ngIf="telephone.invalid && telephone.touched" class="error-msg">
+        Telephone must be 8-15 digits.
+      </div>
 
       <label for="contactPerson">Contact Person:</label>
-      <input id="contactPerson" [(ngModel)]="newSupplier.contactPerson" name="contactPerson" />
+      <input id="contactPerson" name="contactPerson" [(ngModel)]="newSupplier.contactPerson" />
 
-      <button type="submit">Create Supplier</button>
-      <button type="button" (click)="cancelAdding()">Cancel</button>
+      <button type="submit" [disabled]="supplierForm.invalid">
+        <i class="pi pi-check"></i> Create Supplier
+      </button>
+      <button type="button" (click)="cancelAdding()">
+        <i class="pi pi-times"></i> Cancel
+      </button>
     </form>
+
   </div>
 
   <!-- Existing Suppliers List -->
   <div *ngIf="filteredSuppliers.length > 0">
+    <h3>Suppliers</h3>
     <ul>
       <li *ngFor="let supplier of filteredSuppliers" (click)="selectSupplier(supplier)">
         {{ supplier.name }} ({{ supplier.slug }})
@@ -43,29 +64,50 @@
     <h3>Selected Supplier: {{ selectedSupplier.name }}</h3>
 
     <div *ngIf="isEditing">
-      <form (ngSubmit)="updateSupplier()">
-        <label for="name">Name:</label>
-        <input id="name" [(ngModel)]="selectedSupplier.name" name="name" required />
+      <form (ngSubmit)="updateSupplier()" #editForm="ngForm" novalidate>
+        <label for="editName">Name:</label>
+        <input id="editName" name="editName" required [(ngModel)]="selectedSupplier.name" #editName="ngModel" />
+        <div *ngIf="editName.invalid && editName.touched" class="error-msg">
+          Name is required.
+        </div>
 
-        <label for="adresse">Address:</label>
-        <input id="adresse" [(ngModel)]="selectedSupplier.adresse" name="adresse" required />
+        <label for="editAdresse">Address:</label>
+        <input id="editAdresse" name="editAdresse" required [(ngModel)]="selectedSupplier.adresse" #editAdresse="ngModel" />
+        <div *ngIf="editAdresse.invalid && editAdresse.touched" class="error-msg">
+          Address is required.
+        </div>
 
-        <label for="email">Email:</label>
-        <input id="email" [(ngModel)]="selectedSupplier.email" name="email" required />
+        <label for="editEmail">Email:</label>
+        <input id="editEmail" name="editEmail" required email [(ngModel)]="selectedSupplier.email" #editEmail="ngModel" />
+        <div *ngIf="editEmail.invalid && editEmail.touched" class="error-msg">
+          Valid email is required.
+        </div>
 
-        <label for="telephone">Telephone:</label>
-        <input id="telephone" [(ngModel)]="selectedSupplier.telephone" name="telephone" required />
+        <label for="editTelephone">Telephone:</label>
+        <input id="editTelephone" name="editTelephone" required pattern="^[0-9]{8,15}$"
+               [(ngModel)]="selectedSupplier.telephone" #editTelephone="ngModel" />
+        <div *ngIf="editTelephone.invalid && editTelephone.touched" class="error-msg">
+          Telephone must be 8-15 digits.
+        </div>
 
-        <label for="contactPerson">Contact Person:</label>
-        <input id="contactPerson" [(ngModel)]="selectedSupplier.contactPerson" name="contactPerson" />
+        <label for="editContactPerson">Contact Person:</label>
+        <input id="editContactPerson" name="editContactPerson"
+               [(ngModel)]="selectedSupplier.contactPerson" />
 
-        <button type="submit">Update Supplier</button>
+        <button type="submit" [disabled]="editForm.invalid">
+          <i class="pi pi-save"></i> Update Supplier
+        </button>
       </form>
+
     </div>
 
-    <div *ngIf="!isEditing">
-      <button (click)="editSupplier()">Edit</button>
-      <button (click)="deleteSupplier()">Delete</button>
+    <div *ngIf="!isEditing" class="action-buttons">
+      <button class="edit-button" (click)="editSupplier()">
+        <i class="pi pi-pencil"></i> Edit
+      </button>
+      <button class="delete-button" (click)="deleteSupplier()">
+        <i class="pi pi-trash"></i> Delete
+      </button>
     </div>
   </div>
 </div>

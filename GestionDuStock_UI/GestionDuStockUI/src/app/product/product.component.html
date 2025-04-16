@@ -1,77 +1,25 @@
-<div class="container">
-  <h1>Products</h1>
+<div class="container purchase-container">
 
-  <!-- Product Categories -->
 
-  <!-- Products List -->
-  <div *ngIf="products.length > 0" class="product-section">
-    <h3>Product List</h3>
-    <table class="table">
-      <thead>
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Price</th>
-        <th>Stock Quantity</th>
-        <th>Stock Threshold</th>
-        <th>Supplier</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let product of products">
-        <td>{{ product.id }}</td>
-        <td>{{ product.name }}</td>
-        <td>{{ product.price | currency }}</td>
-        <td>{{ product.stockQuantity }}</td>
-        <td>{{ product.stockThreshold }}</td>
-        <td>{{ product.supplier?.name || 'No Supplier' }}</td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
+  <!-- Product Grid Section -->
+  <div class="filtered-result-container" style="flex-grow: 1;">
+    <h3>Product List <img src="assets/box.png" style="height: 30px; width: 30px"></h3>
 
-  <div *ngIf="products.length === 0" class="no-products">
-    <p>No products available.</p>
+    <div *ngIf="products.length > 0" class="product-grid">
+      <div *ngFor="let product of products" class="result-window">
+        <h4>{{ (product.name)?.toUpperCase() }}</h4>
+
+        <p><strong>Price:</strong> {{ product.price | currency }}</p>
+        <p><strong>Stock Quantity:</strong> {{ product.stockQuantity }} </p>
+        <p><strong>Stock Threshold:</strong>{{ product.stockThreshold }}</p>
+
+        <p><strong>Supplier:</strong> {{ product.supplier?.name || 'No Supplier' }}</p>
+
+      </div>
+    </div>
+
+    <div *ngIf="products.length === 0" class="no-products">
+      <p>No products available.</p>
+    </div>
   </div>
 </div>
-<p-card header="Low Stock Products" styleClass="alert-table">
-  <p-table [value]="lowStockProducts" [paginator]="true" [rows]="5" styleClass="p-datatable-sm">
-    <ng-template pTemplate="header">
-      <tr>
-        <th>Name</th>
-        <th>Category</th>
-        <th>Quantity</th>
-        <th>Threshold</th>
-        <th>Status</th>
-        <th>Action</th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-product>
-      <tr>
-        <td>{{ product.name }}</td>
-        <td>{{ product.category }}</td>
-        <td>{{ product.quantity }}</td>
-        <td>{{ product.threshold }}</td>
-        <td>
-              <span class="status-badge" [ngClass]="{
-                'status-low': product.status === 'LOW',
-                'status-out': product.status === 'OUT_OF_STOCK'
-              }">
-                {{ product.status }}
-              </span>
-        </td>
-        <td>
-          <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm"
-                  [routerLink]="['/products/edit', product.id]"></button>
-        </td>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="emptymessage">
-      <tr>
-        <td colspan="6" class="text-center">
-          No products with low stock found
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
-</p-card>
