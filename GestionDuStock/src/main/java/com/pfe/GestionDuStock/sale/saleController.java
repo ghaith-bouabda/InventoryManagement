@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -45,5 +46,9 @@ public class saleController {
     @GetMapping("/total-sales")
     public Long getTotalSales() {
         return saleService.getTotalSales();
+    }
+    @GetMapping("/getall")
+    public List<saleDTO> getAllSales() {
+        return saleService.getAllSales();
     }
 }

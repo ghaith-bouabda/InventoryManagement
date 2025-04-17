@@ -22,8 +22,9 @@ public class purchaseItem {
     @JoinColumn(name = "product_id")
     private product product;  // Product being purchased
     private String name;
-   private Long StockThreshold;
     private Long quantity;  // Quantity of the product purchased
+    private Long StockThreshold;
+
     private Double price;  // Price at which the product was purchased
 
     @ManyToOne

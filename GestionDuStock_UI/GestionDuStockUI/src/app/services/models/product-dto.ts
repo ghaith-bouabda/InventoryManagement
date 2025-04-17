@@ -10,4 +10,5 @@ export interface ProductDto {
   stockQuantity: number;
   stockThreshold?: number;
   supplier?: SupplierDto;
+  isDeleted?: boolean;
 }

@@ -29,4 +29,5 @@ public class product {
 
     private Long stockQuantity;
     private Long stockThreshold;
+    private boolean isDeleted;
 }

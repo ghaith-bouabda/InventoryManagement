@@ -16,9 +16,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -29,6 +32,10 @@ public class saleService {
     private final customerRepository customerRepository;
     private final productMapper productMapper;
     private final saleItemMapper saleItemMapper;
+    private final com.pfe.GestionDuStock.sale.saleMapper saleMapper;
+    private String generateInvoiceNumber() {
+        return "INV-" + System.currentTimeMillis();
+    }
 
     @Transactional
     public sale registerSale(Long customerId, saleDTO saleDTO) {
@@ -38,7 +45,7 @@ public class saleService {
         sale sale = new sale();
         sale.setSaleDate(LocalDateTime.now());
         sale.setAmount(saleDTO.amount());
-        sale.setInvoiceNumber(saleDTO.invoiceNumber());
+        sale.setInvoiceNumber(generateInvoiceNumber());
         sale.setSaleItems(new ArrayList<>());
         sale.setCustomer(customer);
 
@@ -89,48 +96,64 @@ public class saleService {
         saleRepository.save(sale);
     }
 
+    @Transactional
     public sale updateSale(Long saleId, saleDTO updatedSaleDTO) {
         sale sale = saleRepository.findById(saleId)
                 .orElseThrow(() -> new SaleNotFoundException("Sale with ID " + saleId + " not found"));
 
-        sale.getSaleItems().clear();  // Remove old sale items
+        // Preserve the provided amount
+        sale.setAmount(updatedSaleDTO.amount());
 
-        return processSaleItems(updatedSaleDTO, sale);
+        // Clear existing items
+        sale.getSaleItems().clear();
+
+        // Process new items
+        sale updatedSale = processSaleItems(updatedSaleDTO, sale);
+
+        return updatedSale;
     }
+
 
     public Optional<sale> getSaleByInvoiceNumber(String invoiceNumber) {
         return saleRepository.findByInvoiceNumber(invoiceNumber);
     }
 
+
     private sale processSaleItems(saleDTO saleDTO, sale sale) {
+        // Store original amount
+        BigDecimal originalAmount = sale.getAmount();
+
         for (saleitemDTO itemDTO : saleDTO.saleItems()) {
-            // Fetch productDTO from the service
             productDTO productDTO = productService.getProductById(itemDTO.productId())
                     .orElseThrow(() -> new ProductNotFoundException("Product with ID " + itemDTO.productId() + " not found"));
 
-            supplierDTO supplierdto = productDTO.supplier();
-            supplier    supplier = supplierMapper.toEntity(supplierdto);
-            // Convert productDTO to product entity using supplier
+            supplier supplier = supplierMapper.toEntity(productDTO.supplier());
             product product = productMapper.toEntity(productDTO, supplier);
 
-            // Check stock availability
             if (product.getStockQuantity() < itemDTO.quantity()) {
                 throw new RuntimeException("Not enough stock for product: " + product.getName());
             }
 
-            // Reduce stock quantity
             productService.reduceProductQuantity(itemDTO.productId(), itemDTO.quantity());
 
-            // Use saleItemMapper to map DTO to entity
             saleItem saleItem = saleItemMapper.toEntity(itemDTO, product.getSupplier());
-
-            saleItem.setSale(sale); // Link saleItem to sale
+            saleItem.setSale(sale);
             sale.getSaleItems().add(saleItem);
         }
 
+        // Restore original amount
+        sale.setAmount(originalAmount);
         return saleRepository.save(sale);
     }
+
     public Long getTotalSales() {
         return saleRepository.sumTotalAmount();
     }
+
+    public List<saleDTO> getAllSales() {
+        return saleRepository.findAll().stream()
+                .map(saleMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
 }

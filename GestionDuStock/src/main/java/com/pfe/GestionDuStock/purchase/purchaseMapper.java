@@ -34,7 +34,6 @@ public class purchaseMapper {
         entity.setStatus(dto.status());  // Set status
         entity.setTotalAmount(dto.totalAmount());  // Set total amount
 
-        // Map purchaseItemsDTO to purchaseItems entities
         List<purchaseItem> purchaseItems = dto.purchaseItems().stream()
                 .map(itemDTO -> purchaseItemMapper.toEntity(itemDTO, entity, products))  // Convert each DTO to entity
                 .collect(Collectors.toList());

@@ -33,6 +33,14 @@ public class purchaseController {
         return new ResponseEntity<>(purchases, HttpStatus.OK);
     }
 
+    @PutMapping("/{invoiceNumber}")
+    public ResponseEntity<purchaseDTO> updatePurchase(
+            @PathVariable String invoiceNumber,
+            @RequestBody purchaseDTO purchaseDTO) {
+
+        purchaseDTO updatedPurchase = purchaseService.updatePurchase(invoiceNumber, purchaseDTO);
+        return new ResponseEntity<>(updatedPurchase, HttpStatus.OK);
+    }
     // Get purchases by supplier slug
     @GetMapping("/{slug}")
     public ResponseEntity<List<purchaseDTO>> getPurchaseBySupplier(@PathVariable String slug) {

@@ -10,4 +10,5 @@ export interface Product {
   stockQuantity: number;
   stockThreshold?: number;
   supplier?: Supplier;
+  isDeleted?: boolean;
 }

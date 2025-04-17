@@ -3,7 +3,8 @@ import { ProductControllerService } from '../services/services/product-controlle
 import { ProductDto } from '../services/models/product-dto';  // Adjust the path
 import { WebSocketService } from '../socketservice/WebSocketService';
 import {Product} from '../services/models/product';
-import {ToastrService} from 'ngx-toastr';  // Ensure the WebSocket service is imported
+import {ToastrService} from 'ngx-toastr';
+import {deleteProduct} from '../services/fn/product-controller/delete-product';  // Ensure the WebSocket service is imported
 
 @Component({
   selector: 'app-product',
@@ -13,7 +14,6 @@ import {ToastrService} from 'ngx-toastr';  // Ensure the WebSocket service is im
 export class ProductComponent implements OnInit {
 
   products: ProductDto[] = [];
-
 
 
   constructor(
@@ -29,7 +29,7 @@ export class ProductComponent implements OnInit {
   fetchAllProducts(): void {
     this.productService.getAllProducts().subscribe({
       next: (data) => {
-        this.products = data;
+        this.products = data.filter(s => s.isDeleted === false);
       },
       error: (err) => {
         console.error('Error fetching products', err);
@@ -38,9 +38,16 @@ export class ProductComponent implements OnInit {
   }
 
 
-
-
-
-
-
+  delete(id: number) {
+    this.productService.deleteProduct({id}).subscribe({
+      next: () => {
+        console.log('deleted');
+        this.products = this.products.filter(p => p.id !== id);
+      },
+      error: (err) => {
+        console.error('Error deleting product', err);
+      }
+    });
+  }
 }
+

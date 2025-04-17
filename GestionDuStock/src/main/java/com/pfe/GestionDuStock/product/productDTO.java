@@ -8,5 +8,6 @@ public record productDTO(
         Double price,           // Product price
         Long stockQuantity,     // Current stock quantity of the product
         Long stockThreshold,    // Stock threshold for reordering the product
-        supplierDTO supplier    // Encapsulate the supplier details
+        supplierDTO supplier,
+        boolean isDeleted// Encapsulate the supplier details
 ) {}

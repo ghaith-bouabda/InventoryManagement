@@ -39,7 +39,10 @@ public class productService {
     }
 
     public void deleteProduct(Long id) {
-        productRepository.deleteById(id);
+      product product=productRepository.getById(id);
+     product.setDeleted(true);
+     productRepository.save(product);
+
     }
 
     @Transactional

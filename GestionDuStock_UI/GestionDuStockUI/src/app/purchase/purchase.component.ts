@@ -75,7 +75,7 @@ export class PurchaseComponent implements OnInit {
 
   getAvailableProducts(): void {
     this.productService.getAllProducts().subscribe(products => {
-      this.products = products;
+      this.products = products.filter(s=>s.isDeleted==false);
     });
   }
 
@@ -164,10 +164,11 @@ export class PurchaseComponent implements OnInit {
       this.products = products;
 
       const isDuplicate = products.some(product =>
-        product.name!.trim().toLowerCase() === newName
+        product.name!.trim().toLowerCase() === newName && !product.isDeleted
       );
 
-      if (isDuplicate && this.selectedProductId === 'new') {
+      if (isDuplicate  && this.selectedProductId === 'new') {
+
         this.toastr.warning('This product already exists in the system!');
         return;
       }
@@ -238,7 +239,7 @@ export class PurchaseComponent implements OnInit {
           this.filteredResults = purchases.filter(purchase =>
             purchase.purchaseItems.some(item => {
               const product = this.products.find(p => p.id === item.productId);
-              return product && product.name?.toLowerCase().includes(search);
+              return product && product.name?.toLowerCase()===(search);
             })
           ).map(purchase => {
             const supplier = this.suppliers.find(s => s.id === purchase.supplierId);
@@ -390,8 +391,6 @@ export class PurchaseComponent implements OnInit {
         })
       )
     };
-
-    // Call the service to update the purchase
     this.purchaseService.updatePurchase({
       invoiceNumber: this.editingPurchase.invoiceNumber,
       body: requestData

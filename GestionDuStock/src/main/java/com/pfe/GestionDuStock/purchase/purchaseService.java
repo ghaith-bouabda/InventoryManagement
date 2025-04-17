@@ -122,4 +122,69 @@ public class purchaseService {
     private String generateInvoiceNumber() {
         return "INV-" + System.currentTimeMillis();
     }
+
+    @Transactional
+    public purchaseDTO updatePurchase(String invoiceNumber, purchaseDTO dto) {
+        // Find existing purchase
+        purchase existingPurchase = purchaseRepository.findByInvoiceNumber(invoiceNumber)
+                .orElseThrow(() -> new RuntimeException("Purchase not found"));
+
+        // Validate supplier
+        supplier supplier = supplierRepository.findById(dto.supplierId())
+                .orElseThrow(() -> new RuntimeException("Supplier not found"));
+
+        // Update basic info
+        existingPurchase.setSupplier(supplier);
+        existingPurchase.setPurchaseDate(dto.purchaseDate());
+        existingPurchase.setStatus(dto.status());
+
+        // Clear existing items
+        purchaseItemRepository.deleteAll(existingPurchase.getPurchaseItems());
+        existingPurchase.getPurchaseItems().clear();
+
+        // Process new items
+        List<purchaseItem> purchaseItems = new ArrayList<>();
+        double totalAmount = 0;
+
+        for (purchaseItemDTO itemDTO : dto.purchaseItems()) {
+            product product = productRepository.findByNameAndSupplierId(itemDTO.name(), supplier.getId())
+                    .orElseGet(() -> createNewProduct(itemDTO, supplier));
+
+            // Create and add purchase item
+            purchaseItem item = new purchaseItem();
+            item.setProduct(product);
+            item.setName(itemDTO.name());
+            item.setStockThreshold(itemDTO.stockThreshold());
+            item.setQuantity(itemDTO.quantity());
+            item.setPrice(itemDTO.price());
+            item.setPurchase(existingPurchase);
+            purchaseItems.add(item);
+
+            totalAmount += itemDTO.quantity() * itemDTO.price();
+        }
+
+        // Update purchase with new items and amount
+        existingPurchase.setTotalAmount(totalAmount);
+        existingPurchase.setQuantity((int) purchaseItems.stream().mapToLong(purchaseItem::getQuantity).sum());
+
+        // Save the updated purchase
+        purchaseRepository.save(existingPurchase);
+        purchaseItemRepository.saveAll(purchaseItems);
+
+        // Update stock quantities
+        updateProductStocks(purchaseItems);
+
+        return purchaseMapper.toDTO(existingPurchase);
+    }
+
+    private void updateProductStocks(List<purchaseItem> items) {
+        for (purchaseItem item : items) {
+            product product = item.getProduct();
+            // Calculate new stock based on purchase updates
+            long newStock = product.getStockQuantity() + item.getQuantity();
+            product.setStockQuantity(newStock);
+            product.setStockThreshold(item.getStockThreshold());
+            productRepository.save(product);
+        }
+    }
 }

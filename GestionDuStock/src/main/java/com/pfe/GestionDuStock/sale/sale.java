@@ -39,15 +39,4 @@ public class sale {
     @JsonIgnore
     private List<saleItem> saleItems = new ArrayList<>();  // List of sale items in the sale
 
-    // Helper method to add a sale item to the sale
-    public void addSaleItem(saleItem item) {
-        saleItems.add(item);
-        item.setSale(this);
-    }
-
-    // Helper method to remove a sale item from the sale
-    public void removeSaleItem(saleItem item) {
-        saleItems.remove(item);
-        item.setSale(null);
-    }
 }

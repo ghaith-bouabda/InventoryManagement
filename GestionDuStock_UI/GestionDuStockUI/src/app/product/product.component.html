@@ -1,25 +1,27 @@
 <div class="container purchase-container">
-
-
   <!-- Product Grid Section -->
   <div class="filtered-result-container" style="flex-grow: 1;">
-    <h3>Product List <img src="assets/box.png" style="height: 30px; width: 30px"></h3>
+    <h3>
+      <i class="pi pi-box" style="font-size: 1.5rem;"></i>
+      Product List
+    </h3>
 
     <div *ngIf="products.length > 0" class="product-grid">
       <div *ngFor="let product of products" class="result-window">
         <h4>{{ (product.name)?.toUpperCase() }}</h4>
-
         <p><strong>Price:</strong> {{ product.price | currency }}</p>
         <p><strong>Stock Quantity:</strong> {{ product.stockQuantity }} </p>
-        <p><strong>Stock Threshold:</strong>{{ product.stockThreshold }}</p>
-
+        <p><strong>Stock Threshold:</strong> {{ product.stockThreshold }}</p>
         <p><strong>Supplier:</strong> {{ product.supplier?.name || 'No Supplier' }}</p>
 
-      </div>
-    </div>
+        <div class="result-actions">
+          <button class="delete-btn" (click)="delete(product.id!)">
+            <i class="pi pi-trash"></i>
+            Delete
+          </button>
 
-    <div *ngIf="products.length === 0" class="no-products">
-      <p>No products available.</p>
+        </div>
+      </div>
     </div>
   </div>
 </div>

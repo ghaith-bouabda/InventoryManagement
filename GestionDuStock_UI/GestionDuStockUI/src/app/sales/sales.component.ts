@@ -55,7 +55,7 @@ export class SalesComponent implements OnInit {
 
   getAvailableProducts(): void {
     this.productService.getAllProducts().subscribe({
-      next: (products) => (this.products = products),
+      next: (products) => (this.products = products.filter(s=>s.isDeleted==false)),
       error: (err) => console.error("Error fetching products:", err)
     });
   }

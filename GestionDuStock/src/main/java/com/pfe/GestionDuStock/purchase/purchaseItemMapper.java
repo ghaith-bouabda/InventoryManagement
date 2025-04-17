@@ -7,14 +7,13 @@ public class purchaseItemMapper {
     // Convert purchaseItem entity to purchaseItemDTO
     public static purchaseItemDTO toDTO(purchaseItem entity) {
         return new purchaseItemDTO(
-                entity.getProduct() != null ? entity.getProduct().getId() : null,  // Product ID
+                entity.getProduct() != null ? entity.getProduct().getId() : null,
                 entity.getProduct() != null ? entity.getProduct().getName() : null,
-                entity.getStockThreshold(), // Product Name
-                entity.getQuantity(),
+                entity.getQuantity(),       // Correct order - quantity comes first
+                entity.getStockThreshold(), // Then stockThreshold
                 entity.getPrice()
         );
     }
-
     // Convert purchaseItemDTO to purchaseItem entity
     public static purchaseItem toEntity(purchaseItemDTO dto, purchase purchase, product product) {
         if (product == null) {

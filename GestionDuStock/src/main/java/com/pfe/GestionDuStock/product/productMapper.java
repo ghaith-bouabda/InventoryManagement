@@ -15,7 +15,8 @@ public class productMapper {
                 entity.getPrice(),
                 entity.getStockQuantity(),
                 entity.getStockThreshold(),
-                entity.getSupplier() != null ? supplierMapper.toDTO(entity.getSupplier()) : null  // Map supplier to supplierDTO
+                entity.getSupplier() != null ? supplierMapper.toDTO(entity.getSupplier()) : null,
+                entity.isDeleted()// Map supplier to supplierDTO
         );
     }
 
@@ -27,6 +28,7 @@ public class productMapper {
         entity.setPrice(dto.price());
         entity.setStockQuantity(dto.stockQuantity());
         entity.setStockThreshold(dto.stockThreshold());
+        entity.setDeleted(dto.isDeleted());
 
         entity.setSupplier(supplier);  // Set the supplier entity
 

@@ -71,8 +71,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     // Get all products
     this.productService.getAllProducts().subscribe((products) => {
-      this.products = products;
-      this.productStats.total = products.length;
+      this.products = products.filter(s=>s.isDeleted==false);
+      this.productStats.total = products.filter(s=>s.isDeleted==false).length;
 
       // Update the stock status data
       this.updateStockStatusData();
@@ -82,12 +82,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     // Get low stock products
     this.productService.getLowStockProducts().subscribe((products) => {
-      this.productStats.lowStock = products.length;
+      this.productStats.lowStock = products.filter(s=>s.isDeleted==false).length;
     });
 
     // Get out of stock products
     this.productService.getOutOfStockProducts().subscribe((products) => {
-      this.productStats.outOfStock = products.length;
+      this.productStats.outOfStock = products.filter(s=>s.isDeleted==false).length;
     });
   }
 
@@ -114,9 +114,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   updateStockStatusData(): void {
-    const inStock = this.products.filter((p) => p.stockQuantity >= p.stockThreshold!).length;
-    const lowStock = this.products.filter((p) => p.stockQuantity < p.stockThreshold! && p.stockQuantity > 0).length;
-    const outOfStock = this.products.filter((p) => p.stockQuantity === 0).length;
+    const inStock = this.products.filter((p) => p.stockQuantity >= p.stockThreshold! && !p.isDeleted).length;
+    const lowStock = this.products.filter((p) => p.stockQuantity < p.stockThreshold! && p.stockQuantity > 0&& !p.isDeleted).length;
+    const outOfStock = this.products.filter((p) => p.stockQuantity === 0&& !p.isDeleted).length;
 
     this.stockStatusData = {
       labels: ['In Stock', 'Low Stock', 'Out of Stock'],
@@ -138,7 +138,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       // Create the data for the chart using only non-deleted suppliers
       const supplierNames = nonDeletedSuppliers.map(supplier => supplier.name);
       const supplierProductCounts = nonDeletedSuppliers.map(supplier =>
-        this.products.filter(p => p.supplier?.id === supplier.id).length
+        this.products.filter(p => p.supplier?.id === supplier.id && !p.isDeleted).length
       );
 
       // Set the suppliers data to create the bar chart
