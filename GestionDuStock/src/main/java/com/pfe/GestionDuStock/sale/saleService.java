@@ -34,8 +34,13 @@ public class saleService {
     private final saleItemMapper saleItemMapper;
     private final com.pfe.GestionDuStock.sale.saleMapper saleMapper;
     private String generateInvoiceNumber() {
-        return "INV-" + System.currentTimeMillis();
+        String invoiceNumber;
+        do {
+            invoiceNumber = "INV-" + java.util.UUID.randomUUID(); // Using UUID for guaranteed uniqueness
+        } while (saleRepository.findByInvoiceNumber(invoiceNumber).isPresent()); // Check if the invoice number already exists
+        return invoiceNumber;
     }
+
 
     @Transactional
     public sale registerSale(Long customerId, saleDTO saleDTO) {

@@ -8,8 +8,13 @@ import com.pfe.GestionDuStock.supplier.supplierRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -118,10 +123,15 @@ public class purchaseService {
         purchaseRepository.deleteByInvoiceNumber(invoiceNumber);
     }
 
-    // Generate a new invoice number (simple timestamp approach)
     private String generateInvoiceNumber() {
-        return "INV-" + System.currentTimeMillis();
+        String invoiceNumber;
+        do {
+            invoiceNumber = "INV-" + java.util.UUID.randomUUID(); // Using UUID for guaranteed uniqueness
+        } while (purchaseRepository.findByInvoiceNumber(invoiceNumber).isPresent()); // Check if the invoice number already exists
+        return invoiceNumber;
     }
+
+
 
     @Transactional
     public purchaseDTO updatePurchase(String invoiceNumber, purchaseDTO dto) {
@@ -186,5 +196,54 @@ public class purchaseService {
             product.setStockThreshold(item.getStockThreshold());
             productRepository.save(product);
         }
+    }
+    public int importPurchasesFromFile(MultipartFile file) throws Exception {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("File is empty.");
+        }
+
+        List<purchase> purchases = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            String line;
+            boolean isFirstLine = true;
+
+            while ((line = reader.readLine()) != null) {
+                if (isFirstLine) {
+                    isFirstLine = false;
+                    continue;
+                }
+
+                String[] data = line.split(",");
+
+                if (data.length < 7) continue;
+
+                String supplierName = data[0].trim();
+                String dateString = data[1].trim();
+                int quantity = Integer.parseInt(data[2].trim());
+                double totalAmount = Double.parseDouble(data[3].trim());
+                boolean approved = Boolean.parseBoolean(data[4].trim());
+                String status = data[5].trim();
+
+                supplier supplier = supplierRepository.findByName(supplierName);
+                if (supplier == null) continue;
+
+                Date purchaseDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(dateString);
+
+                purchase  newPurchase = purchase.builder()
+                        .supplier(supplier)
+                        .purchaseDate(purchaseDate)
+                        .quantity(quantity)
+                        .totalAmount(totalAmount)
+                        .approved(approved)
+                        .status(status)
+                        .build();
+
+                purchases.add(newPurchase);
+            }
+        }
+
+        purchaseRepository.saveAll(purchases);
+        return purchases.size();
     }
 }

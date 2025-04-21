@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -69,4 +70,17 @@ public class purchaseController {
         purchaseService.deletePurchase(invoiceNumber);
         return ResponseEntity.noContent().build();
     }
+    @PostMapping("/import")
+    public ResponseEntity<?> importPurchases(@RequestParam("file") MultipartFile file) {
+        try {
+            int importedCount = purchaseService.importPurchasesFromFile(file);
+            return ResponseEntity.ok("Successfully imported " + importedCount + " purchases.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Import failed: " + e.getMessage());
+        }
+    }
+
 }

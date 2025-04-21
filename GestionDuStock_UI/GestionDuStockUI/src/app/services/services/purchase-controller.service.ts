@@ -270,4 +270,27 @@ export class PurchaseControllerService extends BaseService {
       map((r: StrictHttpResponse<PurchaseDto>): PurchaseDto => r.body)
     );
   }
+  static readonly ImportPurchasesPath = '/api/purchases/import';
+
+  /**
+   * This method sends the file for import to the backend.
+   *
+   * @param file The file to be uploaded.
+   * @param context Optional HTTP context for the request.
+   * @returns Observable with response message.
+   */
+  importPurchases(file: File, context?: HttpContext): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+
+    // Send the file to the backend API
+    return this.http.post(this.rootUrl + PurchaseControllerService.ImportPurchasesPath, formData, {
+      observe: 'response',
+      responseType: 'json',
+      context: context
+    }).pipe(
+      map((response: StrictHttpResponse<any>) => response.body)
+    );
+  }
 }
+

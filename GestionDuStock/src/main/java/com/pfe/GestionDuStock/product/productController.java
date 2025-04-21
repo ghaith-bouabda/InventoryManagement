@@ -58,4 +58,5 @@ public class productController {
         Map<String, Long> supplierProductCount = productService.getProductCountBySupplier();
         return new ResponseEntity<>(supplierProductCount, HttpStatus.OK);
     }
+
 }

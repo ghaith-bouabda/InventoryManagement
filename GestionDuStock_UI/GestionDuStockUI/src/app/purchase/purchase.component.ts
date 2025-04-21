@@ -9,6 +9,7 @@ import { ProductDto } from '../services/models/product-dto';
 import { ToastrService } from 'ngx-toastr';
 import { SupplierDto } from '../services/models/supplier-dto';
 import {PurchaseItemDto} from '../services/models/purchase-item-dto';
+import { Papa } from 'ngx-papaparse'; // <-- Import PapaParse
 
 @Component({
   selector: 'app-purchase',
@@ -44,7 +45,8 @@ export class PurchaseComponent implements OnInit {
     private purchaseService: PurchaseControllerService,
     private supplierService: SupplierControllerService,
     private productService: ProductControllerService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private papa: Papa
   ) {
   }
 
@@ -75,7 +77,7 @@ export class PurchaseComponent implements OnInit {
 
   getAvailableProducts(): void {
     this.productService.getAllProducts().subscribe(products => {
-      this.products = products.filter(s=>s.isDeleted==false);
+      this.products = products.filter(s => s.isDeleted == false);
     });
   }
 
@@ -167,7 +169,7 @@ export class PurchaseComponent implements OnInit {
         product.name!.trim().toLowerCase() === newName && !product.isDeleted
       );
 
-      if (isDuplicate  && this.selectedProductId === 'new') {
+      if (isDuplicate && this.selectedProductId === 'new') {
 
         this.toastr.warning('This product already exists in the system!');
         return;
@@ -215,9 +217,10 @@ export class PurchaseComponent implements OnInit {
     this.selectedProductId = '';
     this.purchaseDate = '';
     this.selectedSupplierId = '';
-    this.newPurchaseData = { purchase: { purchaseDate: '', totalAmount: 0, products: [] } };
-    this.newProduct = { name: '', price: 0, stockQuantity: 1, stockThreshold: 1 };
+    this.newPurchaseData = {purchase: {purchaseDate: '', totalAmount: 0, products: []}};
+    this.newProduct = {name: '', price: 0, stockQuantity: 1, stockThreshold: 1};
   }
+
   showSuccess() {
     this.toastr.success('Purchase Created Successfully!');
   }
@@ -239,7 +242,7 @@ export class PurchaseComponent implements OnInit {
           this.filteredResults = purchases.filter(purchase =>
             purchase.purchaseItems.some(item => {
               const product = this.products.find(p => p.id === item.productId);
-              return product && product.name?.toLowerCase()===(search);
+              return product && product.name?.toLowerCase() === (search);
             })
           ).map(purchase => {
             const supplier = this.suppliers.find(s => s.id === purchase.supplierId);
@@ -315,11 +318,12 @@ export class PurchaseComponent implements OnInit {
       }
     });
   }
+
   editPurchase(purchase: PurchaseDto): void {
     console.log('Editing purchase:', purchase);
     this.editingPurchase = {};  // Initialize as an object, not an array
 
-    this.purchaseService.getPurchaseByInvoiceNumber({ invoiceNumber: purchase.invoiceNumber! }).subscribe({
+    this.purchaseService.getPurchaseByInvoiceNumber({invoiceNumber: purchase.invoiceNumber!}).subscribe({
       next: (purchaseData) => {
         this.editingPurchase = purchaseData;
         console.log('Editing purchase:', this.editingPurchase);
@@ -340,7 +344,7 @@ export class PurchaseComponent implements OnInit {
         // Add each purchase item to the form
         this.editingPurchase.purchaseItems.forEach((item: PurchaseItemDto) => {
           const product = this.products.find(p => p.id === item.productId);
-            console.log(item)
+          console.log(item)
           if (product) {
             const productQuantity = item.quantity || product.stockQuantity;  // Use existing product stock if quantity is not provided
 
@@ -366,6 +370,7 @@ export class PurchaseComponent implements OnInit {
       }
     });
   }
+
   updatePurchase(): void {
     if (!this.editingPurchase.invoiceNumber) {
       this.showError("No purchase selected for update");
@@ -426,4 +431,123 @@ export class PurchaseComponent implements OnInit {
     });
   }
 
+  onFileChange(event: any): void {
+    const file = event.target.files[0];  // Get the file from the input
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const csvData = e.target.result;  // CSV content
+        this.parseCSV(csvData);  // Parse CSV
+      };
+      reader.readAsText(file);
+    }
+  }
+
+  // Parse CSV using PapaParse
+  parseCSV(csvData: string): void {
+    this.papa.parse(csvData, {
+      header: true,  // Set header to true to use the first row as column headers
+      skipEmptyLines: true,  // Skip empty lines
+      complete: (result) => {
+        console.log('CSV Parsed Result:', result);  // This will give you the parsed data
+        this.handleParsedCSV(result.data);  // Handle parsed CSV data
+      },
+      error: (error) => {
+        console.error('Error parsing CSV:', error);
+        this.toastr.error('Error parsing CSV file.');
+      }
+    });
+  }
+  handleParsedCSV(data: any[]): void {
+    data.forEach((row) => {
+      // Find or create supplier
+      let supplier = this.suppliers.find((s) => s.name === row.supplierName);
+
+      if (!supplier) {
+        // Create new supplier if not found
+        const newSupplier: SupplierDto = {
+          name: row.supplierName,
+          email: row.supplierEmail || '',
+          isDeleted: false
+        };
+
+        this.supplierService.createFournisseur({body: newSupplier}).subscribe({
+          next: (createdSupplier) => {
+            supplier = createdSupplier;
+            this.suppliers.push(createdSupplier);
+            this.processProductAndPurchase(row, supplier!);
+          },
+          error: (err) => {
+            console.error('Error creating supplier:', err);
+            this.toastr.error(`Error creating supplier ${row.supplierName}`);
+          }
+        });
+        return; // Exit this iteration, will continue after supplier is created
+      }
+
+      this.processProductAndPurchase(row, supplier);
+    });
+  }
+
+  private processProductAndPurchase(row: any, supplier: SupplierDto): void {
+    // Find product by name
+    const existingProduct = this.products.find(p => p.name?.toLowerCase() === row.productName.toLowerCase());
+
+    if (existingProduct) {
+
+      this.createPurchaseFromCSV(row, supplier, existingProduct);
+    } else {
+      // Product doesn't exist, create new product
+      const newProduct: ProductDto = {
+        name: row.productName,
+        price: parseFloat(row.productPrice) || 0,
+        stockQuantity: parseInt(row.quantity, 10) || 1,
+        stockThreshold: parseInt(row.stockThreshold, 10) || 1,
+        isDeleted: false,
+        supplier:supplier
+      };
+
+      this.productService.createProduct({body: newProduct}).subscribe({
+        next: (createdProduct) => {
+          this.products.push(createdProduct);
+          this.createPurchaseFromCSV(row, supplier, createdProduct);
+        },
+        error: (err) => {
+          console.error('Error creating product:', err);
+          this.toastr.error(`Error creating product ${row.productName}`);
+        }
+      });
+    }
+  }
+
+  private createPurchaseFromCSV(row: any, supplier: SupplierDto, product: ProductDto): void {
+    const purchaseData = {
+      purchaseDate: new Date(row.purchaseDate).toISOString(),
+      totalAmount: parseFloat(row.totalAmount) || (parseFloat(row.productPrice) * parseInt(row.quantity, 10)),
+      supplierId: supplier.id!,
+      purchaseItems: [{
+        productId: product.id!,
+        quantity: parseInt(row.quantity, 10) || 1,
+        price: parseFloat(row.productPrice) || 0,
+        stockThreshold: product.stockThreshold || 1,
+        name: product.name
+      }]
+    };
+
+    this.purchaseService.createPurchase({ body: purchaseData }).subscribe({
+      next: (purchase) => {
+        const enrichedPurchase = {
+          ...purchase,
+          supplierName: supplier.name
+        };
+        this.purchases.unshift(enrichedPurchase);
+        this.toastr.success(`Purchase for ${product.name} imported successfully!`);
+      },
+      error: (err) => {
+        console.error('Error importing purchase:', err);
+      }
+    });
+  }
+
 }
+
