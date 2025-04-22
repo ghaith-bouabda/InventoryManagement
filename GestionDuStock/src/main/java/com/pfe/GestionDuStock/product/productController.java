@@ -58,5 +58,10 @@ public class productController {
         Map<String, Long> supplierProductCount = productService.getProductCountBySupplier();
         return new ResponseEntity<>(supplierProductCount, HttpStatus.OK);
     }
+    @PutMapping("/products/{id}")
+    public productDTO updateProduct(@PathVariable Long id, @RequestBody productDTO dto) {
+        return productService.updateProduct(id,dto);
+    }
+
 
 }

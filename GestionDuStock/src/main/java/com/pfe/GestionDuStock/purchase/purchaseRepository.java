@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface purchaseRepository extends JpaRepository<purchase, Long> {
     @Query("SELECT p FROM purchase p WHERE p.invoiceNumber = :invoiceNumber")
     Optional<purchase> findByInvoiceNumber(String invoiceNumber);
+
    List<purchase> findBySupplierSlug(String slug);
     @Query("SELECT SUM(p.totalAmount) FROM purchase p")
     Long sumTotalAmount();

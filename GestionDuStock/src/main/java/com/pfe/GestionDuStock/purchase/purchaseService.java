@@ -13,10 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,8 +45,7 @@ public class purchaseService {
         double totalAmount = 0;
 
         for (purchaseItemDTO itemDTO : dto.purchaseItems()) {
-            product product = productRepository.findByNameAndSupplierId(itemDTO.name(), supplier.getId())
-                    .orElseGet(() -> createNewProduct(itemDTO, supplier));
+            product product = findOrReactivateProduct(itemDTO, supplier);
 
             // Create and add purchase item
             purchaseItem item = new purchaseItem();
@@ -122,7 +118,6 @@ public class purchaseService {
     public void deletePurchase(String invoiceNumber) {
         purchaseRepository.deleteByInvoiceNumber(invoiceNumber);
     }
-
     private String generateInvoiceNumber() {
         String invoiceNumber;
         do {
@@ -130,8 +125,6 @@ public class purchaseService {
         } while (purchaseRepository.findByInvoiceNumber(invoiceNumber).isPresent()); // Check if the invoice number already exists
         return invoiceNumber;
     }
-
-
 
     @Transactional
     public purchaseDTO updatePurchase(String invoiceNumber, purchaseDTO dto) {
@@ -157,8 +150,7 @@ public class purchaseService {
         double totalAmount = 0;
 
         for (purchaseItemDTO itemDTO : dto.purchaseItems()) {
-            product product = productRepository.findByNameAndSupplierId(itemDTO.name(), supplier.getId())
-                    .orElseGet(() -> createNewProduct(itemDTO, supplier));
+            product product = findOrReactivateProduct(itemDTO, supplier);
 
             // Create and add purchase item
             purchaseItem item = new purchaseItem();
@@ -246,4 +238,30 @@ public class purchaseService {
         purchaseRepository.saveAll(purchases);
         return purchases.size();
     }
+    private product findOrReactivateProduct(purchaseItemDTO itemDTO, supplier supplier) {
+        // First, check if there's an active product
+        Optional<product> activeProduct = productRepository.findByNameAndSupplierIdAndIsDeletedFalse(
+                itemDTO.name(), supplier.getId()
+        );
+        if (activeProduct.isPresent()) {
+            return activeProduct.get();
+        }
+
+        // Then, check if there's a deleted product to reactivate
+        Optional<product> deletedProduct = productRepository.findByNameAndSupplierIdAndIsDeletedTrue(
+                itemDTO.name(), supplier.getId()
+        );
+        if (deletedProduct.isPresent()) {
+            product p = deletedProduct.get();
+            p.setDeleted(false);
+            p.setPrice(itemDTO.price());
+            p.setStockQuantity(itemDTO.quantity());
+            p.setStockThreshold(itemDTO.stockThreshold());
+            return productRepository.save(p);
+        }
+
+        // Otherwise, create a new product
+        return createNewProduct(itemDTO, supplier);
+    }
+
 }
