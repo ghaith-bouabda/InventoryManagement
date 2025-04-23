@@ -38,6 +38,9 @@
         <div *ngFor="let result of filteredResults" class="filtered-result-item">
           <div class="result-window">
             <p><strong>Invoice Number:</strong> {{ result.invoiceNumber }}</p>
+            <li *ngFor="let item of result.purchaseItems">
+              {{ item.name }} - Quantity: {{ item.quantity }} - Price: {{ item.price }}
+            </li>
             <p><strong>Supplier:</strong> {{ result.supplierName }}</p>
             <p><strong>Total Amount:</strong> ${{ result.totalAmount }}</p>
 
@@ -217,4 +220,10 @@
     <h3>Import Purchases from CSV</h3>
     <input type="file" (change)="onFileChange($event)" accept=".csv" />
   </div>
+  <div class="csv-import">
+    <h3>Export Purchases in CSV</h3>
+    <Button (click)="exportToCSV()">Export CSV</Button>
+  </div>
+
+
 </div>

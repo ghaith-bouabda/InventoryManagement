@@ -19,6 +19,8 @@ import { Papa } from 'ngx-papaparse'; // <-- Import PapaParse
 export class PurchaseComponent implements OnInit {
   purchases: PurchaseDto[] = [];
   products: ProductDto[] = [];
+  productsforedit: ProductDto[] = [];
+
   suppliers: SupplierDto[] = [];
   activeSuppliers: SupplierDto[] = [];
 
@@ -53,6 +55,7 @@ export class PurchaseComponent implements OnInit {
   ngOnInit(): void {
     this.getAllPurchases();
     this.getAvailableProducts();
+    this.getAllProducts()
 
     this.supplierService.getAllFournisseurs().subscribe({
       next: (data: SupplierDto[]) => {
@@ -80,6 +83,11 @@ export class PurchaseComponent implements OnInit {
       this.products = products.filter(s => s.isDeleted == false);
     });
   }
+  getAllProducts(): void {
+    this.productService.getAllProducts().subscribe(products => {
+      this.productsforedit = products;
+    });
+  }
 
   createPurchase(): void {
     if (!this.selectedSupplierId || !this.purchaseDate || this.newPurchaseData.purchase.products.length === 0) {
@@ -88,10 +96,9 @@ export class PurchaseComponent implements OnInit {
       return;
     }
 
-    // Validate all products have required fields
     const invalidProducts = this.newPurchaseData.purchase.products.filter(
       (item: { product: Product; quantity: number }) =>
-        !item.product.id || !item.quantity || item.quantity <= 0
+        !item.quantity || item.quantity <= 0
     );
 
     if (invalidProducts.length > 0) {
@@ -116,7 +123,9 @@ export class PurchaseComponent implements OnInit {
 
     this.purchaseService.createPurchase({body: requestData}).subscribe({
       next: (purchase) => {
-        // ... rest of the success handling
+        this.showSuccess('Purchase Created Successfully!');
+        this.resetPurchaseForm();
+
       },
       error: (error) => {
         console.error("Error creating purchase:", error);
@@ -141,8 +150,8 @@ export class PurchaseComponent implements OnInit {
     }
   }
   addProductToPurchase(): void {
-    if (!this.newProduct || !this.newProduct.name || this.newProduct.stockQuantity <= 0) {
-      console.error('Invalid product details');
+    if (!this.newProduct || !this.newProduct.name) {
+      this.toastr.error('Invalid product details');
       return;
     }
 
@@ -151,106 +160,45 @@ export class PurchaseComponent implements OnInit {
       return;
     }
 
-    const newName = this.newProduct.name.trim().toLowerCase();
-    const supplierId = parseInt(this.selectedSupplierId, 10);
-
-    this.productService.getAllProducts().subscribe(products => {
-      this.products = products;
-
-      // Look for an active product first
-      let existing = products.find(p =>
-        p.name && p.name.trim().toLowerCase() === newName &&
-        p.supplier?.id === supplierId &&
-        !p.isDeleted
-      );
-
-      if (existing) {
-        this.addProductToPurchaseList(existing);
-        return;
-      }
-
-      // Check for deleted product
-      let deleted = products.find(p =>
-        p.name && p.name.trim().toLowerCase() === newName &&
-        p.supplier?.id === supplierId &&
-        p.isDeleted
-      );
-
-      if (deleted) {
-        const updateDto: ProductDto = {
-          ...deleted,
-          price: this.newProduct.price,
-          stockQuantity: this.newProduct.stockQuantity,
-          stockThreshold: this.newProduct.stockThreshold,
-          isDeleted: false,
-          supplier: { id: supplierId }
-        };
-
-        this.productService.updateProduct(updateDto.id!, { product: updateDto }).subscribe({
-          next: (prod) => {
-            this.products = this.products.map(p => p.id === prod.id ? prod : p);
-            this.addProductToPurchaseList(prod);
-          },
-          error: (err) => {
-            console.error('Error reactivating product:', err);
-            this.toastr.error(`Failed to reactivate ${deleted?.name}`);
-          }
-        });
-        return;
-      }
-
-      // Create new product
-      const newProductDto: ProductDto = {
-        name: this.newProduct.name,
-        price: this.newProduct.price,
-        stockQuantity: this.newProduct.stockQuantity,
-        stockThreshold: this.newProduct.stockThreshold,
-        isDeleted: false,
-        supplier: { id: supplierId }
-      };
-
-      this.productService.createProduct({ body: newProductDto }).subscribe({
-        next: (createdProduct) => {
-          this.products.push(createdProduct);
-          this.addProductToPurchaseList(createdProduct);
-        },
-        error: (err) => {
-          console.error('Error creating new product:', err);
-          this.toastr.error('Error creating new product');
-        }
-      });
-    });
-  }
-
-
-
-  private addProductToPurchaseList(product: Product): void {
-    // Ensure product has all required fields
-    if (!product.id || !product.name || !product.stockQuantity) {
-      console.error('Product is missing required fields');
-      this.toastr.warning('Product information is incomplete');
+    if (this.newProduct.stockQuantity <= 0) {
+      this.toastr.error('Quantity must be greater than 0');
       return;
     }
 
+    const productToAdd = { ...this.newProduct }; // clone the selected product
+
+    // Add product with user-entered purchase quantity
     this.newPurchaseData.purchase.products.push({
       product: {
-        id: product.id,
-        name: product.name,
-        price: product.price || 0,
-        stockQuantity: product.stockQuantity,
-        stockThreshold: product.stockThreshold || 1
+        id: productToAdd.id,
+        name: productToAdd.name,
+        price: productToAdd.price || 0,
+        stockQuantity: productToAdd.stockQuantity,
+        stockThreshold: productToAdd.stockThreshold || 1
       },
-      quantity: product.stockQuantity
+      quantity: this.newProduct.stockQuantity
     });
 
     this.calculateTotalAmount();
     this.resetProductForm();
   }
 
+
   private resetProductForm(): void {
-    this.newProduct = {name: '', price: 0, stockQuantity: 1, stockThreshold: 1};
+    this.newProduct = {
+      name: '',
+      price: 0,
+      stockQuantity: 1,
+      stockThreshold: 1,
+      id: undefined
+    };
+    this.newProduct.stockQuantity = 1;
+    this.selectedProductId = '';
     setTimeout(() => {
-      this.selectedProductId = '';
+      const productSelect = document.getElementById('productSelect') as HTMLSelectElement;
+      if (productSelect) {
+        productSelect.value = '';
+      }
     }, 0);
   }
 
@@ -283,8 +231,8 @@ export class PurchaseComponent implements OnInit {
     this.newProduct = {name: '', price: 0, stockQuantity: 1, stockThreshold: 1};
   }
 
-  showSuccess() {
-    this.toastr.success('Purchase Created Successfully!');
+  showSuccess(msg:string) {
+    this.toastr.success(msg);
   }
 
   showError(msg: string) {
@@ -335,14 +283,16 @@ export class PurchaseComponent implements OnInit {
             const supplier = this.suppliers.find(s => s.id === p.supplierId);
             return {
               ...p,
-              supplierName: supplier?.name || 'Unknown'
+              supplierName: supplier?.name || 'Unknown',
+              purchaseItems: p.purchaseItems || [] // Ensure purchaseItems exists
             };
           });
         } else {
           const supplier = this.suppliers.find(s => s.id === purchases.supplierId);
           this.filteredResults = [{
             ...purchases,
-            supplierName: supplier?.name || 'Unknown'
+            supplierName: supplier?.name || 'Unknown',
+            purchaseItems: purchases.purchaseItems
           }];
         }
       },
@@ -351,7 +301,6 @@ export class PurchaseComponent implements OnInit {
       }
     });
   }
-
   getPurchaseByInvoice(invoiceNumber: string) {
     this.purchaseService.getPurchaseByInvoiceNumber({invoiceNumber}).subscribe({
       next: (purchases) => {
@@ -383,54 +332,39 @@ export class PurchaseComponent implements OnInit {
 
   editPurchase(purchase: PurchaseDto): void {
     console.log('Editing purchase:', purchase);
-    this.editingPurchase = {};  // Initialize as an object, not an array
+    this.editingPurchase = { ...purchase };  // Create a copy of the purchase
 
-    this.purchaseService.getPurchaseByInvoiceNumber({invoiceNumber: purchase.invoiceNumber!}).subscribe({
-      next: (purchaseData) => {
-        this.editingPurchase = purchaseData;
-        console.log('Editing purchase:', this.editingPurchase);
+    // Initialize the purchase data
+    this.selectedSupplierId = this.editingPurchase.supplierId?.toString() || '';
+    this.purchaseDate = this.editingPurchase.purchaseDate?.split('T')[0] || '';
 
-        // Ensure purchaseItems exists
-        if (!this.editingPurchase.purchaseItems) {
-          console.error("No purchase items available for this purchase");
-          return;
-        }
+    // Clear existing products in new purchase data
+    this.newPurchaseData.purchase.products = [];
 
-        // Initialize the purchase data
-        this.selectedSupplierId = purchase.supplierId?.toString() || '';
-        this.purchaseDate = purchase.purchaseDate?.split('T')[0] || '';
+    // Add each purchase item to the form
+    this.editingPurchase.purchaseItems.forEach((item: PurchaseItemDto) => {
+      // Find the product in your local list
+      const product = this.productsforedit.find(p => p.id === item.productId);
 
-        // Clear existing products in new purchase data
-        this.newPurchaseData.purchase.products = [];
+      // Use item data first, fall back to product data if available
+      const productName = product?.name || 'Unknown Product';
+      const productPrice = item.price || product?.price || 0;
+      const productThreshold = item.stockThreshold || product?.stockThreshold || 1;
 
-        // Add each purchase item to the form
-        this.editingPurchase.purchaseItems.forEach((item: PurchaseItemDto) => {
-          const product = this.products.find(p => p.id === item.productId);
-          console.log(item)
-          if (product) {
-            const productQuantity = item.quantity || product.stockQuantity;  // Use existing product stock if quantity is not provided
-
-            this.newPurchaseData.purchase.products.push({
-              product: {
-                id: product.id,
-                name: product.name,
-                price: item.price, // Use item price if available
-                stockQuantity: productQuantity, // Ensure quantity is coming from item, or default to product stock
-                stockThreshold: item.stockThreshold // Use product's actual threshold
-              },
-              quantity: productQuantity  // Use the same quantity logic here
-            });
-          }
-        });
-
-
-        this.calculateTotalAmount();
-        console.log('Form data after edit:', this.newPurchaseData); // Debug log
-      },
-      error: (error) => {
-        console.error('Error fetching purchase details:', error);
-      }
+      this.newPurchaseData.purchase.products.push({
+        product: {
+          id: item.productId,
+          name: productName,
+          price: productPrice,
+          stockQuantity: item.quantity || 1,
+          stockThreshold: productThreshold
+        },
+        quantity: item.quantity || 1
+      });
     });
+
+    this.calculateTotalAmount();
+    console.log('Form data after edit:', this.newPurchaseData);
   }
 
   updatePurchase(): void {
@@ -483,7 +417,7 @@ export class PurchaseComponent implements OnInit {
 
         // Reset the form after successful update
         this.resetPurchaseForm();
-        this.showSuccess();
+        this.showSuccess("Updated Successfully!");
         this.editingPurchase = null; // Close the editing form
       },
       error: (error) => {
@@ -652,7 +586,68 @@ export class PurchaseComponent implements OnInit {
         this.toastr.error(`Failed to create purchase for ${product.name}`);
       }
     });
+  }exportToCSV(): void {
+    if (this.filteredResults.length === 0) {
+      this.toastr.warning('No purchases available to export');
+      return;
+    }
+
+    const headers = [
+      "Product",
+      "Supplier",
+      "Quantity",
+      "Cost Price",
+      "Total",
+      "Date",
+    ];
+
+    const csvRows = [
+      headers.join(","),  // Add header row
+      ...this.filteredResults.flatMap((purchase) => {
+        return purchase.purchaseItems.map((item: { name: string; price: number; quantity: number }) => {
+
+          // Log the product directly from purchaseItem
+          const productName = item.name || 'Unknown Product';
+          const productPrice = item.price || 0;
+          const total = productPrice * item.quantity;
+
+          // Log for debugging purposes
+          console.log('Product Name:', productName); // Debugging log
+          console.log('Product Price:', productPrice); // Debugging log
+
+          const supplierName = purchase.supplierName || 'Unknown Supplier';
+          const quantity = item.quantity || 0;
+          const date = new Date(purchase.purchaseDate).toLocaleDateString();
+
+          // Format the price and total values to two decimal places
+          const formattedProductPrice = productPrice.toFixed(2);
+          const formattedTotal = total.toFixed(2);
+
+          // Return a row for the CSV
+          return [
+            productName,
+            supplierName,
+            quantity,
+            formattedProductPrice,
+            formattedTotal,
+            date,
+          ].join(",");
+        });
+      }),
+    ];
+
+    // Generate CSV content and trigger download
+    const blob = new Blob([csvRows.join("\n")], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'purchases.csv');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   }
+
 
 }
 
