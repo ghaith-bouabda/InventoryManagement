@@ -4,7 +4,8 @@ import { ProductDto } from '../services/models/product-dto';  // Adjust the path
 import { WebSocketService } from '../socketservice/WebSocketService';
 import {Product} from '../services/models/product';
 import {ToastrService} from 'ngx-toastr';
-import {deleteProduct} from '../services/fn/product-controller/delete-product';  // Ensure the WebSocket service is imported
+import {deleteProduct} from '../services/fn/product-controller/delete-product';
+import {Observable, tap, throwError} from 'rxjs';  // Ensure the WebSocket service is imported
 
 @Component({
   selector: 'app-product',
@@ -49,5 +50,6 @@ export class ProductComponent implements OnInit {
       }
     });
   }
+
 }
 

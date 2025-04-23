@@ -124,8 +124,11 @@ export class PurchaseComponent implements OnInit {
     this.purchaseService.createPurchase({body: requestData}).subscribe({
       next: (purchase) => {
         this.showSuccess('Purchase Created Successfully!');
+
         this.resetPurchaseForm();
 
+        this.getAllPurchases();
+        this.getAvailableProducts();
       },
       error: (error) => {
         console.error("Error creating purchase:", error);
@@ -165,23 +168,34 @@ export class PurchaseComponent implements OnInit {
       return;
     }
 
-    const productToAdd = { ...this.newProduct }; // clone the selected product
+    const productToAdd = { ...this.newProduct };
 
-    // Add product with user-entered purchase quantity
-    this.newPurchaseData.purchase.products.push({
-      product: {
-        id: productToAdd.id,
-        name: productToAdd.name,
-        price: productToAdd.price || 0,
-        stockQuantity: productToAdd.stockQuantity,
-        stockThreshold: productToAdd.stockThreshold || 1
-      },
-      quantity: this.newProduct.stockQuantity
-    });
+    // Check if the product already exists in the purchase list
+    const existingItem = this.newPurchaseData.purchase.products.find(
+      (item: { product: Product }) => item.product.id === productToAdd.id
+    );
+
+    if (existingItem) {
+      // Merge quantities if product already exists
+      existingItem.quantity += productToAdd.stockQuantity;
+    } else {
+      // Add product if it's not already in the list
+      this.newPurchaseData.purchase.products.push({
+        product: {
+          id: productToAdd.id,
+          name: productToAdd.name,
+          price: productToAdd.price || 0,
+          stockQuantity: productToAdd.stockQuantity,
+          stockThreshold: productToAdd.stockThreshold || 1
+        },
+        quantity: productToAdd.stockQuantity
+      });
+    }
 
     this.calculateTotalAmount();
     this.resetProductForm();
   }
+
 
 
   private resetProductForm(): void {
@@ -189,6 +203,7 @@ export class PurchaseComponent implements OnInit {
       name: '',
       price: 0,
       stockQuantity: 1,
+
       stockThreshold: 1,
       id: undefined
     };
@@ -246,7 +261,9 @@ export class PurchaseComponent implements OnInit {
       this.getPurchaseBySupplier(this.searchText);
     } else if (this.searchType === 'product') {
       const search = this.searchText.toLowerCase().trim();
-
+      this.getAllPurchases();
+      this.getAvailableProducts();
+      this.getAllProducts()
       this.purchaseService.getAllPurchases().subscribe({
         next: (purchases) => {
           this.filteredResults = purchases.filter(purchase =>
@@ -319,6 +336,7 @@ export class PurchaseComponent implements OnInit {
   deletePurchase(purchaseInvoice: string) {
     this.purchaseService.deletePurchase({invoice: purchaseInvoice}).subscribe({
       next: () => {
+
         this.purchases = this.purchases.filter(p => p.invoiceNumber !== purchaseInvoice);
         this.filteredResults = this.filteredResults.filter(p => p.invoiceNumber !== purchaseInvoice);
         this.toastr.success('Purchase deleted');
@@ -356,7 +374,6 @@ export class PurchaseComponent implements OnInit {
           id: item.productId,
           name: productName,
           price: productPrice,
-          stockQuantity: item.quantity || 1,
           stockThreshold: productThreshold
         },
         quantity: item.quantity || 1
@@ -455,35 +472,58 @@ export class PurchaseComponent implements OnInit {
     });
   }
   handleParsedCSV(data: any[]): void {
-    data.forEach((row) => {
-      // Find or create supplier
-      let supplier = this.suppliers.find((s) => s.name === row.supplierName);
+    const supplierMap: { [key: string]: SupplierDto } = {};
+    const rowsBySupplier: { [key: string]: any[] } = {};
 
-      if (!supplier) {
-        // Create new supplier if not found
+    // 1. Group rows by supplier name
+    data.forEach((row) => {
+      if (!rowsBySupplier[row.supplierName]) {
+        rowsBySupplier[row.supplierName] = [];
+      }
+      rowsBySupplier[row.supplierName].push(row);
+    });
+
+    // 2. For each unique supplier, find or create it
+    const supplierNames = Object.keys(rowsBySupplier);
+    let processedSuppliers = 0;
+
+    supplierNames.forEach((supplierName) => {
+      let supplier = this.suppliers.find((s) => s.name === supplierName && !s.isDeleted);
+
+      const onSupplierReady = (resolvedSupplier: SupplierDto) => {
+        supplierMap[supplierName] = resolvedSupplier;
+        this.suppliers.push(resolvedSupplier); // Optional: only if you want to cache locally
+
+        // Process all rows for this supplier
+        rowsBySupplier[supplierName].forEach((row) => {
+          this.processProductAndPurchase(row, resolvedSupplier);
+        });
+
+        processedSuppliers++;
+      };
+
+      if (supplier) {
+        onSupplierReady(supplier);
+      } else {
         const newSupplier: SupplierDto = {
-          name: row.supplierName,
-          email: row.supplierEmail || '',
+          name: supplierName,
+          email: rowsBySupplier[supplierName][0].supplierEmail || '',
           isDeleted: false
         };
 
-        this.supplierService.createFournisseur({body: newSupplier}).subscribe({
+        this.supplierService.createFournisseur({ body: newSupplier }).subscribe({
           next: (createdSupplier) => {
-            supplier = createdSupplier;
-            this.suppliers.push(createdSupplier);
-            this.processProductAndPurchase(row, supplier!);
+            onSupplierReady(createdSupplier);
           },
           error: (err) => {
             console.error('Error creating supplier:', err);
-            this.toastr.error(`Error creating supplier ${row.supplierName}`);
+            this.toastr.error(`Error creating supplier ${supplierName}`);
           }
         });
-        return; // Exit this iteration, will continue after supplier is created
       }
-
-      this.processProductAndPurchase(row, supplier);
     });
   }
+
   private processProductAndPurchase(row: any, supplier: SupplierDto): void {
     // First try to find existing product (including deleted)
     const existingProduct = this.products.find(p =>

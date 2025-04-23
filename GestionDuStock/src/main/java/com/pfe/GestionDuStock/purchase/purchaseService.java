@@ -136,7 +136,7 @@ public class purchaseService {
         supplier supplier = supplierRepository.findById(dto.supplierId())
                 .orElseThrow(() -> new RuntimeException("Supplier not found"));
 
-        // Update basic info
+        reduceStockByOriginalQuantities(existingPurchase.getPurchaseItems());
         existingPurchase.setSupplier(supplier);
         existingPurchase.setPurchaseDate(dto.purchaseDate());
         existingPurchase.setStatus(dto.status());
@@ -178,17 +178,32 @@ public class purchaseService {
 
         return purchaseMapper.toDTO(existingPurchase);
     }
-
-    private void updateProductStocks(List<purchaseItem> items) {
-        for (purchaseItem item : items) {
+    private void reduceStockByOriginalQuantities(List<purchaseItem> originalItems) {
+        for (purchaseItem item : originalItems) {
             product product = item.getProduct();
-            // Calculate new stock based on purchase updates
-            long newStock = product.getStockQuantity() + item.getQuantity();
+            long newStock = product.getStockQuantity() - item.getQuantity();
+            if (newStock < 0) {
+                throw new RuntimeException("Cannot reduce stock below 0 for product: " + product.getName());
+            }
             product.setStockQuantity(newStock);
-            product.setStockThreshold(item.getStockThreshold());
             productRepository.save(product);
         }
     }
+
+
+    private void updateProductStocks(List<purchaseItem> items) {
+        for (purchaseItem item : items) {
+            // Always reload the product from DB to get accurate stock
+            product dbProduct = productRepository.findById(item.getProduct().getId())
+                    .orElseThrow(() -> new RuntimeException("Product not found"));
+
+            long newStock = dbProduct.getStockQuantity() + item.getQuantity();
+            dbProduct.setStockQuantity(newStock- dbProduct.getStockQuantity());
+            dbProduct.setStockThreshold(item.getStockThreshold());
+            productRepository.save(dbProduct);
+        }
+    }
+
     public int importPurchasesFromFile(MultipartFile file) throws Exception {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("File is empty.");
