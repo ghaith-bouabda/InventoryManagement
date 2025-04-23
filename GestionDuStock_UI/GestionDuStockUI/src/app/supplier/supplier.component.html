@@ -53,7 +53,8 @@
   <div *ngIf="filteredSuppliers.length > 0">
     <h3>Suppliers</h3>
     <ul>
-      <li *ngFor="let supplier of filteredSuppliers" (click)="selectSupplier(supplier)">
+      <li *ngFor="let supplier of filteredSuppliers"   [class.disabled]="!isAdmin"
+          (click)="isAdmin ? selectSupplier(supplier) : null">
         {{ supplier.name }} ({{ supplier.slug }})
       </li>
     </ul>

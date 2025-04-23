@@ -9,7 +9,8 @@ import { ProductDto } from '../services/models/product-dto';
 import { ToastrService } from 'ngx-toastr';
 import { SupplierDto } from '../services/models/supplier-dto';
 import {PurchaseItemDto} from '../services/models/purchase-item-dto';
-import { Papa } from 'ngx-papaparse'; // <-- Import PapaParse
+import { Papa } from 'ngx-papaparse';
+import {AuthControllerService} from '../services/services/auth-controller.service'; // <-- Import PapaParse
 
 @Component({
   selector: 'app-purchase',
@@ -40,7 +41,7 @@ export class PurchaseComponent implements OnInit {
       products: []
     }
   };
-
+  isAdmin: any;
   editingPurchase: any = null;
 
   constructor(
@@ -48,7 +49,8 @@ export class PurchaseComponent implements OnInit {
     private supplierService: SupplierControllerService,
     private productService: ProductControllerService,
     private toastr: ToastrService,
-    private papa: Papa
+    private papa: Papa,
+    private authService : AuthControllerService
   ) {
   }
 
@@ -69,6 +71,10 @@ export class PurchaseComponent implements OnInit {
           }));
         });
       }
+    });
+    //
+    this.authService.isAdmin$.subscribe(status => {
+      this.isAdmin = status;
     });
   }
 
@@ -457,6 +463,7 @@ export class PurchaseComponent implements OnInit {
   }
 
   // Parse CSV using PapaParse
+
   parseCSV(csvData: string): void {
     this.papa.parse(csvData, {
       header: true,  // Set header to true to use the first row as column headers
@@ -523,7 +530,6 @@ export class PurchaseComponent implements OnInit {
       }
     });
   }
-
   private processProductAndPurchase(row: any, supplier: SupplierDto): void {
     // First try to find existing product (including deleted)
     const existingProduct = this.products.find(p =>
@@ -531,16 +537,17 @@ export class PurchaseComponent implements OnInit {
       p.supplier?.id === supplier.id
     );
 
-    if (existingProduct) {
-      // Ensure quantity is properly parsed from CSV
-      const quantity = parseInt(row.quantity, 10) || 1;
+    // Parse quantity from CSV (only once)
+    const quantity = parseInt(row.quantity, 10) || 1;
+    const price = parseFloat(row.productPrice) || 0;
 
+    if (existingProduct) {
       // Update existing product (reactivate if deleted)
       const updateData: ProductDto = {
         id: existingProduct.id,
         name: row.productName,
-        price: parseFloat(row.productPrice) || 0,
-        stockQuantity: quantity, // Use the parsed quantity
+        price: price,
+        stockQuantity: existingProduct.stockQuantity, // Keep existing stock
         stockThreshold: parseInt(row.stockThreshold, 10) || 1,
         isDeleted: false,
         supplier: supplier
@@ -550,22 +557,18 @@ export class PurchaseComponent implements OnInit {
         next: (updatedProduct) => {
           const purchaseData = {
             purchaseDate: new Date(row.purchaseDate).toISOString(),
-            totalAmount: parseFloat(row.totalAmount) || (parseFloat(row.productPrice) * quantity),
+            totalAmount: parseFloat(row.totalAmount) || (price * quantity),
             supplierId: supplier.id!,
             purchaseItems: [{
               productId: updatedProduct.id!,
-              quantity: quantity, // Use the same quantity here
-              price: parseFloat(row.productPrice) || 0,
+              quantity: quantity,
+              price: price,
               stockThreshold: updatedProduct.stockThreshold || 1,
               name: updatedProduct.name
             }]
           };
 
           this.createPurchaseFromCSV(purchaseData, supplier, updatedProduct);
-          // Update local products list
-          this.products = this.products.map(p =>
-            p.id === updatedProduct.id ? updatedProduct : p
-          );
         },
         error: (err) => {
           console.error('Error updating product:', err);
@@ -573,12 +576,11 @@ export class PurchaseComponent implements OnInit {
         }
       });
     } else {
-      // Create new product
-      const quantity = parseInt(row.quantity, 10) || 1;
+      // Create new product with initial stock of 0 (it will be increased by the purchase)
       const newProduct: ProductDto = {
         name: row.productName,
-        price: parseFloat(row.productPrice) || 0,
-        stockQuantity: quantity,
+        price: price,
+        stockQuantity: 0, // Initialize with 0, purchase will add to it
         stockThreshold: parseInt(row.stockThreshold, 10) || 1,
         isDeleted: false,
         supplier: supplier
@@ -588,19 +590,19 @@ export class PurchaseComponent implements OnInit {
         next: (createdProduct) => {
           const purchaseData = {
             purchaseDate: new Date(row.purchaseDate).toISOString(),
-            totalAmount: parseFloat(row.totalAmount) || (createdProduct.price * quantity),
+            totalAmount: parseFloat(row.totalAmount) || (price * quantity),
             supplierId: supplier.id!,
             purchaseItems: [{
               productId: createdProduct.id!,
               quantity: quantity,
-              price: createdProduct.price,
+              price: price,
               stockThreshold: createdProduct.stockThreshold || 1,
               name: createdProduct.name
             }]
           };
 
           this.createPurchaseFromCSV(purchaseData, supplier, createdProduct);
-          this.products.push(createdProduct); // Add to local product list
+          this.products.push(createdProduct);
         },
         error: (err) => {
           console.error('Error creating product:', err);

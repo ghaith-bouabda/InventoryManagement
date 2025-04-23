@@ -44,7 +44,7 @@
             <p><strong>Supplier:</strong> {{ result.supplierName }}</p>
             <p><strong>Total Amount:</strong> ${{ result.totalAmount }}</p>
 
-            <div class="result-actions">
+            <div [class.hidden]="!isAdmin" class="result-actions">
               <button type="button" (click)="editPurchase(result)">
                 <i class="pi pi-pencil"></i> Edit
               </button>

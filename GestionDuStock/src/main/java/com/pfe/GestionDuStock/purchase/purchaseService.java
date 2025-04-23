@@ -116,8 +116,29 @@ public class purchaseService {
 
     @Transactional
     public void deletePurchase(String invoiceNumber) {
-        purchaseRepository.deleteByInvoiceNumber(invoiceNumber);
+        purchase purchase = purchaseRepository.findByInvoiceNumber(invoiceNumber)
+                .orElseThrow(() -> new RuntimeException("Purchase not found"));
+
+        // Reduce stock for each item in this purchase
+        for (purchaseItem item : purchase.getPurchaseItems()) {
+            product product = item.getProduct();
+            long newStock = product.getStockQuantity() - item.getQuantity();
+
+            if (newStock < 0) {
+                throw new RuntimeException("Cannot reduce stock below 0 for product: " + product.getName());
+            }
+
+            product.setStockQuantity(newStock);
+            productRepository.save(product);
+        }
+
+        // Delete all purchase items first (or cascade delete them)
+        purchaseItemRepository.deleteAll(purchase.getPurchaseItems());
+
+        // Delete the purchase
+        purchaseRepository.delete(purchase);
     }
+
     private String generateInvoiceNumber() {
         String invoiceNumber;
         do {

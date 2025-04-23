@@ -14,7 +14,7 @@
         <p><strong>Stock Threshold:</strong> {{ product.stockThreshold }}</p>
         <p><strong>Supplier:</strong> {{ product.supplier?.name || 'No Supplier' }}</p>
 
-        <div class="result-actions">
+        <div [class.hidden]="!isAdmin" class="result-actions">
           <button class="delete-btn" (click)="delete(product.id!)">
             <i class="pi pi-trash"></i>
             Delete

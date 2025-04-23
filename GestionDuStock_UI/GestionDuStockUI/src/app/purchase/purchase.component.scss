@@ -279,3 +279,9 @@ button[disabled] {
 .csv-import button i {
   margin-right: 0.5rem;
 }
+//
+.hidden {
+  visibility: hidden;
+  overflow: hidden;
+  height: 0;
+}
