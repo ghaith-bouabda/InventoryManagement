@@ -214,6 +214,11 @@ export class ProductControllerService extends BaseService {
     return this.getLowStockProducts$Response(params, context).pipe(
       map((r: StrictHttpResponse<Array<ProductDto>>): Array<ProductDto> => r.body)
     );
+
+  }
+
+  updateProduct(id: number, product: { product: ProductDto }): Observable<ProductDto> {
+    return this.http.put<ProductDto>(`${this.rootUrl}/api/products/products/${id}`, product);
   }
 
 }

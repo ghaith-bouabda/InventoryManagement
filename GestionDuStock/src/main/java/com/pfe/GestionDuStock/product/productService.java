@@ -1,6 +1,7 @@
 package com.pfe.GestionDuStock.product;
 
 import com.pfe.GestionDuStock.supplier.supplier;
+import com.pfe.GestionDuStock.supplier.supplierMapper;
 import com.pfe.GestionDuStock.supplier.supplierRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -16,14 +17,14 @@ import java.util.stream.Collectors;
 public class productService {
 
     private final productRepository productRepository;
-    private final supplierRepository supplierRepository;  // Added to fetch supplier when needed
+    private final supplierRepository supplierRepository;
+    private final supplierMapper supplierMapper;// Added to fetch supplier when needed
 
     public productDTO saveProduct(productDTO dto) {
         // Fetch the supplier by its ID in the DTO
         supplier supplier = supplierRepository.findById(dto.supplier().id())
                 .orElseThrow(() -> new RuntimeException("Supplier not found"));
 
-        // Convert productDTO to product entity with the supplier
         product product = productMapper.toEntity(dto, supplier);
         return productMapper.toDTO(productRepository.save(product));
     }
@@ -86,4 +87,30 @@ public class productService {
                 .filter(p -> p.getSupplier() != null)
                 .collect(Collectors.groupingBy(p -> p.getSupplier().getName(), Collectors.counting()));
     }
+    public productDTO updateProduct(Long id, productDTO dto) {
+        product existingProduct = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        // Update 'name' only if provided in the DTO
+        if (dto.name() != null) {
+            existingProduct.setName(dto.name());
+        }
+
+        // Update 'stockQuantity' only if provided in the DTO
+        if (dto.stockQuantity() != null) {
+            existingProduct.setStockQuantity(dto.stockQuantity());
+        }
+
+
+
+        // Update 'supplier' only if provided in the DTO
+        if (dto.supplier() != null) {
+            supplier supplier = supplierRepository.findById(dto.supplier().id())
+                    .orElseThrow(() -> new RuntimeException("Supplier not found"));
+            existingProduct.setSupplier(supplier);
+        }
+
+        return productMapper.toDTO(productRepository.save(existingProduct));
+    }
+
 }

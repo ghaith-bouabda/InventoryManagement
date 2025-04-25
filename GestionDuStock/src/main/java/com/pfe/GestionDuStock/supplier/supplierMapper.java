@@ -1,8 +1,9 @@
 package com.pfe.GestionDuStock.supplier;
 
 import com.pfe.GestionDuStock.product.product;
+import org.springframework.stereotype.Component;
 
-
+@Component
 public class supplierMapper {
     public static supplierDTO toDTO(supplier entity) {
         return new supplierDTO(

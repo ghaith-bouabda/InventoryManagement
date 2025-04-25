@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SupplierControllerService } from '../services/services/supplier-controller.service';
 import { SupplierDto } from '../services/models/supplier-dto';
+import {AuthControllerService} from '../services/services/auth-controller.service';
 
 @Component({
   selector: 'app-supplier',
@@ -16,10 +17,18 @@ export class SupplierComponent implements OnInit {
   newSupplier: SupplierDto = {} as SupplierDto;
   errorMessage = '';
 
-  constructor(private supplierService: SupplierControllerService) {}
+  isAdmin: any ;
+
+  constructor(private supplierService: SupplierControllerService,    private authService : AuthControllerService
+  ) {
+  }
 
   ngOnInit(): void {
-    this.loadSuppliers();
+    this.authService.isAdmin$.subscribe(status => {
+      this.isAdmin = status;
+    });
+
+  this.loadSuppliers();
   }
 
   loadSuppliers(): void {

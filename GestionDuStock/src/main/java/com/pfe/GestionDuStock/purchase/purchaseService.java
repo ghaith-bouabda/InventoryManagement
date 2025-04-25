@@ -8,10 +8,12 @@ import com.pfe.GestionDuStock.supplier.supplierRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,8 +45,7 @@ public class purchaseService {
         double totalAmount = 0;
 
         for (purchaseItemDTO itemDTO : dto.purchaseItems()) {
-            product product = productRepository.findByNameAndSupplierId(itemDTO.name(), supplier.getId())
-                    .orElseGet(() -> createNewProduct(itemDTO, supplier));
+            product product = findOrReactivateProduct(itemDTO, supplier);
 
             // Create and add purchase item
             purchaseItem item = new purchaseItem();
@@ -115,12 +116,35 @@ public class purchaseService {
 
     @Transactional
     public void deletePurchase(String invoiceNumber) {
-        purchaseRepository.deleteByInvoiceNumber(invoiceNumber);
+        purchase purchase = purchaseRepository.findByInvoiceNumber(invoiceNumber)
+                .orElseThrow(() -> new RuntimeException("Purchase not found"));
+
+        // Reduce stock for each item in this purchase
+        for (purchaseItem item : purchase.getPurchaseItems()) {
+            product product = item.getProduct();
+            long newStock = product.getStockQuantity() - item.getQuantity();
+
+            if (newStock < 0) {
+                throw new RuntimeException("Cannot reduce stock below 0 for product: " + product.getName());
+            }
+
+            product.setStockQuantity(newStock);
+            productRepository.save(product);
+        }
+
+        // Delete all purchase items first (or cascade delete them)
+        purchaseItemRepository.deleteAll(purchase.getPurchaseItems());
+
+        // Delete the purchase
+        purchaseRepository.delete(purchase);
     }
 
-    // Generate a new invoice number (simple timestamp approach)
     private String generateInvoiceNumber() {
-        return "INV-" + System.currentTimeMillis();
+        String invoiceNumber;
+        do {
+            invoiceNumber = "INV-" + java.util.UUID.randomUUID(); // Using UUID for guaranteed uniqueness
+        } while (purchaseRepository.findByInvoiceNumber(invoiceNumber).isPresent()); // Check if the invoice number already exists
+        return invoiceNumber;
     }
 
     @Transactional
@@ -133,7 +157,7 @@ public class purchaseService {
         supplier supplier = supplierRepository.findById(dto.supplierId())
                 .orElseThrow(() -> new RuntimeException("Supplier not found"));
 
-        // Update basic info
+        reduceStockByOriginalQuantities(existingPurchase.getPurchaseItems());
         existingPurchase.setSupplier(supplier);
         existingPurchase.setPurchaseDate(dto.purchaseDate());
         existingPurchase.setStatus(dto.status());
@@ -147,8 +171,7 @@ public class purchaseService {
         double totalAmount = 0;
 
         for (purchaseItemDTO itemDTO : dto.purchaseItems()) {
-            product product = productRepository.findByNameAndSupplierId(itemDTO.name(), supplier.getId())
-                    .orElseGet(() -> createNewProduct(itemDTO, supplier));
+            product product = findOrReactivateProduct(itemDTO, supplier);
 
             // Create and add purchase item
             purchaseItem item = new purchaseItem();
@@ -176,15 +199,102 @@ public class purchaseService {
 
         return purchaseMapper.toDTO(existingPurchase);
     }
-
-    private void updateProductStocks(List<purchaseItem> items) {
-        for (purchaseItem item : items) {
+    private void reduceStockByOriginalQuantities(List<purchaseItem> originalItems) {
+        for (purchaseItem item : originalItems) {
             product product = item.getProduct();
-            // Calculate new stock based on purchase updates
-            long newStock = product.getStockQuantity() + item.getQuantity();
+            long newStock = product.getStockQuantity() - item.getQuantity();
+            if (newStock < 0) {
+                throw new RuntimeException("Cannot reduce stock below 0 for product: " + product.getName());
+            }
             product.setStockQuantity(newStock);
-            product.setStockThreshold(item.getStockThreshold());
             productRepository.save(product);
         }
     }
+
+
+    private void updateProductStocks(List<purchaseItem> items) {
+        for (purchaseItem item : items) {
+            product dbProduct = productRepository.findById(item.getProduct().getId())
+                    .orElseThrow(() -> new RuntimeException("Product not found"));
+            long newStock = dbProduct.getStockQuantity() + item.getQuantity(); // Correct calculation
+            dbProduct.setStockQuantity(newStock); // Set to newStock instead of subtracting
+            dbProduct.setStockThreshold(item.getStockThreshold());
+            productRepository.save(dbProduct);
+        }
+    }
+
+    public int importPurchasesFromFile(MultipartFile file) throws Exception {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("File is empty.");
+        }
+
+        List<purchase> purchases = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            String line;
+            boolean isFirstLine = true;
+
+            while ((line = reader.readLine()) != null) {
+                if (isFirstLine) {
+                    isFirstLine = false;
+                    continue;
+                }
+
+                String[] data = line.split(",");
+
+                if (data.length < 7) continue;
+
+                String supplierName = data[0].trim();
+                String dateString = data[1].trim();
+                int quantity = Integer.parseInt(data[2].trim());
+                double totalAmount = Double.parseDouble(data[3].trim());
+                boolean approved = Boolean.parseBoolean(data[4].trim());
+                String status = data[5].trim();
+
+                supplier supplier = supplierRepository.findByName(supplierName);
+                if (supplier == null) continue;
+
+                Date purchaseDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(dateString);
+
+                purchase  newPurchase = purchase.builder()
+                        .supplier(supplier)
+                        .purchaseDate(purchaseDate)
+                        .quantity(quantity)
+                        .totalAmount(totalAmount)
+                        .approved(approved)
+                        .status(status)
+                        .build();
+
+                purchases.add(newPurchase);
+            }
+        }
+
+        purchaseRepository.saveAll(purchases);
+        return purchases.size();
+    }
+    private product findOrReactivateProduct(purchaseItemDTO itemDTO, supplier supplier) {
+        // First, check if there's an active product
+        Optional<product> activeProduct = productRepository.findByNameAndSupplierIdAndIsDeletedFalse(
+                itemDTO.name(), supplier.getId()
+        );
+        if (activeProduct.isPresent()) {
+            return activeProduct.get();
+        }
+
+        // Then, check if there's a deleted product to reactivate
+        Optional<product> deletedProduct = productRepository.findByNameAndSupplierIdAndIsDeleted(
+                itemDTO.name(), supplier.getId(), true);
+        if (deletedProduct.isPresent()) {
+            product p = deletedProduct.get();
+            p.setDeleted(false);
+            p.setPrice(itemDTO.price());
+            p.setStockQuantity(p.getStockQuantity() + itemDTO.quantity()); // Add to existing stock
+            p.setStockThreshold(itemDTO.stockThreshold());
+            return productRepository.save(p);
+        }
+
+        // Create new product
+        return createNewProduct(itemDTO, supplier);
+    }
+
 }

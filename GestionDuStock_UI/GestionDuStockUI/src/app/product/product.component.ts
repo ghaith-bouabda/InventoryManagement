@@ -4,7 +4,9 @@ import { ProductDto } from '../services/models/product-dto';  // Adjust the path
 import { WebSocketService } from '../socketservice/WebSocketService';
 import {Product} from '../services/models/product';
 import {ToastrService} from 'ngx-toastr';
-import {deleteProduct} from '../services/fn/product-controller/delete-product';  // Ensure the WebSocket service is imported
+import {deleteProduct} from '../services/fn/product-controller/delete-product';
+import {Observable, tap, throwError} from 'rxjs';
+import {AuthControllerService} from '../services/services/auth-controller.service';  // Ensure the WebSocket service is imported
 
 @Component({
   selector: 'app-product',
@@ -14,16 +16,20 @@ import {deleteProduct} from '../services/fn/product-controller/delete-product'; 
 export class ProductComponent implements OnInit {
 
   products: ProductDto[] = [];
-
+  isAdmin: any;
 
   constructor(
     private productService: ProductControllerService,
     private webSocketService: WebSocketService,
+    private authService : AuthControllerService
   ) {
   }
 
   ngOnInit(): void {
     this.fetchAllProducts();
+    this.authService.isAdmin$.subscribe(status => {
+      this.isAdmin = status;
+    });
   }
 
   fetchAllProducts(): void {
@@ -49,5 +55,6 @@ export class ProductComponent implements OnInit {
       }
     });
   }
+
 }
 

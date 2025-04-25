@@ -156,3 +156,7 @@ input.ng-invalid.ng-touched {
   color: #dc2626;
   margin-bottom: 0.75rem;
 }
+/* Style for non-clickable (disabled) items */
+li.disabled {
+  cursor: not-allowed;
+}

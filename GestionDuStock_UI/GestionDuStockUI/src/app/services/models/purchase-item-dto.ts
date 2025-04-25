@@ -4,7 +4,7 @@
 
 export interface PurchaseItemDto {
   price?: number;
-  productId: number;
+  productId: number | undefined;
   quantity?: number;
   stockThreshold?: number; // <-- Add this!
 }

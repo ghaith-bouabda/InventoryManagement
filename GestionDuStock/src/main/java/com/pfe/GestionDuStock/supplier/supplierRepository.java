@@ -11,4 +11,6 @@ public interface supplierRepository extends JpaRepository<supplier, Long> {
 
 
     Optional<supplier> findBySlug(String slug);
+
+    supplier findByName(String supplierName);
 }
