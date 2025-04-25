@@ -37,12 +37,29 @@
       <div class="filtered-result-container">
         <div *ngFor="let result of filteredResults" class="filtered-result-item">
           <div class="result-window">
-            <p><strong>Invoice Number:</strong> {{ result.invoiceNumber }}</p>
-            <li *ngFor="let item of result.purchaseItems">
-              {{ item.name }} - Quantity: {{ item.quantity }} - Price: {{ item.price }}
-            </li>
-            <p><strong>Supplier:</strong> {{ result.supplierName }}</p>
-            <p><strong>Total Amount:</strong> ${{ result.totalAmount }}</p>
+            <p>
+              <strong>Invoice Number:</strong>
+              <i class="pi pi-file-invoice"></i> {{ result.invoiceNumber }}
+            </p>
+                ---------------------------------------
+              <div *ngFor="let item of result.purchaseItems">
+                <i class="pi pi-box"></i> {{ item.name }} <br>
+                <span class="item-details">
+          <i class="pi pi-caret-up"></i> Quantity: {{ item.quantity }} <br>
+          <i class="pi pi-dollar"></i> Price: ${{ item.price }}
+        </span>
+                ---------------------------------------
+              </div>
+
+            <p>
+              <strong>Supplier:</strong>
+              <i class="pi pi-briefcase"></i> {{ result.supplierName }}
+            </p>
+
+            <p>
+              <strong>Total Amount:</strong>
+              <i class="pi pi-wallet"></i> ${{ result.totalAmount }}
+            </p>
 
             <div [class.hidden]="!isAdmin" class="result-actions">
               <button type="button" (click)="editPurchase(result)">
@@ -52,6 +69,7 @@
                 <i class="pi pi-trash"></i> Delete
               </button>
             </div>
+
           </div>
         </div>
       </div>

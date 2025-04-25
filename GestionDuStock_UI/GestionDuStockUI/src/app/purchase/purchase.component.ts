@@ -537,24 +537,26 @@ export class PurchaseComponent implements OnInit {
       p.supplier?.id === supplier.id
     );
 
-    // Parse quantity from CSV (only once)
+    // Parse values from CSV
     const quantity = parseInt(row.quantity, 10) || 1;
     const price = parseFloat(row.productPrice) || 0;
+    const stockThreshold = parseInt(row.stockThreshold, 10) || 1;
 
     if (existingProduct) {
-      // Update existing product (reactivate if deleted)
+      // Handle existing product - ensure stockQuantity is never null
       const updateData: ProductDto = {
         id: existingProduct.id,
         name: row.productName,
         price: price,
-        stockQuantity: existingProduct.stockQuantity, // Keep existing stock
-        stockThreshold: parseInt(row.stockThreshold, 10) || 1,
+        stockQuantity: existingProduct.stockQuantity || 0, // Ensure valid number
+        stockThreshold: stockThreshold,
         isDeleted: false,
         supplier: supplier
       };
 
       this.productService.updateProduct(existingProduct.id!, {product: updateData}).subscribe({
         next: (updatedProduct) => {
+          // Create purchase with updated product
           const purchaseData = {
             purchaseDate: new Date(row.purchaseDate).toISOString(),
             totalAmount: parseFloat(row.totalAmount) || (price * quantity),
@@ -563,11 +565,10 @@ export class PurchaseComponent implements OnInit {
               productId: updatedProduct.id!,
               quantity: quantity,
               price: price,
-              stockThreshold: updatedProduct.stockThreshold || 1,
+              stockThreshold: stockThreshold,
               name: updatedProduct.name
             }]
           };
-
           this.createPurchaseFromCSV(purchaseData, supplier, updatedProduct);
         },
         error: (err) => {
@@ -576,12 +577,12 @@ export class PurchaseComponent implements OnInit {
         }
       });
     } else {
-      // Create new product with initial stock of 0 (it will be increased by the purchase)
+      // Create new product with explicit stock quantity
       const newProduct: ProductDto = {
         name: row.productName,
         price: price,
-        stockQuantity: 0, // Initialize with 0, purchase will add to it
-        stockThreshold: parseInt(row.stockThreshold, 10) || 1,
+        stockQuantity: 0, // Explicit initial value
+        stockThreshold: stockThreshold,
         isDeleted: false,
         supplier: supplier
       };
@@ -596,11 +597,10 @@ export class PurchaseComponent implements OnInit {
               productId: createdProduct.id!,
               quantity: quantity,
               price: price,
-              stockThreshold: createdProduct.stockThreshold || 1,
+              stockThreshold: stockThreshold,
               name: createdProduct.name
             }]
           };
-
           this.createPurchaseFromCSV(purchaseData, supplier, createdProduct);
           this.products.push(createdProduct);
         },

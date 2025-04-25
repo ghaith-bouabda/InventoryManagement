@@ -214,12 +214,10 @@ public class purchaseService {
 
     private void updateProductStocks(List<purchaseItem> items) {
         for (purchaseItem item : items) {
-            // Always reload the product from DB to get accurate stock
             product dbProduct = productRepository.findById(item.getProduct().getId())
                     .orElseThrow(() -> new RuntimeException("Product not found"));
-
-            long newStock = dbProduct.getStockQuantity() + item.getQuantity();
-            dbProduct.setStockQuantity(newStock- dbProduct.getStockQuantity());
+            long newStock = dbProduct.getStockQuantity() + item.getQuantity(); // Correct calculation
+            dbProduct.setStockQuantity(newStock); // Set to newStock instead of subtracting
             dbProduct.setStockThreshold(item.getStockThreshold());
             productRepository.save(dbProduct);
         }
@@ -284,19 +282,18 @@ public class purchaseService {
         }
 
         // Then, check if there's a deleted product to reactivate
-        Optional<product> deletedProduct = productRepository.findByNameAndSupplierIdAndIsDeletedTrue(
-                itemDTO.name(), supplier.getId()
-        );
+        Optional<product> deletedProduct = productRepository.findByNameAndSupplierIdAndIsDeleted(
+                itemDTO.name(), supplier.getId(), true);
         if (deletedProduct.isPresent()) {
             product p = deletedProduct.get();
             p.setDeleted(false);
             p.setPrice(itemDTO.price());
-            p.setStockQuantity(itemDTO.quantity());
+            p.setStockQuantity(p.getStockQuantity() + itemDTO.quantity()); // Add to existing stock
             p.setStockThreshold(itemDTO.stockThreshold());
             return productRepository.save(p);
         }
 
-        // Otherwise, create a new product
+        // Create new product
         return createNewProduct(itemDTO, supplier);
     }
 

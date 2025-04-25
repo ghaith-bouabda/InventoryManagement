@@ -27,8 +27,8 @@ public class product {
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private supplier supplier;  // Only have supplier as a reference for product
-
-    private Long stockQuantity;
+    @Column(nullable = false)
+    private Long stockQuantity = 0L;
     private Long stockThreshold;
     private boolean isDeleted;
 }

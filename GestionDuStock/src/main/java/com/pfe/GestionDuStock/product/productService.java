@@ -91,10 +91,19 @@ public class productService {
         product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        existingProduct.setName(dto.name());
-        existingProduct.setStockQuantity(dto.stockQuantity());
-        existingProduct.setDeleted(dto.isDeleted());
+        // Update 'name' only if provided in the DTO
+        if (dto.name() != null) {
+            existingProduct.setName(dto.name());
+        }
 
+        // Update 'stockQuantity' only if provided in the DTO
+        if (dto.stockQuantity() != null) {
+            existingProduct.setStockQuantity(dto.stockQuantity());
+        }
+
+
+
+        // Update 'supplier' only if provided in the DTO
         if (dto.supplier() != null) {
             supplier supplier = supplierRepository.findById(dto.supplier().id())
                     .orElseThrow(() -> new RuntimeException("Supplier not found"));
