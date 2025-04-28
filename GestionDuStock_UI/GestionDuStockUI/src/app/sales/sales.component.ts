@@ -150,14 +150,19 @@ export class SalesComponent implements OnInit {
       return;
     }
 
+    // Get the current product price from the products array to ensure consistency
+    const currentProduct = this.products.find(p => p.id === this.newProduct.id);
+    const productPrice = currentProduct ? currentProduct.price : this.newProduct.price;
+
     const existingItem = this.newSaleData.saleItems.find(item => item.productId === this.newProduct.id);
     if (existingItem) {
       existingItem.quantity += this.newProduct.stockQuantity;
+      existingItem.price = productPrice; // Update price to current price
     } else {
       this.newSaleData.saleItems.push({
         productId: this.newProduct.id!,
         quantity: this.newProduct.stockQuantity,
-        price: this.newProduct.price
+        price: productPrice // Use current price
       });
     }
 
@@ -171,10 +176,12 @@ export class SalesComponent implements OnInit {
   }
 
   calculateTotalAmount(): number {
-    return this.newSaleData.saleItems.reduce(
+    const total = this.newSaleData.saleItems.reduce(
       (total, item) => total + (item.price * item.quantity),
       0
     );
+    // Round to 2 decimal places to avoid floating point issues
+    return Math.round(total * 100) / 100;
   }
 
   createSale(): void {
@@ -182,6 +189,10 @@ export class SalesComponent implements OnInit {
       this.showError("Missing required fields: Customer, Date, or Products");
       return;
     }
+    console.log('Creating sale with items:', this.newSaleData.saleItems);
+    console.log('Calculated amount before submission:', this.newSaleData.amount);
+    // Recalculate amount right before submission
+    this.newSaleData.amount = this.calculateTotalAmount();
 
     if (this.isEditMode && this.editSaleId) {
       this.updateSale();
@@ -190,7 +201,7 @@ export class SalesComponent implements OnInit {
         customerId: parseInt(this.selectedCustomerId, 10),
         body: {
           saleDate: new Date(this.saleDate).toISOString(),
-          amount: this.calculateTotalAmount(),
+          amount: this.newSaleData.amount, // Use the recalculated amount
           invoiceNumber: "",
           saleItems: this.newSaleData.saleItems,
           status: "pending"
@@ -224,11 +235,15 @@ export class SalesComponent implements OnInit {
   }
 
   updateSale(): void {
+    // Recalculate amount right before submission
+    this.newSaleData.amount = this.calculateTotalAmount();
+
     const requestData = {
       saleId: this.editSaleId!,
       body: {
         ...this.newSaleData,
         saleDate: new Date(this.saleDate).toISOString(),
+        amount: this.newSaleData.amount, // Use the recalculated amount
         saleItems: this.newSaleData.saleItems.map(item => ({
           productId: item.productId,
           quantity: item.quantity,
@@ -248,7 +263,6 @@ export class SalesComponent implements OnInit {
       }
     });
   }
-
   deleteSale(invoiceNumber: string): void {
     if (!confirm('Are you sure you want to delete this sale?')) return;
 

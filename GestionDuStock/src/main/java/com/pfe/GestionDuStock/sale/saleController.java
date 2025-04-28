@@ -27,7 +27,7 @@ public class saleController {
     public void addSaleItem(@PathVariable Long saleId,
                             @RequestParam Long productId,
                             @RequestParam Long quantity,
-                            @RequestParam Long price) {
+                            @RequestParam Double price) {
         saleService.addSaleItem(saleId, productId, quantity, price);
     }
 

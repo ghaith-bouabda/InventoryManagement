@@ -57,7 +57,8 @@ public class saleService {
         sale.setInvoiceNumber(generateInvoiceNumber());
         sale.setSaleItems(new ArrayList<>());
 
-        // 3. Process each sale item
+        // 3. Process each sale item WITH CURRENT PRICES
+        double totalAmount = 0;
         for (saleitemDTO itemDTO : saleDTO.saleItems()) {
             // Get current product state
             productDTO productDTO = productService.getProductById(itemDTO.productId())
@@ -68,23 +69,24 @@ public class saleService {
                 throw new RuntimeException("Insufficient stock for product: " + productDTO.name());
             }
 
-            // Reduce stock FIRST (important!)
+            // Use CURRENT PRODUCT PRICE, not the one from request
+            Double currentPrice = productDTO.price();
+            totalAmount += currentPrice * itemDTO.quantity();
+
+            // Reduce stock
             productService.reduceProductQuantity(itemDTO.productId(), itemDTO.quantity());
 
-            // Create sale item
+            // Create sale item WITH CURRENT PRICE
             saleItem saleItem = new saleItem();
             saleItem.setProduct(productMapper.toEntity(productDTO,supplierMapper.toEntity(productDTO.supplier())));
             saleItem.setQuantity(itemDTO.quantity());
-            saleItem.setPrice(itemDTO.price());
+            saleItem.setPrice(currentPrice); // <-- THIS IS CRUCIAL
             saleItem.setSale(sale);
 
             sale.getSaleItems().add(saleItem);
         }
 
-        // 4. Calculate and set total amount
-        double totalAmount = saleDTO.saleItems().stream()
-                .mapToDouble(item -> item.price() * item.quantity())
-                .sum();
+        // 4. Set the calculated amount
         sale.setAmount(BigDecimal.valueOf(totalAmount));
 
         // 5. Save and return
@@ -92,7 +94,7 @@ public class saleService {
     }
 
     @Transactional
-    public void addSaleItem(Long saleId, Long productId, Long quantity, Long price) {
+    public void addSaleItem(Long saleId, Long productId, Long quantity, Double price) {
         sale sale = saleRepository.findById(saleId)
                 .orElseThrow(() -> new SaleNotFoundException("Sale with ID " + saleId + " not found"));
 

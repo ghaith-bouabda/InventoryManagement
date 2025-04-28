@@ -202,8 +202,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
               ...this.recentSales.map(sale => ({
                 type: 'sale',
                 date: sale.saleDate,
-                message: `Sale #${sale.invoiceNumber} for ${sale.amount}€`,
-                amount: sale.amount
+                message: `Sale #${sale.invoiceNumber} for ${this.calculateSaleTotal(sale)}€`,
+                amount: this.calculateSaleTotal(sale)
+
               })),
               ...this.recentPurchases.map(purchase => ({
                 type: 'purchase',
@@ -225,6 +226,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.toastr.error('Failed to load sales data');
       }
     });
+  }
+  calculateSaleTotal(sale: SaleDto): number {
+    if (!sale.saleItems) return 0;
+    return sale.saleItems.reduce((sum, item) => sum + (item.price! * item.quantity!), 0);
   }
 
   fetchTopSellingProducts(): void {
