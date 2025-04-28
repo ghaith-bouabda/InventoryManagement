@@ -185,4 +185,18 @@
       </button>
     </form>
   </div>
+
+    <div class="csv-import">
+      <h3>Import Sales from CSV</h3>
+      <input type="file" (change)="onFileChange($event)" accept=".csv" />
+      <p>CSV format should include: customerName, customerEmail, productName, quantity, saleDate</p>
+    </div>
+
+    <div class="csv-export">
+      <h3>Export Sales to CSV</h3>
+      <button (click)="exportToCSV()">
+        <i class="pi pi-download"></i> Export CSV
+      </button>
+    </div>
+
 </div>

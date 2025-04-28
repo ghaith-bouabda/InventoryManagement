@@ -73,13 +73,59 @@
 
     <div class="charts-container">
       <p-card header="Stock Status Distribution" styleClass="chart-card">
-        <p-chart type="pie" [data]="stockStatusData" [options]="{ responsive: true }"></p-chart>
+        <p-chart type="pie" [data]="stockStatusData" [options]="chartOptions" style="height: 100%"></p-chart>
       </p-card>
 
-      <!-- New Suppliers Graph -->
       <p-card header="Products by Supplier" styleClass="chart-card">
-        <p-chart type="bar" [data]="suppliersData" [options]="{ responsive: true }"></p-chart>
+        <p-chart type="bar" [data]="suppliersData" [options]="chartOptions" style="height: 100%"></p-chart>
       </p-card>
+    </div>
+    <!-- Add these sections to your dashboard.component.html -->
+
+    <!-- Top Selling Products Section -->
+    <div class="card">
+      <h3>Top Selling Products</h3>
+      <div *ngIf="topSellingProducts.length > 0; else noTopProducts">
+        <p-chart type="bar" [data]="topProductsData" [options]="chartOptions" height="300px"></p-chart>
+        <div class="product-list">
+          <div *ngFor="let product of topSellingProducts" class="product-item">
+            <span>{{ product.product.name }}</span>
+            <span class="sold-count">{{ product.totalSold }} sold</span>
+          </div>
+        </div>
+      </div>
+      <ng-template #noTopProducts>
+        <p>No sales data available</p>
+      </ng-template>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="card activity-card">
+      <h3>Recent Activity</h3>
+      <p-timeline [value]="activityLogs" align="alternate">
+        <ng-template pTemplate="content" let-event>
+          <div class="log-item">
+            <div class="log-header">
+          <span class="log-icon">
+            <i class="pi" [ngClass]="{
+              'pi-shopping-cart': event.type === 'purchase',
+              'pi-chart-line': event.type === 'sale'
+            }"></i>
+          </span>
+              <small class="log-date">{{ event.date | date:'medium' }}</small>
+            </div>
+            <p class="log-message">{{ event.message }}</p>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="opposite" let-event>
+          <div class="log-info">
+            <small class="log-type">{{ event.type | uppercase }}</small>
+            <p class="log-amount" [ngClass]="{'text-green-500': event.type === 'sale', 'text-red-500': event.type === 'purchase'}">
+              {{ event.amount | currency:'EUR' }}
+            </p>
+          </div>
+        </ng-template>
+      </p-timeline>
     </div>
 
 

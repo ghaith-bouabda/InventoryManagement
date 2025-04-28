@@ -35,7 +35,6 @@ export class AppComponent implements OnInit {
     this.productService.getAllProducts().subscribe({
       next: (data) => {
         this.products = data;
-        this.checkLowStockForAllProducts();  // Check low stock on initial fetch
       },
       error: (err) => {
         console.error('Error fetching products', err);
@@ -43,27 +42,20 @@ export class AppComponent implements OnInit {
     });
   }
 
-  checkLowStockForAllProducts(): void {
-    this.products.forEach(product => {
-      if(!this.isAdmin) {
-        this.showwarning(this.webSocketService.checkLowStock(product));  // Check stock for each product
-      }   });
-  }
+
 
 
 
   ngOnInit() {
-      this.authService.isAdmin$.subscribe(status => {
-        this.isAdmin = status;
-        if (!this.isAdmin && this.isLoggedIn) {
-          this.checkLowStockForAllProducts(); // 🔥 trigger check right after login
-        }
-      });
+    this.webSocketService.connect();
 
-      if (this.isLoggedIn) {
-        this.fetchAllProducts();
+    this.authService.isAdmin$.subscribe(status => {
+      this.isAdmin = status;
+      if ( this.isLoggedIn) {
         this.loadDashboardData();
+
       }
+    });
 
   }
   loadDashboardData(): void {
@@ -81,13 +73,17 @@ export class AppComponent implements OnInit {
     })
 
 
-    // Get product category distribution for chart
-
-
     this.productService.getLowStockProducts().subscribe((products) => {
-      this.lowStockProducts = products
-      this.productStats.lowStock = products.length
-    })
+      this.lowStockProducts = products;
+      this.productStats.lowStock = products.length;
+
+      // Show initial alerts for non-admin users
+      if (!this.isAdmin) {
+        products.forEach(p => {
+          this.toast.warning(`Low stock: ${p.name}`);
+        });
+      }
+    });
   }
 
   get isLoggedIn(): boolean {

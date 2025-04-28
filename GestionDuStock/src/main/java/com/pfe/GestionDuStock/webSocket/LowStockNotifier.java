@@ -1,6 +1,7 @@
 package com.pfe.GestionDuStock.webSocket;
 
 import com.pfe.GestionDuStock.notification.LowStockEvent;
+import com.pfe.GestionDuStock.product.product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -14,7 +15,11 @@ public class LowStockNotifier {
 
     @EventListener
     public void handleLowStockEvent(LowStockEvent event) {
-        messagingTemplate.convertAndSend("/topic/lowStock",
-                "Low stock for product: " + event.getProduct().getName());
+        product product = event.getProduct();
+        // Double-check stock level before sending
+        if (product.getStockQuantity() <= product.getStockThreshold()) {
+            messagingTemplate.convertAndSend("/topic/lowStock",
+                    "Low stock for product: " + product.getName());
+        }
     }
 }

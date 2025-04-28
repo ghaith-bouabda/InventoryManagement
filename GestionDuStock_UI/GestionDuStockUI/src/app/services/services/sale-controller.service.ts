@@ -160,4 +160,35 @@ export class SaleControllerService extends BaseService {
   getAllSales(): Observable<SaleDto[]> {
     return this.http.get<SaleDto[]>(`${this.rootUrl}/api/sales/getall`);
   }
+  /** Path part for operation `deleteSale()` */
+  static readonly DeleteSalePath = '/api/sales/{InvoiceNumber}';
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `deleteSale()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `deleteSale$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteSale(InvoiceNumber: string, context?: HttpContext): Observable<void> {
+    return this.deleteSale$Response(InvoiceNumber, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
+    );
+  }
+
+  deleteSale$Response(InvoiceNumber: string, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    const url = this.rootUrl + '/api/sales/' + encodeURIComponent(InvoiceNumber);
+    return this.http.delete<void>(url, {
+      observe: 'response',
+      responseType: 'json',
+      context
+    }) as Observable<StrictHttpResponse<void>>;
+  }
+
+
+
 }

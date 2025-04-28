@@ -18,7 +18,11 @@ public class saleController {
     public sale createSale(@RequestParam Long customerId, @RequestBody saleDTO saleDTO) {
         return saleService.registerSale(customerId, saleDTO);
     }
-
+    @DeleteMapping("/{InvoiceNumber}")
+    public ResponseEntity<Void> deleteSale(@PathVariable String InvoiceNumber) {
+        saleService.deleteSale(InvoiceNumber);
+        return ResponseEntity.noContent().build(); // HTTP 204 No Content
+    }
     @PostMapping("/{saleId}/items")
     public void addSaleItem(@PathVariable Long saleId,
                             @RequestParam Long productId,

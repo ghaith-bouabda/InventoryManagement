@@ -38,6 +38,7 @@ import {WebSocketService} from './socketservice/WebSocketService';
 import {provideToastr, ToastrModule} from 'ngx-toastr';
 import {BrowserAnimationsModule, provideAnimations} from '@angular/platform-browser/animations';
 import { UsermanagementComponent } from './usermanagement/usermanagement.component';
+import {Timeline} from "primeng/timeline";
 
 
 
@@ -58,9 +59,9 @@ import { UsermanagementComponent } from './usermanagement/usermanagement.compone
     UsermanagementComponent,
   ],
     imports: [
-      BrowserAnimationsModule, // required animations module
-      ToastrModule.forRoot(),
-      BrowserModule,
+        BrowserAnimationsModule, // required animations module
+        ToastrModule.forRoot(),
+        BrowserModule,
         HttpClientModule,
         AppRoutingModule,
         MatListItem,
@@ -70,7 +71,7 @@ import { UsermanagementComponent } from './usermanagement/usermanagement.compone
         MatSidenavModule,
         MatListModule,
         FormsModule,
-      ReactiveFormsModule,
+        ReactiveFormsModule,
         ChartModule,
         TableModule,
         ButtonModule,
@@ -84,6 +85,7 @@ import { UsermanagementComponent } from './usermanagement/usermanagement.compone
         PanelModule,
         Menu,
         NgOptimizedImage,
+        Timeline,
 
     ],
   providers: [

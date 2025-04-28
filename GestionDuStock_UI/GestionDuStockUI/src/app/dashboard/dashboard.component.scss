@@ -115,3 +115,112 @@
 .text-center {
   text-align: center;
 }
+// Add to your dashboard.component.scss
+.product-list {
+  margin-top: 1rem;
+}
+
+
+  .sold-count {
+    font-weight: bold;
+    color: #34d399;
+  }
+
+
+.product-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+
+  .sold-count {
+    font-weight: bold;
+    color: #34d399;
+  }
+}
+
+
+/* Add styles for the Recent Activity section */
+.activity-card {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.activity-card h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  color: #1e293b;
+}
+
+.log-item {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  transition: box-shadow 0.3s ease;
+  background-color: #f9fafb;
+}
+
+.log-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.log-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.log-icon {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f3f4f6;
+  border-radius: 50%;
+  color: #1e293b;
+  font-size: 1.25rem;
+}
+
+.log-date {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.log-message {
+  font-size: 1rem;
+  color: #374151;
+  margin-bottom: 0.75rem;
+}
+
+.log-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.log-type {
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+
+.log-amount {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1e293b;
+}
+
+.text-green-500 {
+  color: #10b981;
+}
+
+.text-red-500 {
+  color: #ef4444;
+}
