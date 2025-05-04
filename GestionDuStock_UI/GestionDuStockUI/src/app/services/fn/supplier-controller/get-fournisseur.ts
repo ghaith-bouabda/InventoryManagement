@@ -30,4 +30,4 @@ export function getFournisseur(http: HttpClient, rootUrl: string, params: GetFou
   );
 }
 
-getFournisseur.PATH = '/fournisseurs/{slug}';
+getFournisseur.PATH = '/Supplier/{slug}';

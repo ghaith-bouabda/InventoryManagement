@@ -32,7 +32,7 @@ export class SupplierComponent implements OnInit {
   }
 
   loadSuppliers(): void {
-    this.supplierService.getAllFournisseurs().subscribe({
+    this.supplierService.getAllSuppliers().subscribe({
       next: (data: SupplierDto[]) => {
         this.suppliers = data;
         this.filteredSuppliers = this.suppliers.filter(supplier => !supplier.isDeleted);
@@ -56,7 +56,7 @@ export class SupplierComponent implements OnInit {
   }
 
   addSupplier(): void {
-    this.supplierService.createFournisseur({ body: this.newSupplier }).subscribe({
+    this.supplierService.createSupplier({ body: this.newSupplier }).subscribe({
       next: (newSupplier) => {
         this.suppliers.push(newSupplier);
         this.updateFilteredSuppliers();
@@ -74,7 +74,7 @@ export class SupplierComponent implements OnInit {
 
   updateSupplier(): void {
     if (this.selectedSupplier) {
-      this.supplierService.updateFournisseur({
+      this.supplierService.updateSupplier({
         slug: this.selectedSupplier.slug!,
         body: this.selectedSupplier
       }).subscribe({
@@ -89,7 +89,7 @@ export class SupplierComponent implements OnInit {
 
   deleteSupplier(): void {
     if (this.selectedSupplier) {
-      this.supplierService.deleteFournisseur({ slug: this.selectedSupplier.slug! }).subscribe({
+      this.supplierService.deleteSupplier({ slug: this.selectedSupplier.slug! }).subscribe({
         next: () => {
           this.suppliers = this.suppliers.filter(s => s.slug !== this.selectedSupplier!.slug);
           this.updateFilteredSuppliers();

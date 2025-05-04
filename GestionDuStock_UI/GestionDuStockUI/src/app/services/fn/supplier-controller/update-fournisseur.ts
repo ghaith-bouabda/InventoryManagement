@@ -32,4 +32,4 @@ export function updateFournisseur(http: HttpClient, rootUrl: string, params: Upd
   );
 }
 
-updateFournisseur.PATH = '/fournisseurs/{slug}';
+updateFournisseur.PATH = '/Supplier/{slug}';

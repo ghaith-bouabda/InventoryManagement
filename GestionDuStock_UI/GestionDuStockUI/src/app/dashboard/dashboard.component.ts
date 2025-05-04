@@ -135,7 +135,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   // Fetch suppliers data and create chart for suppliers
   loadSuppliersData(): void {
-    this.supplierService.getAllFournisseurs().subscribe((suppliers) => {
+    this.supplierService.getAllSuppliers().subscribe((suppliers) => {
       // Filter out suppliers who are deleted (assuming 'isDeleted' property exists)
       const nonDeletedSuppliers = suppliers.filter(supplier => !supplier.isDeleted);
 

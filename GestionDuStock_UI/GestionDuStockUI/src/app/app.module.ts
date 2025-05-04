@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import {ChartsComponent} from "./charts/charts.component";
 import {AppComponent} from "./app.component";
 import {SidebarComponent} from "./sidebar/sidebar.component";
 import {DashboardComponent} from "./dashboard/dashboard.component";
@@ -26,8 +25,6 @@ import { LoginComponent } from './login/login.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import {Menu} from 'primeng/menu';
 import {AuthInterceptor} from './auth-interceptor.service';
-import { LandingComponent } from './landing/landing.component';
-import { AlertComponent } from './alert/alert.component';
 import { SupplierComponent } from './supplier/supplier.component';
 import { ProductComponent } from './product/product.component';
 import { PurchaseComponent } from './purchase/purchase.component';
@@ -46,11 +43,8 @@ import {Timeline} from "primeng/timeline";
   declarations: [
     AppComponent ,
     DashboardComponent,
-    ChartsComponent,
     SidebarComponent,
     LoginComponent,
-    LandingComponent,
-    AlertComponent,
     SupplierComponent,
     ProductComponent,
     PurchaseComponent,

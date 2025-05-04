@@ -5,6 +5,7 @@ import {ProductControllerService} from './services/services/product-controller.s
 import {ToastrService} from 'ngx-toastr';
 import {ProductDto} from './services/models/product-dto';
 import {Product} from './services/models/product';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -24,40 +25,26 @@ export class AppComponent implements OnInit {
   constructor(private authService: AuthControllerService,
               private productService: ProductControllerService,
               private webSocketService: WebSocketService,
-              private toast:ToastrService// Inject the WebSocketService
-  ) {
+              private toast:ToastrService,
+              private router: Router
+
+) {
   }
-
-  showwarning(msg: String) {
-    this.toast.warning(msg.toString());
-  }
-  fetchAllProducts(): void {
-    this.productService.getAllProducts().subscribe({
-      next: (data) => {
-        this.products = data;
-      },
-      error: (err) => {
-        console.error('Error fetching products', err);
-      }
-    });
-  }
-
-
-
-
 
   ngOnInit() {
+    if (!this.isLoggedIn) {
+      this.router.navigate(['login']);
+      return;
+    }
+
     this.webSocketService.connect();
 
     this.authService.isAdmin$.subscribe(status => {
       this.isAdmin = status;
-      if ( this.isLoggedIn) {
-        this.loadDashboardData();
-
-      }
+      this.loadDashboardData();
     });
-
   }
+
   loadDashboardData(): void {
     // Get all products
     this.productService.getAllProducts().subscribe((products) => {
@@ -77,7 +64,6 @@ export class AppComponent implements OnInit {
       this.lowStockProducts = products;
       this.productStats.lowStock = products.length;
 
-      // Show initial alerts for non-admin users
       if (!this.isAdmin) {
         products.forEach(p => {
           this.toast.warning(`Low stock: ${p.name}`);
@@ -88,6 +74,7 @@ export class AppComponent implements OnInit {
 
   get isLoggedIn(): boolean {
     return localStorage.getItem("token") !== null;
+
   }
 
   title = 'GestionDuStockUI';

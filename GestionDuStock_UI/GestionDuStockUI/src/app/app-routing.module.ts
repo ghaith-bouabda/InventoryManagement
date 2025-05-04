@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import {DashboardComponent} from './dashboard/dashboard.component';
 import {LoginComponent} from './login/login.component';
 import {AuthguardService} from './authguard/authguard.service';
-import {LandingComponent} from './landing/landing.component';
 import {SupplierComponent} from './supplier/supplier.component';
 import {ProductComponent} from './product/product.component';
 import {PurchaseComponent} from './purchase/purchase.component';
@@ -21,11 +20,6 @@ const routes: Routes = [
     component: DashboardComponent,
     canActivate: [AuthguardService]
   },
-  {
-    path:"landing",
-    component: LandingComponent
-  }
-  ,
   {
     path:"supplier",
     component: SupplierComponent,

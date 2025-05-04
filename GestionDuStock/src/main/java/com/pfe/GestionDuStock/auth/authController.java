@@ -44,4 +44,5 @@ public class authController {
     public User getCurrentUser(@AuthenticationPrincipal User user) {
         return user;
     }
+
 }

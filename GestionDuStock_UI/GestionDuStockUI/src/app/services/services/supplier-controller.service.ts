@@ -29,8 +29,7 @@ export class SupplierControllerService extends BaseService {
     super(config, http);
   }
 
-  /** Path part for operation `getFournisseur()` */
-  static readonly GetFournisseurPath = '/fournisseurs/{slug}';
+  static readonly GetFournisseurPath = '/Supplier/{slug}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -38,7 +37,7 @@ export class SupplierControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getFournisseur$Response(params: GetFournisseur$Params, context?: HttpContext): Observable<StrictHttpResponse<SupplierDto>> {
+  getSupplier$Response(params: GetFournisseur$Params, context?: HttpContext): Observable<StrictHttpResponse<SupplierDto>> {
     return getFournisseur(this.http, this.rootUrl, params, context);
   }
 
@@ -48,14 +47,14 @@ export class SupplierControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getFournisseur(params: GetFournisseur$Params, context?: HttpContext): Observable<SupplierDto> {
-    return this.getFournisseur$Response(params, context).pipe(
+  getSupplier(params: GetFournisseur$Params, context?: HttpContext): Observable<SupplierDto> {
+    return this.getSupplier$Response(params, context).pipe(
       map((r: StrictHttpResponse<SupplierDto>): SupplierDto => r.body)
     );
   }
 
   /** Path part for operation `updateFournisseur()` */
-  static readonly UpdateFournisseurPath = '/fournisseurs/{slug}';
+  static readonly UpdateFournisseurPath = '/Supplier/{slug}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -63,7 +62,7 @@ export class SupplierControllerService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateFournisseur$Response(params: UpdateFournisseur$Params, context?: HttpContext): Observable<StrictHttpResponse<SupplierDto>> {
+  updateSupplier$Response(params: UpdateFournisseur$Params, context?: HttpContext): Observable<StrictHttpResponse<SupplierDto>> {
     return updateFournisseur(this.http, this.rootUrl, params, context);
   }
 
@@ -73,14 +72,14 @@ export class SupplierControllerService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updateFournisseur(params: UpdateFournisseur$Params, context?: HttpContext): Observable<SupplierDto> {
-    return this.updateFournisseur$Response(params, context).pipe(
+  updateSupplier(params: UpdateFournisseur$Params, context?: HttpContext): Observable<SupplierDto> {
+    return this.updateSupplier$Response(params, context).pipe(
       map((r: StrictHttpResponse<SupplierDto>): SupplierDto => r.body)
     );
   }
 
   /** Path part for operation `deleteFournisseur()` */
-  static readonly DeleteFournisseurPath = '/fournisseurs/{slug}';
+  static readonly DeleteFournisseurPath = '/Supplier/{slug}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -88,7 +87,7 @@ export class SupplierControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  deleteFournisseur$Response(params: DeleteFournisseur$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  deleteSupplier$Response(params: DeleteFournisseur$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
     return deleteFournisseur(this.http, this.rootUrl, params, context);
   }
 
@@ -98,14 +97,14 @@ export class SupplierControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  deleteFournisseur(params: DeleteFournisseur$Params, context?: HttpContext): Observable<void> {
-    return this.deleteFournisseur$Response(params, context).pipe(
+  deleteSupplier(params: DeleteFournisseur$Params, context?: HttpContext): Observable<void> {
+    return this.deleteSupplier$Response(params, context).pipe(
       map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
 
   /** Path part for operation `createFournisseur()` */
-  static readonly CreateFournisseurPath = '/fournisseurs';
+  static readonly CreateFournisseurPath = '/Supplier';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -113,7 +112,7 @@ export class SupplierControllerService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  createFournisseur$Response(params: CreateFournisseur$Params, context?: HttpContext): Observable<StrictHttpResponse<SupplierDto>> {
+  createSupplier$Response(params: CreateFournisseur$Params, context?: HttpContext): Observable<StrictHttpResponse<SupplierDto>> {
     return createFournisseur(this.http, this.rootUrl, params, context);
   }
 
@@ -123,14 +122,14 @@ export class SupplierControllerService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  createFournisseur(params: CreateFournisseur$Params, context?: HttpContext): Observable<SupplierDto> {
-    return this.createFournisseur$Response(params, context).pipe(
+  createSupplier(params: CreateFournisseur$Params, context?: HttpContext): Observable<SupplierDto> {
+    return this.createSupplier$Response(params, context).pipe(
       map((r: StrictHttpResponse<SupplierDto>): SupplierDto => r.body)
     );
   }
 
   /** Path part for operation `getAllFournisseurs()` */
-  static readonly GetAllFournisseursPath = '/fournisseurs/';
+  static readonly GetAllFournisseursPath = '/Supplier/';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -138,7 +137,7 @@ export class SupplierControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getAllFournisseurs$Response(params?: GetAllFournisseurs$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<SupplierDto>>> {
+  getAllSuppliers$Response(params?: GetAllFournisseurs$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<SupplierDto>>> {
     return getAllFournisseurs(this.http, this.rootUrl, params, context);
   }
 
@@ -148,8 +147,8 @@ export class SupplierControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getAllFournisseurs(params?: GetAllFournisseurs$Params, context?: HttpContext): Observable<Array<SupplierDto>> {
-    return this.getAllFournisseurs$Response(params, context).pipe(
+  getAllSuppliers(params?: GetAllFournisseurs$Params, context?: HttpContext): Observable<Array<SupplierDto>> {
+    return this.getAllSuppliers$Response(params, context).pipe(
       map((r: StrictHttpResponse<Array<SupplierDto>>): Array<SupplierDto> => r.body)
     );
   }
