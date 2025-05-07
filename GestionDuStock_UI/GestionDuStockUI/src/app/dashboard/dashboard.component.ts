@@ -13,6 +13,7 @@ import { ChartData } from 'chart.js';
 import { ProductDto } from '../services/models/product-dto';
 import {SaleDto} from '../services/models/sale-dto';
 import {PurchaseDto} from '../services/models/purchase-dto';
+import {getCurrentUser} from '../services/fn/user-controller/get-current-user';
 
 @Component({
   selector: "app-dashboard",
@@ -20,7 +21,7 @@ import {PurchaseDto} from '../services/models/purchase-dto';
   styleUrls: ["./dashboard.component.scss"],
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  currentUser: User | null = null;
+  currentUser: any ;
   isAdmin = false;
   productStats = {
     total: 0,
@@ -43,6 +44,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   totalSales = 0;
   totalPurchases = 0;
   loading = true;
+   username: string = '';
 
   constructor(
     private productService: ProductControllerService,
@@ -63,7 +65,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.updateStockStatusData();
     this.loadSuppliersData();
     this.fetchTopSellingProducts(); // Add this
-    this.fetchRecentActivity();     // Add this
+    this.fetchRecentActivity();
+    this.currentUser = JSON.parse(<string>localStorage.getItem('user'));
+  this.username=this.currentUser.username;
   }
 
   ngOnDestroy(): void {
@@ -178,6 +182,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   recentSales: SaleDto[] = [];
   recentPurchases: PurchaseDto[] = [];
   activityLogs: any[] | undefined;
+  supplierOptions: any[] | undefined;
+  timePeriods: any[] | undefined;
+  selectedPeriod: any;
+  selectedSupplier: any;
 
   fetchRecentActivity(): void {
     // Clear existing logs while loading

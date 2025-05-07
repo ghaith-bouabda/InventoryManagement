@@ -1,21 +1,24 @@
 <div class="purchase-container">
   <!-- Sidebar with Search -->
   <div class="search-sidebar">
-    <h3>Search</h3>
+    <div class="sidebar-header">
+      <i class="pi pi-search" style="font-size: 1.25rem; color: #4f46e5;"></i>
+      <h3>Search Purchases</h3>
+    </div>
     <form (ngSubmit)="search()">
-      <div>
-        <label for="searchQuery">Search by:</label>
+      <div class="form-group">
+        <label for="searchQuery"><i class="pi pi-filter" style="margin-right: 8px;"></i>Search by:</label>
         <div class="input-with-icon">
-          <i class="pi pi-search-plus"></i>
+          <i class="pi pi-tags"></i>
           <select id="searchQuery" [(ngModel)]="searchType" name="searchQuery" required>
-            <option value="invoice">Invoice Number</option>
-            <option value="supplier">Supplier</option>
-            <option value="product">Product</option>
+            <option value="invoice"><i class="pi pi-file"></i> Invoice Number</option>
+            <option value="supplier"><i class="pi pi-building"></i> Supplier</option>
+            <option value="product"><i class="pi pi-box"></i> Product</option>
           </select>
         </div>
       </div>
-      <div>
-        <label for="searchInput">Search:</label>
+      <div class="form-group">
+        <label for="searchInput"><i class="pi pi-keyword" style="margin-right: 8px;"></i>Search:</label>
         <div class="input-with-icon">
           <i class="pi pi-search"></i>
           <input
@@ -29,47 +32,68 @@
         </div>
       </div>
 
-      <button type="submit"><i class="pi pi-search"></i> Search</button>
+      <button type="submit" class="search-button">
+        <i class="pi pi-search"></i> Search Purchases
+      </button>
     </form>
 
     <div *ngIf="filteredResults.length > 0">
-      <h4>Search Results:</h4>
+      <div class="results-header">
+        <i class="pi pi-list" style="font-size: 1.25rem; color: #4f46e5;"></i>
+        <h4>Search Results</h4>
+      </div>
       <div class="filtered-result-container">
         <div *ngFor="let result of filteredResults" class="filtered-result-item">
           <div class="result-window">
-            <p>
-              <strong>Invoice Number:</strong>
-              <i class="pi pi-file-invoice"></i> {{ result.invoiceNumber }}
-            </p>
-                ---------------------------------------
-              <div *ngFor="let item of result.purchaseItems">
-                <i class="pi pi-box"></i> {{ item.name }} <br>
-                <span class="item-details">
-          <i class="pi pi-caret-up"></i> Quantity: {{ item.quantity }} <br>
-          <i class="pi pi-dollar"></i> Price: ${{ item.price }}
-        </span>
-                ---------------------------------------
+            <div class="result-field">
+              <i class="pi pi-file-invoice"></i>
+              <div>
+                <span class="field-label">Invoice Number</span>
+                <span class="field-value">{{ result.invoiceNumber }}</span>
               </div>
+            </div>
 
-            <p>
-              <strong>Supplier:</strong>
-              <i class="pi pi-briefcase"></i> {{ result.supplierName }}
-            </p>
+            <div class="divider"></div>
 
-            <p>
-              <strong>Total Amount:</strong>
-              <i class="pi pi-wallet"></i> ${{ result.totalAmount }}
-            </p>
+            <div *ngFor="let item of result.purchaseItems" class="purchase-item">
+              <div class="result-field">
+                <i class="pi pi-box"></i>
+                <div>
+                  <span class="field-label">Product</span>
+                  <span class="field-value">{{ item.name }}</span>
+                </div>
+              </div>
+              <div class="item-details">
+                <span><i class="pi pi-database"></i> Qty: {{ item.quantity }}</span>
+                <span><i class="pi pi-money-bill"></i> ${{ item.price }}</span>
+              </div>
+              <div class="divider"></div>
+            </div>
+
+            <div class="result-field">
+              <i class="pi pi-building"></i>
+              <div>
+                <span class="field-label">Supplier</span>
+                <span class="field-value">{{ result.supplierName }}</span>
+              </div>
+            </div>
+
+            <div class="result-field total-field">
+              <i class="pi pi-wallet"></i>
+              <div>
+                <span class="field-label">Total Amount</span>
+                <span class="field-value">${{ result.totalAmount }}</span>
+              </div>
+            </div>
 
             <div [class.hidden]="!isAdmin" class="result-actions">
-              <button type="button" (click)="editPurchase(result)">
+              <button type="button" (click)="editPurchase(result)" class="edit-button">
                 <i class="pi pi-pencil"></i> Edit
               </button>
-              <button type="button" (click)="deletePurchase(result.invoiceNumber)">
+              <button type="button" (click)="deletePurchase(result.invoiceNumber)" class="delete-button">
                 <i class="pi pi-trash"></i> Delete
               </button>
             </div>
-
           </div>
         </div>
       </div>
@@ -78,12 +102,17 @@
 
   <!-- Purchase Form -->
   <div class="purchase-form">
-    <h2>{{ editingPurchase ? 'Edit Purchase' : 'Create New Purchase' }}</h2>
+    <div class="form-header">
+      <i class="pi" [ngClass]="editingPurchase ? 'pi-file-edit' : 'pi-plus-circle'"
+         style="font-size: 1.5rem; color: #4f46e5;"></i>
+      <h2>{{ editingPurchase ? 'Edit Purchase' : 'Create New Purchase' }}</h2>
+    </div>
+
     <form (ngSubmit)="editingPurchase ? updatePurchase() : createPurchase()">
-      <div>
-        <label for="purchaseDate">Purchase Date:</label>
+      <div class="form-group">
+        <label for="purchaseDate"><i class="pi pi-calendar" style="margin-right: 8px;"></i>Purchase Date:</label>
         <div class="input-with-icon">
-          <i class="pi pi-calendar-clock"></i>
+          <i class="pi pi-clock"></i>
           <input
             type="date"
             id="purchaseDate"
@@ -94,10 +123,10 @@
         </div>
       </div>
 
-      <div>
-        <label for="supplierId">Supplier:</label>
+      <div class="form-group">
+        <label for="supplierId"><i class="pi pi-users" style="margin-right: 8px;"></i>Supplier:</label>
         <div class="input-with-icon">
-          <i class="pi pi-briefcase"></i>
+          <i class="pi pi-id-card"></i>
           <select
             id="supplierId"
             [(ngModel)]="selectedSupplierId"
@@ -106,16 +135,16 @@
           >
             <option value="">-- Select Supplier --</option>
             <option *ngFor="let supplier of activeSuppliers" [value]="supplier.id">
-              {{ supplier.name }}
+              <i class="pi pi-building"></i> {{ supplier.name }}
             </option>
           </select>
         </div>
       </div>
 
-      <div>
-        <label for="productSelect">Product:</label>
+      <div class="form-group">
+        <label for="productSelect"><i class="pi pi-shopping-bag" style="margin-right: 8px;"></i>Product:</label>
         <div class="input-with-icon">
-          <i class="pi pi-cog"></i>
+          <i class="pi pi-tag"></i>
           <select
             id="productSelect"
             [(ngModel)]="selectedProductId"
@@ -125,18 +154,18 @@
           >
             <option value="">-- Select Product --</option>
             <option *ngFor="let product of products" [value]="product.id">
-              {{ product.name }} - ${{ product.price }}
+              <i class="pi pi-box"></i> {{ product.name }} - ${{ product.price }}
             </option>
-            <option value="new">+ Add New Product</option>
+            <option value="new"><i class="pi pi-plus"></i> Add New Product</option>
           </select>
         </div>
       </div>
 
-      <div *ngIf="selectedProductId">
-        <div>
-          <label for="productName">Product Name:</label>
+      <div *ngIf="selectedProductId" class="product-details">
+        <div class="form-group">
+          <label for="productName"><i class="pi pi-tag" style="margin-right: 8px;"></i>Product Name:</label>
           <div class="input-with-icon">
-            <i class="pi pi-tag"></i>
+            <i class="pi pi-font"></i>
             <input
               type="text"
               id="productName"
@@ -148,10 +177,10 @@
           </div>
         </div>
 
-        <div>
-          <label for="productPrice">Product Price ($):</label>
+        <div class="form-group">
+          <label for="productPrice"><i class="pi pi-dollar" style="margin-right: 8px;"></i>Product Price ($):</label>
           <div class="input-with-icon">
-            <i class="pi pi-dollar"></i>
+            <i class="pi pi-money-bill"></i>
             <input
               type="number"
               id="productPrice"
@@ -165,10 +194,10 @@
           </div>
         </div>
 
-        <div>
-          <label for="stockThreshold">Stock Threshold:</label>
+        <div class="form-group">
+          <label for="stockThreshold"><i class="pi pi-exclamation-circle" style="margin-right: 8px;"></i>Stock Threshold:</label>
           <div class="input-with-icon">
-            <i class="pi pi-arrow-down"></i>
+            <i class="pi pi-sort-amount-down"></i>
             <input
               type="number"
               id="stockThreshold"
@@ -181,10 +210,10 @@
           </div>
         </div>
 
-        <div>
-          <label for="productQuantity">Quantity:</label>
+        <div class="form-group">
+          <label for="productQuantity"><i class="pi pi-sort-numeric-up" style="margin-right: 8px;"></i>Quantity:</label>
           <div class="input-with-icon">
-            <i class="pi pi-caret-up"></i>
+            <i class="pi pi-plus-circle"></i>
             <input
               type="number"
               id="productQuantity"
@@ -196,19 +225,26 @@
           </div>
         </div>
 
-        <button type="button" (click)="addProductToPurchase()">
+        <button type="button" (click)="addProductToPurchase()" class="add-button">
           <i class="pi pi-plus"></i> Add to Purchase
         </button>
       </div>
 
-      <div *ngIf="newPurchaseData.purchase.products.length > 0">
-        <h3>Purchase Items</h3>
+      <div *ngIf="newPurchaseData.purchase.products.length > 0" class="purchase-items-section">
+        <div class="section-header">
+          <i class="pi pi-shopping-cart" style="font-size: 1.25rem; color: #4f46e5;"></i>
+          <h3>Purchase Items</h3>
+        </div>
         <ul class="purchase-items-list">
           <li *ngFor="let item of newPurchaseData.purchase.products" class="purchase-item">
-            <span class="item-name">{{ item.product.name }}</span>
+            <div class="item-info">
+              <i class="pi pi-box"></i>
+              <span class="item-name">{{ item.product.name }}</span>
+            </div>
             <span class="item-details">
-              ${{ item.product.price | number:'1.2-2' }} × {{ item.quantity }} =
-              ${{ (item.product.price * item.quantity) | number:'1.2-2' }}
+              <i class="pi pi-money-bill"></i> ${{ item.product.price | number:'1.2-2' }} ×
+              <i class="pi pi-database"></i> {{ item.quantity }} =
+              <i class="pi pi-wallet"></i> ${{ (item.product.price * item.quantity) | number:'1.2-2' }}
             </span>
             <button type="button" (click)="removeProductFromPurchase(item.product)" class="remove-item">
               <i class="pi pi-trash"></i>
@@ -218,12 +254,14 @@
       </div>
 
       <div class="total-amount">
+        <i class="pi pi-calculator"></i>
         <label>Total Amount:</label>
         <span>${{ calculateTotalAmount() | number:'1.2-2' }}</span>
       </div>
 
       <div class="form-actions">
-        <button type="submit" [disabled]="!purchaseDate || !selectedSupplierId || newPurchaseData.purchase.products.length === 0">
+        <button type="submit" [disabled]="!purchaseDate || !selectedSupplierId || newPurchaseData.purchase.products.length === 0"
+                class="submit-button">
           <i class="pi pi-check"></i> {{ editingPurchase ? 'Update' : 'Create' }} Purchase
         </button>
 
@@ -232,16 +270,28 @@
         </button>
       </div>
     </form>
-
-  </div>
-  <div class="csv-import">
-    <h3>Import Purchases from CSV</h3>
-    <input type="file" (change)="onFileChange($event)" accept=".csv" />
-  </div>
-  <div class="csv-import">
-    <h3>Export Purchases in CSV</h3>
-    <Button  click (click)="exportToCSV()">Export CSV</Button>
   </div>
 
+  <div class="csv-section">
+    <div class="csv-import">
+      <div class="csv-header">
+        <i class="pi pi-upload" style="font-size: 1.25rem; color: #4f46e5;"></i>
+        <h3>Import Purchases</h3>
 
+      </div>
+      <input type="file" (change)="onFileChange($event)" accept=".csv" />
+      <p class="csv-hint">CSV format should include:<br> supplierName,productName,<br>productPrice,quantity, <br>purchaseDate,totalAmount,stockThreshold<br>,supplierContact<br>,supplierEmail,supplierAddress
+      </p>
+
+    </div>
+    <div class="csv-export">
+      <div class="csv-header">
+        <i class="pi pi-download" style="font-size: 1.25rem; color: #4f46e5;"></i>
+        <h3>Export Purchases</h3>
+      </div>
+      <button (click)="exportToCSV()" class="export-button">
+        <i class="pi pi-file-excel"></i> Export CSV
+      </button>
+    </div>
+  </div>
 </div>

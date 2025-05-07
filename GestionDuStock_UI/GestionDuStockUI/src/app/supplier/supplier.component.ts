@@ -44,11 +44,16 @@ export class SupplierComponent implements OnInit {
   selectSupplier(supplier: SupplierDto): void {
     this.selectedSupplier = this.selectedSupplier === supplier ? null : supplier;
     this.isEditing = false;
+    this.isAdding = false;
+
   }
 
   startAddingSupplier(): void {
     this.isAdding = true;
     this.newSupplier = {} as SupplierDto;
+
+    this.selectedSupplier =  null ;
+
   }
 
   cancelAdding(): void {
@@ -56,6 +61,7 @@ export class SupplierComponent implements OnInit {
   }
 
   addSupplier(): void {
+
     this.supplierService.createSupplier({ body: this.newSupplier }).subscribe({
       next: (newSupplier) => {
         this.suppliers.push(newSupplier);
@@ -69,6 +75,8 @@ export class SupplierComponent implements OnInit {
   editSupplier(): void {
     if (this.selectedSupplier) {
       this.isEditing = true;
+      this.isAdding = false;
+
     }
   }
 
