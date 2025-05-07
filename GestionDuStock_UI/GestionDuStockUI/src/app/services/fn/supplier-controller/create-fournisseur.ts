@@ -30,4 +30,4 @@ export function createFournisseur(http: HttpClient, rootUrl: string, params: Cre
   );
 }
 
-createFournisseur.PATH = '/fournisseurs';
+createFournisseur.PATH = '/Supplier';

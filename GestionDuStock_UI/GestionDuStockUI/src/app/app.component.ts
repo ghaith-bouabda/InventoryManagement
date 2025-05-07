@@ -5,6 +5,7 @@ import {ProductControllerService} from './services/services/product-controller.s
 import {ToastrService} from 'ngx-toastr';
 import {ProductDto} from './services/models/product-dto';
 import {Product} from './services/models/product';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -24,48 +25,26 @@ export class AppComponent implements OnInit {
   constructor(private authService: AuthControllerService,
               private productService: ProductControllerService,
               private webSocketService: WebSocketService,
-              private toast:ToastrService// Inject the WebSocketService
-  ) {
+              private toast:ToastrService,
+              private router: Router
+
+) {
   }
 
-  showwarning(msg: String) {
-    this.toast.warning(msg.toString());
-  }
-  fetchAllProducts(): void {
-    this.productService.getAllProducts().subscribe({
-      next: (data) => {
-        this.products = data;
-        this.checkLowStockForAllProducts();  // Check low stock on initial fetch
-      },
-      error: (err) => {
-        console.error('Error fetching products', err);
-      }
+  ngOnInit() {
+    if (!this.isLoggedIn) {
+      this.router.navigate(['login']);
+      return;
+    }
+
+    this.webSocketService.connect();
+
+    this.authService.isAdmin$.subscribe(status => {
+      this.isAdmin = status;
+      this.loadDashboardData();
     });
   }
 
-  checkLowStockForAllProducts(): void {
-    this.products.forEach(product => {
-      if(!this.isAdmin) {
-        this.showwarning(this.webSocketService.checkLowStock(product));  // Check stock for each product
-      }   });
-  }
-
-
-
-  ngOnInit() {
-      this.authService.isAdmin$.subscribe(status => {
-        this.isAdmin = status;
-        if (!this.isAdmin && this.isLoggedIn) {
-          this.checkLowStockForAllProducts(); // 🔥 trigger check right after login
-        }
-      });
-
-      if (this.isLoggedIn) {
-        this.fetchAllProducts();
-        this.loadDashboardData();
-      }
-
-  }
   loadDashboardData(): void {
     // Get all products
     this.productService.getAllProducts().subscribe((products) => {
@@ -81,17 +60,21 @@ export class AppComponent implements OnInit {
     })
 
 
-    // Get product category distribution for chart
-
-
     this.productService.getLowStockProducts().subscribe((products) => {
-      this.lowStockProducts = products
-      this.productStats.lowStock = products.length
-    })
+      this.lowStockProducts = products;
+      this.productStats.lowStock = products.length;
+
+      if (!this.isAdmin) {
+        products.forEach(p => {
+          this.toast.warning(`Low stock: ${p.name}`);
+        });
+      }
+    });
   }
 
   get isLoggedIn(): boolean {
     return localStorage.getItem("token") !== null;
+
   }
 
   title = 'GestionDuStockUI';

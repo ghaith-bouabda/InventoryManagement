@@ -1,105 +1,183 @@
 <div class="supplier-container">
-  <h2>Supplier Management <img src="assets/supplier.png" style="height: 30px; width: 30px"> </h2>
-
-  <button (click)="startAddingSupplier()">
-    <i class="pi pi-plus"></i> Add Supplier
-  </button>
-
-  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
-
-  <!-- Form to Add a New Supplier -->
-  <div *ngIf="isAdding">
-    <h3>Add New Supplier</h3>
-    <form (ngSubmit)="addSupplier()" #supplierForm="ngForm" novalidate>
-      <label for="name">Name:</label>
-      <input id="name" name="name" required [(ngModel)]="newSupplier.name" #name="ngModel" />
-      <div *ngIf="name.invalid && name.touched" class="error-msg">
-        Name is required.
-      </div>
-
-      <label for="adresse">Address:</label>
-      <input id="adresse" name="adresse" required [(ngModel)]="newSupplier.adresse" #adresse="ngModel" />
-      <div *ngIf="adresse.invalid && adresse.touched" class="error-msg">
-        Address is required.
-      </div>
-
-      <label for="email">Email:</label>
-      <input id="email" name="email" required email [(ngModel)]="newSupplier.email" #email="ngModel" />
-      <div *ngIf="email.invalid && email.touched" class="error-msg">
-        Valid email is required.
-      </div>
-
-      <label for="telephone">Telephone:</label>
-      <input id="telephone" name="telephone" required pattern="^[0-9]{8,15}$"
-             [(ngModel)]="newSupplier.telephone" #telephone="ngModel" />
-      <div *ngIf="telephone.invalid && telephone.touched" class="error-msg">
-        Telephone must be 8-15 digits.
-      </div>
-
-      <label for="contactPerson">Contact Person:</label>
-      <input id="contactPerson" name="contactPerson" [(ngModel)]="newSupplier.contactPerson" />
-
-      <button type="submit" [disabled]="supplierForm.invalid">
-        <i class="pi pi-check"></i> Create Supplier
-      </button>
-      <button type="button" (click)="cancelAdding()">
-        <i class="pi pi-times"></i> Cancel
-      </button>
-    </form>
-
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="header-title">
+      <i class="pi pi-truck" style="font-size: 1.5rem; color: #4f46e5;"></i>
+      <h2>Supplier Management</h2>
+    </div>
+    <button (click)="startAddingSupplier()" class="primary-btn">
+      <i class="pi pi-plus"></i> Add Supplier
+    </button>
   </div>
 
-  <!-- Existing Suppliers List -->
-  <div *ngIf="filteredSuppliers.length > 0">
-    <h3>Suppliers</h3>
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-message">
+    <i class="pi pi-exclamation-triangle"></i>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <!-- Add Supplier Form -->
+  <div *ngIf="isAdding" class="form-section">
+    <div class="form-header">
+      <i class="pi pi-plus-circle" style="font-size: 1.25rem; color: #4f46e5;"></i>
+      <h3>Add New Supplier</h3>
+    </div>
+    <form (ngSubmit)="addSupplier()" #supplierForm="ngForm" novalidate>
+      <div class="form-group">
+        <label for="name"><i class="pi pi-tag" style="margin-right: 8px;"></i>Name:</label>
+        <div class="input-with-icon">
+          <i class="pi pi-font"></i>
+          <input id="name" name="name" required [(ngModel)]="newSupplier.name" #name="ngModel" />
+        </div>
+        <div *ngIf="name.invalid && name.touched" class="error-msg">
+          <i class="pi pi-exclamation-circle"></i> Name is required.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="adresse"><i class="pi pi-map-marker" style="margin-right: 8px;"></i>Address:</label>
+        <div class="input-with-icon">
+          <i class="pi pi-home"></i>
+          <input id="adresse" name="adresse" required [(ngModel)]="newSupplier.adresse" #adresse="ngModel" />
+        </div>
+        <div *ngIf="adresse.invalid && adresse.touched" class="error-msg">
+          <i class="pi pi-exclamation-circle"></i> Address is required.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email"><i class="pi pi-envelope" style="margin-right: 8px;"></i>Email:</label>
+        <div class="input-with-icon">
+          <i class="pi pi-at"></i>
+          <input id="email" name="email" required email [(ngModel)]="newSupplier.email" #email="ngModel" />
+        </div>
+        <div *ngIf="email.invalid && email.touched" class="error-msg">
+          <i class="pi pi-exclamation-circle"></i> Valid email is required.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="telephone"><i class="pi pi-phone" style="margin-right: 8px;"></i>Telephone:</label>
+        <div class="input-with-icon">
+          <i class="pi pi-mobile"></i>
+          <input id="telephone" name="telephone" required pattern="^[0-9]{8,15}$"
+                 [(ngModel)]="newSupplier.telephone" #telephone="ngModel" />
+        </div>
+        <div *ngIf="telephone.invalid && telephone.touched" class="error-msg">
+          <i class="pi pi-exclamation-circle"></i> Telephone must be 8-15 digits.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="contactPerson"><i class="pi pi-user" style="margin-right: 8px;"></i>Contact Person:</label>
+        <div class="input-with-icon">
+          <i class="pi pi-id-card"></i>
+          <input id="contactPerson" name="contactPerson" [(ngModel)]="newSupplier.contactPerson" />
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button type="submit" [disabled]="supplierForm.invalid" class="primary-btn">
+          <i class="pi pi-check"></i> Create Supplier
+        </button>
+        <button type="button" (click)="cancelAdding()" class="secondary-btn">
+          <i class="pi pi-times"></i> Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Supplier List -->
+  <div *ngIf="filteredSuppliers.length > 0" class="supplier-list">
+    <div class="section-header">
+      <i class="pi pi-list" style="font-size: 1.25rem; color: #4f46e5;"></i>
+      <h3>Suppliers</h3>
+    </div>
     <ul>
-      <li *ngFor="let supplier of filteredSuppliers"   [class.disabled]="!isAdmin"
+      <li *ngFor="let supplier of filteredSuppliers"
+          [class.disabled]="!isAdmin"
+          [class.selected]="selectedSupplier?.id === supplier.id"
           (click)="isAdmin ? selectSupplier(supplier) : null">
-        {{ supplier.name }} ({{ supplier.slug }})
+        <div class="supplier-info">
+          <i class="pi pi-truck"></i>
+          <div>
+            <span class="supplier-name">{{ supplier.name }}</span>
+            <span class="supplier-slug">({{ supplier.slug }})</span>
+          </div>
+        </div>
       </li>
     </ul>
   </div>
 
   <!-- Selected Supplier Details -->
-  <div *ngIf="selectedSupplier">
-    <h3>Selected Supplier: {{ selectedSupplier.name }}</h3>
+  <div *ngIf="selectedSupplier" class="selected-supplier">
+    <div class="section-header">
+      <i class="pi pi-truck" style="font-size: 1.25rem; color: #4f46e5;"></i>
+      <h3>Selected Supplier: {{ selectedSupplier.name }}</h3>
+    </div>
 
-    <div *ngIf="isEditing">
+    <div *ngIf="isEditing" class="edit-section">
       <form (ngSubmit)="updateSupplier()" #editForm="ngForm" novalidate>
-        <label for="editName">Name:</label>
-        <input id="editName" name="editName" required [(ngModel)]="selectedSupplier.name" #editName="ngModel" />
-        <div *ngIf="editName.invalid && editName.touched" class="error-msg">
-          Name is required.
+        <div class="form-group">
+          <label for="editName"><i class="pi pi-tag" style="margin-right: 8px;"></i>Name:</label>
+          <div class="input-with-icon">
+            <i class="pi pi-font"></i>
+            <input id="editName" name="editName" required [(ngModel)]="selectedSupplier.name" #editName="ngModel" />
+          </div>
+          <div *ngIf="editName.invalid && editName.touched" class="error-msg">
+            <i class="pi pi-exclamation-circle"></i> Name is required.
+          </div>
         </div>
 
-        <label for="editAdresse">Address:</label>
-        <input id="editAdresse" name="editAdresse" required [(ngModel)]="selectedSupplier.adresse" #editAdresse="ngModel" />
-        <div *ngIf="editAdresse.invalid && editAdresse.touched" class="error-msg">
-          Address is required.
+        <div class="form-group">
+          <label for="editAdresse"><i class="pi pi-map-marker" style="margin-right: 8px;"></i>Address:</label>
+          <div class="input-with-icon">
+            <i class="pi pi-home"></i>
+            <input id="editAdresse" name="editAdresse" required [(ngModel)]="selectedSupplier.adresse" #editAdresse="ngModel" />
+          </div>
+          <div *ngIf="editAdresse.invalid && editAdresse.touched" class="error-msg">
+            <i class="pi pi-exclamation-circle"></i> Address is required.
+          </div>
         </div>
 
-        <label for="editEmail">Email:</label>
-        <input id="editEmail" name="editEmail" required email [(ngModel)]="selectedSupplier.email" #editEmail="ngModel" />
-        <div *ngIf="editEmail.invalid && editEmail.touched" class="error-msg">
-          Valid email is required.
+        <div class="form-group">
+          <label for="editEmail"><i class="pi pi-envelope" style="margin-right: 8px;"></i>Email:</label>
+          <div class="input-with-icon">
+            <i class="pi pi-at"></i>
+            <input id="editEmail" name="editEmail" required email [(ngModel)]="selectedSupplier.email" #editEmail="ngModel" />
+          </div>
+          <div *ngIf="editEmail.invalid && editEmail.touched" class="error-msg">
+            <i class="pi pi-exclamation-circle"></i> Valid email is required.
+          </div>
         </div>
 
-        <label for="editTelephone">Telephone:</label>
-        <input id="editTelephone" name="editTelephone" required pattern="^[0-9]{8,15}$"
-               [(ngModel)]="selectedSupplier.telephone" #editTelephone="ngModel" />
-        <div *ngIf="editTelephone.invalid && editTelephone.touched" class="error-msg">
-          Telephone must be 8-15 digits.
+        <div class="form-group">
+          <label for="editTelephone"><i class="pi pi-phone" style="margin-right: 8px;"></i>Telephone:</label>
+          <div class="input-with-icon">
+            <i class="pi pi-mobile"></i>
+            <input id="editTelephone" name="editTelephone" required pattern="^[0-9]{8,15}$"
+                   [(ngModel)]="selectedSupplier.telephone" #editTelephone="ngModel" />
+          </div>
+          <div *ngIf="editTelephone.invalid && editTelephone.touched" class="error-msg">
+            <i class="pi pi-exclamation-circle"></i> Telephone must be 8-15 digits.
+          </div>
         </div>
 
-        <label for="editContactPerson">Contact Person:</label>
-        <input id="editContactPerson" name="editContactPerson"
-               [(ngModel)]="selectedSupplier.contactPerson" />
+        <div class="form-group">
+          <label for="editContactPerson"><i class="pi pi-user" style="margin-right: 8px;"></i>Contact Person:</label>
+          <div class="input-with-icon">
+            <i class="pi pi-id-card"></i>
+            <input id="editContactPerson" name="editContactPerson"
+                   [(ngModel)]="selectedSupplier.contactPerson" />
+          </div>
+        </div>
 
-        <button type="submit" [disabled]="editForm.invalid">
-          <i class="pi pi-save"></i> Update Supplier
-        </button>
+        <div class="button-group">
+          <button type="submit" [disabled]="editForm.invalid" class="primary-btn">
+            <i class="pi pi-save"></i> Update Supplier
+          </button>
+        </div>
       </form>
-
     </div>
 
     <div *ngIf="!isEditing" class="action-buttons">

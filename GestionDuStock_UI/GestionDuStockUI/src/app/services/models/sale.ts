@@ -11,4 +11,6 @@ export interface Sale {
   invoiceNumber?: string;
   saleDate?: string;
   saleItems: Array<SaleItem>;
+  isDeleted?: boolean;
+
 }

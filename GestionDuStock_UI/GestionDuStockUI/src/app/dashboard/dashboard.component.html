@@ -1,87 +1,172 @@
-
 <div class="dashboard-container">
-
+  <!-- Loading State -->
   <div *ngIf="loading" class="loading-container">
     <p-progressBar mode="indeterminate" [style]="{'height': '6px'}"></p-progressBar>
     <span>Loading dashboard data...</span>
   </div>
 
+  <!-- Dashboard Content -->
   <div *ngIf="!loading" class="dashboard-content">
-    <div class="stats-cards">
-      <!-- Existing stats cards for Products -->
-      <p-card styleClass="stats-card">
+    <!-- Header Section -->
+    <div class="dashboard-header">
+      <h1>Hello, {{username}}</h1>
+      <div class="header-actions">
+
+      </div>
+    </div>
+
+    <!-- Stats Cards Grid -->
+    <div class="stats-grid">
+      <!-- Total Products Card -->
+      <div class="stat-card">
         <div class="stat-content">
-          <div class="stat-icon">
+          <div class="stat-icon blue">
             <i class="pi pi-box"></i>
           </div>
           <div class="stat-info">
             <div class="stat-value">{{ productStats.total }}</div>
             <div class="stat-label">Total Products</div>
+
           </div>
         </div>
-      </p-card>
+      </div>
 
-      <p-card styleClass="stats-card warning">
+      <!-- Low Stock Card -->
+      <div class="stat-card warning">
         <div class="stat-content">
-          <div class="stat-icon">
+          <div class="stat-icon orange">
             <i class="pi pi-exclamation-triangle"></i>
           </div>
           <div class="stat-info">
             <div class="stat-value">{{ productStats.lowStock }}</div>
             <div class="stat-label">Low Stock</div>
+
           </div>
         </div>
-      </p-card>
+      </div>
 
-      <p-card styleClass="stats-card danger">
+      <!-- Out of Stock Card -->
+      <div class="stat-card danger">
         <div class="stat-content">
-          <div class="stat-icon">
+          <div class="stat-icon red">
             <i class="pi pi-times-circle"></i>
           </div>
           <div class="stat-info">
             <div class="stat-value">{{ productStats.outOfStock }}</div>
             <div class="stat-label">Out of Stock</div>
+
           </div>
         </div>
-      </p-card>
+      </div>
 
-      <!-- New stats cards for Purchases and Sales -->
-      <p-card styleClass="stats-card">
+      <!-- Total Purchases Card -->
+      <div class="stat-card">
         <div class="stat-content">
-          <div class="stat-icon">
+          <div class="stat-icon purple">
             <i class="pi pi-money-bill"></i>
           </div>
           <div class="stat-info">
-            <div class="stat-value">{{ totalPurchases|| 0 | currency }}</div>
-            <div class="stat-label">Total Purchases (Expenditure)</div>
+            <div class="stat-value">{{ totalPurchases || 0 | currency }}</div>
+            <div class="stat-label">Total Purchases</div>
+
           </div>
         </div>
-      </p-card>
+      </div>
 
-      <p-card styleClass="stats-card success">
+      <!-- Total Sales Card -->
+      <div class="stat-card success">
         <div class="stat-content">
-          <div class="stat-icon">
+          <div class="stat-icon green">
             <i class="pi pi-chart-line"></i>
           </div>
           <div class="stat-info">
-            <div class="stat-value">{{ totalSales|| 0 | currency }}</div>
-            <div class="stat-label">Total Sales (Revenue)</div>
+            <div class="stat-value">{{ totalSales || 0 | currency }}</div>
+            <div class="stat-label">Total Sales</div>
+
           </div>
         </div>
-      </p-card>
+      </div>
     </div>
 
-    <div class="charts-container">
-      <p-card header="Stock Status Distribution" styleClass="chart-card">
-        <p-chart type="pie" [data]="stockStatusData" [options]="{ responsive: true }"></p-chart>
-      </p-card>
+    <!-- Charts Section -->
+    <div class="analytics-section">
+      <!-- Stock Status Chart -->
+      <div class="chart-container">
+        <div class="chart-header">
+          <h3>Stock Status Distribution</h3>
+          <p-dropdown [options]="timePeriods" [(ngModel)]="selectedPeriod" placeholder="This Month"></p-dropdown>
+        </div>
+        <p-chart type="doughnut" [data]="stockStatusData" [options]="chartOptions"></p-chart>
+      </div>
 
-      <!-- New Suppliers Graph -->
-      <p-card header="Products by Supplier" styleClass="chart-card">
-        <p-chart type="bar" [data]="suppliersData" [options]="{ responsive: true }"></p-chart>
-      </p-card>
+      <!-- Products by Supplier Chart -->
+      <div class="chart-container">
+        <div class="chart-header">
+          <h3>Products by Supplier</h3>
+        </div>
+        <p-chart type="bar" [data]="suppliersData" [options]="chartOptions"></p-chart>
+      </div>
     </div>
 
+    <!-- Bottom Section -->
+    <div class="bottom-section">
+      <!-- Top Selling Products -->
+      <div class="data-card">
+        <div class="card-header">
+          <h3>Top Selling Products</h3>
+          <button pButton label="View All" icon="pi pi-list" class="p-button-text"></button>
+        </div>
+        <div *ngIf="topSellingProducts.length > 0; else noTopProducts">
+          <div class="product-list">
+            <div *ngFor="let product of topSellingProducts" class="product-item">
+              <div class="product-info">
+                <div>
+                  <div class="product-name">{{ product.product.name }}</div>
+                </div>
+              </div>
+              <div class="product-stats">
+                <div class="sold-count">{{ product.totalSold }} sold</div>
+                <div class="revenue">{{ product.totalRevenue | currency }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ng-template #noTopProducts>
+          <div class="empty-state">
+            <i class="pi pi-info-circle"></i>
+            <p>No sales data available</p>
+          </div>
+        </ng-template>
+      </div>
 
+      <!-- Recent Activity -->
+      <div class="data-card">
+        <div class="card-header">
+          <h3>Recent Activity</h3>
+          <button pButton label="View All" icon="pi pi-list" class="p-button-text"></button>
+        </div>
+        <div class="activity-list">
+          <div *ngFor="let event of activityLogs" class="activity-item">
+            <div class="activity-icon" [ngClass]="event.type">
+              <i class="pi" [ngClass]="{
+                'pi-shopping-cart': event.type === 'purchase',
+                'pi-chart-line': event.type === 'sale',
+                'pi-box': event.type === 'inventory'
+              }"></i>
+            </div>
+            <div class="activity-content">
+              <div class="activity-message">{{ event.message }}</div>
+              <div class="activity-meta">
+                <span class="activity-time">{{ event.date | date:'shortTime' }}</span>
+                <span class="activity-date">{{ event.date | date:'mediumDate' }}</span>
+              </div>
+            </div>
+            <div class="activity-amount" [ngClass]="event.type">
+              {{ event.amount | currency:'EUR' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

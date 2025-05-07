@@ -1,5 +1,6 @@
 package com.pfe.GestionDuStock.product;
 
+import com.pfe.GestionDuStock.exception.ProductNotFoundException;
 import com.pfe.GestionDuStock.supplier.supplier;
 import com.pfe.GestionDuStock.supplier.supplierMapper;
 import com.pfe.GestionDuStock.supplier.supplierRepository;
@@ -47,18 +48,23 @@ public class productService {
     }
 
     @Transactional
-    public productDTO reduceProductQuantity(Long productId, Long quantitySold) {
+    public void reduceProductQuantity(Long productId, Long quantity) {
         product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
 
-        if (product.getStockQuantity() < quantitySold) {
-            throw new RuntimeException("Not enough stock for the sale");
+        System.out.println("[STOCK UPDATE] Product: " + product.getName() +
+                " | Current: " + product.getStockQuantity() +
+                " | Deducting: " + quantity);
+
+        if (product.getStockQuantity() < quantity) {
+            throw new RuntimeException("Insufficient stock");
         }
 
-        product.setStockQuantity(product.getStockQuantity() - quantitySold);
-        return productMapper.toDTO(productRepository.save(product));
-    }
+        product.setStockQuantity(product.getStockQuantity() - quantity);
+        productRepository.save(product); // Explicit save
 
+        System.out.println("[STOCK RESULT] New quantity: " + product.getStockQuantity());
+    }
     @Transactional
     public productDTO increaseProductQuantity(Long productId, Long quantityPurchased) {
         product product = productRepository.findById(productId)

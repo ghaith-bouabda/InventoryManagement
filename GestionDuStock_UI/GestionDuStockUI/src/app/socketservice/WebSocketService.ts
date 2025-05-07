@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import SockJS from 'sockjs-client';
 import { Client, Stomp } from '@stomp/stompjs';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
   providedIn: 'root'
@@ -8,27 +9,30 @@ import { Client, Stomp } from '@stomp/stompjs';
 export class WebSocketService {
   private stompClient: Client;
 
-  constructor() {
+  constructor(private toast: ToastrService) {
     this.stompClient = new Client({
       webSocketFactory: () => {
         const token = localStorage.getItem("token");
 
-        const socket = new SockJS('http://localhost:8080/ws');
-        console.log(socket)
+        const socket = new SockJS('http://localhost:8080/ws');  // WebSocket URL
+        console.log(socket);
+
         socket.onopen = () => {
-          socket.send(JSON.stringify({ Authorization: `Bearer ${token}` }));
+          socket.send(JSON.stringify({ Authorization: `Bearer ${token}` })); // Token sent here
         };
+
         return socket;
       },
       debug: (str) => {
         console.log('STOMP debug:', str);
       },
-      reconnectDelay: 5000,
+      reconnectDelay: 5000,  // Retry after 5 seconds if disconnected
       onConnect: (frame) => {
-        console.log('Connected: ', frame);
+        console.log('Connected:', frame);
+        // Subscribe to the topic for low stock notifications
         this.stompClient.subscribe('/topic/lowStock', (message) => {
           if (message.body) {
-            alert('📦 ' + message.body);
+            this.showwarning(message.body); // Display the low stock message
           }
         });
       },
@@ -39,29 +43,17 @@ export class WebSocketService {
   }
 
   connect(): void {
-    this.stompClient.activate();
+    this.stompClient.activate();  // Activate the connection to the WebSocket
   }
 
   disconnect(): void {
     if (this.stompClient && this.stompClient.active) {
-      this.stompClient.deactivate();
+      this.stompClient.deactivate();  // Deactivate the WebSocket connection
     }
   }
 
-  checkLowStock(product: any): String {
-    if (product.stockQuantity <= product.stockThreshold) {
-      if (this.stompClient && this.stompClient.connected) {
-        this.stompClient.publish({
-          destination: '/app/check-low-stock',
-          body: JSON.stringify(product) // Send product data for low stock check
-        });
-
-      } else {
-        console.warn('STOMP client is not connected');
-
-      }
-    }
-    return('Low stock detected:'+ product.name);
+  showwarning(msg: string) {
+    this.toast.warning(msg);  // Show a warning toast
   }
 
 

@@ -29,4 +29,4 @@ export function deleteFournisseur(http: HttpClient, rootUrl: string, params: Del
   );
 }
 
-deleteFournisseur.PATH = '/fournisseurs/{slug}';
+deleteFournisseur.PATH = '/Supplier/{slug}';

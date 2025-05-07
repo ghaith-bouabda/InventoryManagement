@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import {ChartsComponent} from "./charts/charts.component";
 import {AppComponent} from "./app.component";
 import {SidebarComponent} from "./sidebar/sidebar.component";
 import {DashboardComponent} from "./dashboard/dashboard.component";
@@ -26,8 +25,6 @@ import { LoginComponent } from './login/login.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import {Menu} from 'primeng/menu';
 import {AuthInterceptor} from './auth-interceptor.service';
-import { LandingComponent } from './landing/landing.component';
-import { AlertComponent } from './alert/alert.component';
 import { SupplierComponent } from './supplier/supplier.component';
 import { ProductComponent } from './product/product.component';
 import { PurchaseComponent } from './purchase/purchase.component';
@@ -38,6 +35,7 @@ import {WebSocketService} from './socketservice/WebSocketService';
 import {provideToastr, ToastrModule} from 'ngx-toastr';
 import {BrowserAnimationsModule, provideAnimations} from '@angular/platform-browser/animations';
 import { UsermanagementComponent } from './usermanagement/usermanagement.component';
+import {Timeline} from "primeng/timeline";
 
 
 
@@ -45,11 +43,8 @@ import { UsermanagementComponent } from './usermanagement/usermanagement.compone
   declarations: [
     AppComponent ,
     DashboardComponent,
-    ChartsComponent,
     SidebarComponent,
     LoginComponent,
-    LandingComponent,
-    AlertComponent,
     SupplierComponent,
     ProductComponent,
     PurchaseComponent,
@@ -58,9 +53,9 @@ import { UsermanagementComponent } from './usermanagement/usermanagement.compone
     UsermanagementComponent,
   ],
     imports: [
-      BrowserAnimationsModule, // required animations module
-      ToastrModule.forRoot(),
-      BrowserModule,
+        BrowserAnimationsModule, // required animations module
+        ToastrModule.forRoot(),
+        BrowserModule,
         HttpClientModule,
         AppRoutingModule,
         MatListItem,
@@ -70,7 +65,7 @@ import { UsermanagementComponent } from './usermanagement/usermanagement.compone
         MatSidenavModule,
         MatListModule,
         FormsModule,
-      ReactiveFormsModule,
+        ReactiveFormsModule,
         ChartModule,
         TableModule,
         ButtonModule,
@@ -84,6 +79,7 @@ import { UsermanagementComponent } from './usermanagement/usermanagement.compone
         PanelModule,
         Menu,
         NgOptimizedImage,
+        Timeline,
 
     ],
   providers: [

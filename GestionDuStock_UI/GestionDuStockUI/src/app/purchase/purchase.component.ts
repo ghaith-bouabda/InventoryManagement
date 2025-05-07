@@ -59,7 +59,7 @@ export class PurchaseComponent implements OnInit {
     this.getAvailableProducts();
     this.getAllProducts()
 
-    this.supplierService.getAllFournisseurs().subscribe({
+    this.supplierService.getAllSuppliers().subscribe({
       next: (data: SupplierDto[]) => {
         this.suppliers = data;
         const supplierMap = new Map(data.map(s => [s.id, s.name]));
@@ -518,7 +518,7 @@ export class PurchaseComponent implements OnInit {
           isDeleted: false
         };
 
-        this.supplierService.createFournisseur({ body: newSupplier }).subscribe({
+        this.supplierService.createSupplier({ body: newSupplier }).subscribe({
           next: (createdSupplier) => {
             onSupplierReady(createdSupplier);
           },

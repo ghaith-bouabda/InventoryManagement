@@ -1,48 +1,69 @@
 <div class="customer-container">
-  <h2>
-    Customer Management
-    <img src="assets/client.png" alt="Customer Icon" style="height: 30px; width: 30px" />
-  </h2>
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="header-title">
+      <i class="pi pi-users" style="font-size: 1.5rem; color: #4f46e5;"></i>
+      <h2>Customer Management</h2>
+    </div>
+    <button (click)="startAddingCustomer()" class="primary-btn">
+      <i class="pi pi-plus"></i> Add Customer
+    </button>
+  </div>
 
-  <button (click)="startAddingCustomer()" class="primary-btn">
-    <i class="pi pi-plus"></i> Add Customer
-  </button>
-
-  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-message">
+    <i class="pi pi-exclamation-triangle"></i>
+    <span>{{ errorMessage }}</span>
+  </div>
 
   <!-- Add Customer Form -->
   <div *ngIf="isAdding" class="form-section">
-    <h3>Add New Customer</h3>
+    <div class="form-header">
+      <i class="pi pi-user-plus" style="font-size: 1.25rem; color: #4f46e5;"></i>
+      <h3>Add New Customer</h3>
+    </div>
     <form [formGroup]="customerForm" (ngSubmit)="addCustomer()">
       <div class="form-group">
-        <label for="name">Name</label>
-        <input id="name" formControlName="customerName" class="form-control" />
+        <label for="name"><i class="pi pi-user" style="margin-right: 8px;"></i>Name</label>
+        <div class="input-with-icon">
+          <i class="pi pi-font"></i>
+          <input id="name" formControlName="customerName" class="form-control" />
+        </div>
         <div *ngIf="customerForm.get('customerName')?.invalid && customerForm.get('customerName')?.touched" class="error-msg">
-          Name is required.
+          <i class="pi pi-exclamation-circle"></i> Name is required.
         </div>
       </div>
 
       <div class="form-group">
-        <label for="address">Address</label>
-        <input id="address" formControlName="address" class="form-control" />
+        <label for="address"><i class="pi pi-map-marker" style="margin-right: 8px;"></i>Address</label>
+        <div class="input-with-icon">
+          <i class="pi pi-home"></i>
+          <input id="address" formControlName="address" class="form-control" />
+        </div>
         <div *ngIf="customerForm.get('address')?.invalid && customerForm.get('address')?.touched" class="error-msg">
-          Address is required.
+          <i class="pi pi-exclamation-circle"></i> Address is required.
         </div>
       </div>
 
       <div class="form-group">
-        <label for="email">Email</label>
-        <input id="email" formControlName="email" class="form-control" />
+        <label for="email"><i class="pi pi-envelope" style="margin-right: 8px;"></i>Email</label>
+        <div class="input-with-icon">
+          <i class="pi pi-at"></i>
+          <input id="email" formControlName="email" class="form-control" />
+        </div>
         <div *ngIf="customerForm.get('email')?.invalid && customerForm.get('email')?.touched" class="error-msg">
-          Valid email is required.
+          <i class="pi pi-exclamation-circle"></i> Valid email is required.
         </div>
       </div>
 
       <div class="form-group">
-        <label for="phone">Phone</label>
-        <input id="phone" formControlName="phone" class="form-control" />
+        <label for="phone"><i class="pi pi-phone" style="margin-right: 8px;"></i>Phone</label>
+        <div class="input-with-icon">
+          <i class="pi pi-mobile"></i>
+          <input id="phone" formControlName="phone" class="form-control" />
+        </div>
         <div *ngIf="customerForm.get('phone')?.invalid && customerForm.get('phone')?.touched" class="error-msg">
-          Phone must be 8-15 digits.
+          <i class="pi pi-exclamation-circle"></i> Phone must be 8-15 digits.
         </div>
       </div>
 
@@ -59,48 +80,73 @@
 
   <!-- Customer List -->
   <div *ngIf="customers.length > 0" class="customer-list">
-    <h3>Customers</h3>
+    <div class="section-header">
+      <i class="pi pi-list" style="font-size: 1.25rem; color: #4f46e5;"></i>
+      <h3>Customers</h3>
+    </div>
     <ul>
-      <li *ngFor="let customer of customers" (click)="selectCustomer(customer)">
-        {{ customer.customerName }} ({{ customer.email }})
+      <li *ngFor="let customer of customers" (click)="selectCustomer(customer)"
+          [class.selected]="selectedCustomer?.id === customer.id">
+        <div class="customer-info">
+          <i class="pi pi-user"></i>
+          <div>
+            <span class="customer-name">{{ customer.customerName }}</span>
+            <span class="customer-email">({{ customer.email }})</span>
+          </div>
+        </div>
       </li>
     </ul>
   </div>
 
   <!-- Selected Customer Details -->
   <div *ngIf="selectedCustomer" class="selected-customer">
-    <h3>Selected: {{ selectedCustomer.customerName }}</h3>
+    <div class="section-header">
+      <i class="pi pi-user" style="font-size: 1.25rem; color: #4f46e5;"></i>
+      <h3>Selected: {{ selectedCustomer.customerName }}</h3>
+    </div>
 
     <form *ngIf="isEditing" [formGroup]="editForm" (ngSubmit)="updateCustomer()">
       <div class="form-group">
-        <label for="editName">Name</label>
-        <input id="editName" formControlName="customerName" class="form-control" />
+        <label for="editName"><i class="pi pi-user" style="margin-right: 8px;"></i>Name</label>
+        <div class="input-with-icon">
+          <i class="pi pi-font"></i>
+          <input id="editName" formControlName="customerName" class="form-control" />
+        </div>
         <div *ngIf="editForm.get('customerName')?.invalid && editForm.get('customerName')?.touched" class="error-msg">
-          Name is required.
+          <i class="pi pi-exclamation-circle"></i> Name is required.
         </div>
       </div>
 
       <div class="form-group">
-        <label for="editAddress">Address</label>
-        <input id="editAddress" formControlName="address" class="form-control" />
+        <label for="editAddress"><i class="pi pi-map-marker" style="margin-right: 8px;"></i>Address</label>
+        <div class="input-with-icon">
+          <i class="pi pi-home"></i>
+          <input id="editAddress" formControlName="address" class="form-control" />
+        </div>
         <div *ngIf="editForm.get('address')?.invalid && editForm.get('address')?.touched" class="error-msg">
-          Address is required.
+          <i class="pi pi-exclamation-circle"></i> Address is required.
         </div>
       </div>
 
       <div class="form-group">
-        <label for="editEmail">Email</label>
-        <input id="editEmail" formControlName="email" class="form-control" />
+        <label for="editEmail"><i class="pi pi-envelope" style="margin-right: 8px;"></i>Email</label>
+        <div class="input-with-icon">
+          <i class="pi pi-at"></i>
+          <input id="editEmail" formControlName="email" class="form-control" />
+        </div>
         <div *ngIf="editForm.get('email')?.invalid && editForm.get('email')?.touched" class="error-msg">
-          Valid email is required.
+          <i class="pi pi-exclamation-circle"></i> Valid email is required.
         </div>
       </div>
 
       <div class="form-group">
-        <label for="editPhone">Phone</label>
-        <input id="editPhone" formControlName="phone" class="form-control" />
+        <label for="editPhone"><i class="pi pi-phone" style="margin-right: 8px;"></i>Phone</label>
+        <div class="input-with-icon">
+          <i class="pi pi-mobile"></i>
+          <input id="editPhone" formControlName="phone" class="form-control" />
+        </div>
         <div *ngIf="editForm.get('phone')?.invalid && editForm.get('phone')?.touched" class="error-msg">
-          Phone must be 8-15 digits.
+          <i class="pi pi-exclamation-circle"></i> Phone must be 8-15 digits.
         </div>
       </div>
 

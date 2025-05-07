@@ -28,4 +28,4 @@ export function getAllFournisseurs(http: HttpClient, rootUrl: string, params?: G
   );
 }
 
-getAllFournisseurs.PATH = '/fournisseurs/';
+getAllFournisseurs.PATH = '/Supplier/';

@@ -1,162 +1,264 @@
+/* Modern Zoho-inspired CSS for Suppliers */
 .supplier-container {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 2rem;
-  border-radius: 12px;
-  background: #ffffff;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  font-family: 'Poppins', sans-serif;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-h2 {
-  text-align: center;
-  font-size: 2rem;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #0f172a;
+/* Header Styles */
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1rem;
 }
 
-button {
-  background: #4f46e5;
-  color: white;
-  border: none;
-  padding: 0.75rem 1rem;
-  font-size: 0.95rem;
-  border-radius: 8px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: background-color 0.2s ease-in-out, transform 0.2s;
-}
-
-button:hover {
-  background: #4338ca;
-  transform: translateY(-1px);
-}
-
-button:disabled {
-  background: #d1d5db;
-  cursor: not-allowed;
-}
-
-button + button {
-  margin-left: 0.5rem;
-}
-
-/* Form Styling */
-form {
+.header-title {
   display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  background: #f9fafb;
-  padding: 1.5rem;
+  align-items: center;
+  gap: 0.75rem;
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+  }
+}
+
+/* Form Section Styles */
+.form-section, .selected-supplier {
+  background: #ffffff;
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #374151;
+.form-header, .section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+  }
 }
 
-input {
+/* Form Group Styles */
+.form-group {
+  margin-bottom: 1.25rem;
+
+  label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #475569;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Input Styles */
+.input-with-icon {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: #cbd5e1;
+  }
+
+  &:focus-within {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  }
+
+  i {
+    color: #94a3b8;
+    margin-right: 0.75rem;
+    font-size: 1rem;
+  }
+
+  input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 0.875rem;
+    color: #1e293b;
+  }
+}
+
+/* Error Message Styles */
+.error-message {
+  background: #fee2e2;
+  color: #b91c1c;
   padding: 0.75rem;
   border-radius: 8px;
-  border: 1px solid #d1d5db;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+
+  i {
+    font-size: 1rem;
+  }
+}
+
+.error-msg {
+  font-size: 0.75rem;
+  color: #dc2626;
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Button Styles */
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  padding: 0.625rem 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+
+  i {
+    font-size: 1rem;
+  }
+}
+
+.primary-btn {
+  background-color: #4f46e5;
+  color: white;
+
+  &:hover {
+    background-color: #4338ca;
+  }
+
+  &:disabled {
+    background-color: #cbd5e1;
+    cursor: not-allowed;
+  }
+}
+
+.secondary-btn {
+  background-color: white;
+  color: #64748b;
+  border-color: #e2e8f0;
+
+  &:hover {
+    background-color: #f1f5f9;
+  }
+}
+
+.edit-button {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.delete-button {
+  background-color: #ef4444;
+  color: white;
+}
+
+/* Supplier List Styles */
+.supplier-list {
   background: #ffffff;
-  font-size: 0.95rem;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-input:focus {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-  outline: none;
-}
-
-/* Supplier List */
 ul {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-}
-
-ul li {
-  background: #ffffff;
-  padding: 1rem;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-ul li:hover {
-  background: #f3f4f6;
-}
-
-.error {
-  color: #ef4444;
-  background: #ffe4e6;
-  padding: 0.75rem;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 0.9rem;
-}
-
-/* Action Buttons */
-.action-buttons {
-  display: flex;
   gap: 0.5rem;
 }
 
-.edit-button {
-  background: #09b303;
+li {
+  background: #ffffff;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #f8fafc;
+  }
+
+  &.selected {
+    border-color: #6366f1;
+    background: #f0f4ff;
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+    background: #f3f4f6;
+  }
 }
 
-.edit-button:hover {
-  background: #03431f;
+.supplier-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  i {
+    color: #4f46e5;
+    font-size: 1.25rem;
+  }
 }
 
-.delete-button {
-  background: #ef4444;
+.supplier-name {
+  font-weight: 600;
+  color: #1e293b;
 }
 
-.delete-button:hover {
-  background: #dc2626;
+.supplier-slug {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin-top: 0.25rem;
 }
 
-/* Optional: Icons using FontAwesome or PrimeIcons */
-button i {
-  font-size: 1rem;
-  margin-right: 0.3rem;
-}
-input.ng-invalid.ng-touched {
-  border-color: #ef4444;
-  background-color: #fef2f2;
+/* Action Buttons */
+.button-group, .action-buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
 }
 
-.error-msg {
-  font-size: 0.8rem;
-  color: #dc2626;
-  margin-bottom: 0.75rem;
-}
-/* Style for non-clickable (disabled) items */
-li.disabled {
-  cursor: not-allowed;
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .header-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .button-group, .action-buttons {
+    flex-direction: column;
+  }
 }
