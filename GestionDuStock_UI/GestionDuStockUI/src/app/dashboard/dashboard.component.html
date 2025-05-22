@@ -94,7 +94,6 @@
       <div class="chart-container">
         <div class="chart-header">
           <h3>Stock Status Distribution</h3>
-          <p-dropdown [options]="timePeriods" [(ngModel)]="selectedPeriod" placeholder="This Month"></p-dropdown>
         </div>
         <p-chart type="doughnut" [data]="stockStatusData" [options]="chartOptions"></p-chart>
       </div>
@@ -114,7 +113,6 @@
       <div class="data-card">
         <div class="card-header">
           <h3>Top Selling Products</h3>
-          <button pButton label="View All" icon="pi pi-list" class="p-button-text"></button>
         </div>
         <div *ngIf="topSellingProducts.length > 0; else noTopProducts">
           <div class="product-list">
@@ -143,7 +141,6 @@
       <div class="data-card">
         <div class="card-header">
           <h3>Recent Activity</h3>
-          <button pButton label="View All" icon="pi pi-list" class="p-button-text"></button>
         </div>
         <div class="activity-list">
           <div *ngFor="let event of activityLogs" class="activity-item">

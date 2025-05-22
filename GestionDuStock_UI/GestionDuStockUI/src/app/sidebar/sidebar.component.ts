@@ -1,6 +1,7 @@
 import { Component, type OnInit } from "@angular/core"
 import { AuthControllerService } from "../services/services/auth-controller.service"
 import {Router} from '@angular/router';
+import {TokenService} from '../token/token.service';
 
 @Component({
   selector: "app-sidebar",
@@ -9,14 +10,23 @@ import {Router} from '@angular/router';
 })
 export class SidebarComponent implements OnInit {
   isAdmin = false
-
-  constructor(private router: Router ,private authService: AuthControllerService) {
+  isLoggedIn = false;
+  constructor(private router: Router ,private authService: AuthControllerService,private tokenService:TokenService) {
   }
+
 
   ngOnInit(): void {
     this.authService.isAdmin$.subscribe(status => {
       this.isAdmin = status;
     });
+
+        this.tokenService.isLoggedIn$.subscribe(status => {
+          this.isLoggedIn = status;
+        });
+
+
+
+
   }
 
 

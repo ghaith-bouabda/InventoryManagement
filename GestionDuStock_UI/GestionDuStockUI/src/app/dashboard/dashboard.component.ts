@@ -59,7 +59,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.authService.isAdmin()
     this.loadDashboardData();
-    this.webSocketService.connect();
     this.fetchTotalPurchases();
     this.fetchTotalSales();
     this.updateStockStatusData();
@@ -71,7 +70,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.webSocketService.disconnect();
   }
 
   loadDashboardData(): void {

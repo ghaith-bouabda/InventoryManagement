@@ -76,8 +76,8 @@ export class SalesComponent implements OnInit {
     this.saleService.getAllSales().subscribe({
       next: (sales) => {
         this.sales = sales;
-        this.salesLoaded = true; // <--- NEW
-        this.filteredResults = []; // don't show anything until user searches
+        this.salesLoaded = true;
+        this.filteredResults = [];
       },
       error: (err) => console.error("Error fetching sales:", err)
     });
@@ -99,7 +99,7 @@ export class SalesComponent implements OnInit {
   search(): void {
     if (!this.salesLoaded) {
       this.getAllSales();
-      return; // wait for user to re-trigger search after loading
+      return;
     }
 
     const searchTerm = this.searchText.toLowerCase().trim();

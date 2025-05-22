@@ -1,7 +1,46 @@
 <div class="register-container">
   <div class="register-form">
-    <h2><i class="pi pi-user-plus"></i> Register</h2>
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <h2><i class="pi pi-users"></i> User Management</h2>
+
+    <!-- Search Bar -->
+    <div class="search-bar">
+      <div class="input-with-icon">
+        <i class="pi pi-search"></i>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="filterUsers()"
+          placeholder="Search users..."
+        />
+      </div>
+    </div>
+
+    <!-- User List -->
+    <div class="user-list">
+      <div *ngFor="let user of filteredUsers" class="user-item">
+        <div class="user-info">
+          <span class="username">{{user.username}}</span>
+          <span class="email">{{user.email}}</span>
+          <span class="role">{{user.role}}</span>
+        </div>
+        <div class="user-actions">
+          <button (click)="editUser(user)" class="action-button edit">
+            <i class="pi pi-pencil"></i>
+          </button>
+          <button (click)="confirmDelete(user)" class="action-button delete">
+            <i class="pi pi-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add/Edit User Form -->
+    <h2>
+      <i class="pi" [ngClass]="isEditing ? 'pi-user-edit' : 'pi-user-plus'"></i>
+      {{isEditing ? 'Edit User' : 'Add New User'}}
+    </h2>
+
+    <form [formGroup]="registerForm" (ngSubmit)="isEditing ? updateUser() : onSubmit()">
       <div>
         <label for="username">Username</label>
         <div class="input-with-icon">
@@ -13,6 +52,9 @@
             placeholder="Enter username"
           />
         </div>
+        <small *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched" class="error-message">
+          <i class="pi pi-exclamation-circle"></i> Username is required
+        </small>
       </div>
 
       <div>
@@ -26,6 +68,9 @@
             placeholder="Enter email"
           />
         </div>
+        <small *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="error-message">
+          <i class="pi pi-exclamation-circle"></i> Valid email is required
+        </small>
       </div>
 
       <div>
@@ -37,8 +82,12 @@
             formControlName="password"
             type="password"
             placeholder="Enter password"
+            [required]="!isEditing"
           />
         </div>
+        <small *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="error-message">
+          <i class="pi pi-exclamation-circle"></i> Password is required
+        </small>
       </div>
 
       <div>
@@ -46,23 +95,31 @@
         <div class="input-with-icon">
           <i class="pi pi-shield"></i>
           <select id="role" formControlName="role">
-            <option value="USER">User</option>
-            <option value="ADMIN">Admin</option>
+            <option *ngFor="let role of roles" [value]="role.value">{{role.label}}</option>
           </select>
         </div>
       </div>
 
-      <button
-        type="submit"
-        [disabled]="registerForm.invalid"
-        class="submit-button"
-      >
-        <i class="pi pi-check"></i> Register
-      </button>
-    </form>
+      <div class="form-actions">
+        <button
+          type="submit"
+          [disabled]="registerForm.invalid"
+          class="submit-button"
+        >
+          <i class="pi pi-check"></i> {{isEditing ? 'Update' : 'Register'}}
+        </button>
 
-    <div *ngIf="error" class="error-message">
-      <i class="pi pi-exclamation-triangle"></i> {{ error }}
-    </div>
+        <button
+          *ngIf="isEditing"
+          type="button"
+          (click)="cancelEdit()"
+          class="cancel-button"
+        >
+          <i class="pi pi-times"></i> Cancel
+        </button>
+      </div>
+    </form>
   </div>
 </div>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

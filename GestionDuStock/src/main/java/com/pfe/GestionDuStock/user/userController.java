@@ -34,4 +34,13 @@ public class userController {
     public userDTO getCurrentUser(@AuthenticationPrincipal User user) {
         return userMapper.toDTO(user); // Convert authenticated User to DTO
     }
+    @PutMapping("/edit/{id}")
+    public userDTO editUser(@PathVariable Long id, @RequestBody userDTO userDTO) {
+        return userService.editUser(id, userDTO);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public void deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+    }
 }

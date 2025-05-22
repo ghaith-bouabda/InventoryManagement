@@ -3,58 +3,60 @@ import SockJS from 'sockjs-client';
 import { Client, Stomp } from '@stomp/stompjs';
 import { ToastrService } from 'ngx-toastr';
 
+
 @Injectable({
   providedIn: 'root'
 })
 export class WebSocketService {
   private stompClient: Client;
+  private isConnected = false;
+  private notificationCooldown = new Map<string, number>();
+  private readonly COOLDOWN_PERIOD = 3600000; // 1 hour
 
   constructor(private toast: ToastrService) {
     this.stompClient = new Client({
       webSocketFactory: () => {
-        const token = localStorage.getItem("token");
-
-        const socket = new SockJS('http://localhost:8080/ws');  // WebSocket URL
-        console.log(socket);
-
+        const token = localStorage.getItem('token');
+        const socket = new SockJS('http://localhost:8080/ws');
         socket.onopen = () => {
-          socket.send(JSON.stringify({ Authorization: `Bearer ${token}` })); // Token sent here
+          socket.send(JSON.stringify({ Authorization: `Bearer ${token}` }));
         };
-
         return socket;
       },
-      debug: (str) => {
-        console.log('STOMP debug:', str);
-      },
-      reconnectDelay: 5000,  // Retry after 5 seconds if disconnected
+      debug: (str) => console.log('STOMP debug:', str),
+      reconnectDelay: 5000,
       onConnect: (frame) => {
-        console.log('Connected:', frame);
-        // Subscribe to the topic for low stock notifications
+        this.isConnected = true;
         this.stompClient.subscribe('/topic/lowStock', (message) => {
-          if (message.body) {
-            this.showwarning(message.body); // Display the low stock message
-          }
+          this.handleLowStockNotification(message.body);
         });
-      },
-      onWebSocketError: (error) => {
-        console.error('WebSocket error:', error);
       }
     });
   }
 
-  connect(): void {
-    this.stompClient.activate();  // Activate the connection to the WebSocket
-  }
+  private handleLowStockNotification(message: string): void {
+    const now = Date.now();
+    const lastNotificationTime = this.notificationCooldown.get(message) || 0;
 
-  disconnect(): void {
-    if (this.stompClient && this.stompClient.active) {
-      this.stompClient.deactivate();  // Deactivate the WebSocket connection
+    if (now - lastNotificationTime > this.COOLDOWN_PERIOD) {
+      this.toast.warning(message, 'Low Stock Alert', {
+        timeOut: 10000,
+        progressBar: true,
+        positionClass: 'toast-top-right'
+      });
+      this.notificationCooldown.set(message, now);
     }
   }
 
-  showwarning(msg: string) {
-    this.toast.warning(msg);  // Show a warning toast
+  connect(): void {
+    if (!this.isConnected) {
+      this.stompClient.activate();
+    }
   }
 
-
+  disconnect(): void {
+    if (this.isConnected) {
+      this.stompClient.deactivate();
+    }
+  }
 }
