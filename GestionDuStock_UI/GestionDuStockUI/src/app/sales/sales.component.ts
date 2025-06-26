@@ -76,8 +76,8 @@ export class SalesComponent implements OnInit {
     this.saleService.getAllSales().subscribe({
       next: (sales) => {
         this.sales = sales;
-        this.salesLoaded = true; // <--- NEW
-        this.filteredResults = []; // don't show anything until user searches
+        this.salesLoaded = true;
+        this.filteredResults = [];
       },
       error: (err) => console.error("Error fetching sales:", err)
     });
@@ -90,16 +90,21 @@ export class SalesComponent implements OnInit {
 
   enrichSaleWithCustomerName(sale: SaleDto): any {
     const customer = this.customers.find(c => c.id === sale.customer?.id);
+    const calculatedAmount = sale.saleItems?.reduce((total, item) => total + (item.price * item.quantity), 0) || 0;
+
     return {
       ...sale,
-      customerName: customer?.customerName || 'Unknown'
+      customerName: customer?.customerName || 'Unknown',
+      amount: Math.round(calculatedAmount * 100) / 100
     };
   }
+
+
 
   search(): void {
     if (!this.salesLoaded) {
       this.getAllSales();
-      return; // wait for user to re-trigger search after loading
+      return;
     }
 
     const searchTerm = this.searchText.toLowerCase().trim();

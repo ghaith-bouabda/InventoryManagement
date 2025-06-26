@@ -1,18 +1,37 @@
 import { Injectable } from '@angular/core';
 import {JwtHelperService} from "@auth0/angular-jwt";
 import {jwtDecode} from "jwt-decode";
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TokenService {
 
+  private isLoggedInSubject = new BehaviorSubject<boolean>(this.isTokenValid());
+    isLoggedIn$ = this.isLoggedInSubject.asObservable();
+
   set token(token: string) {
     localStorage.setItem('token', token);
+    this.isLoggedInSubject.next(true);
+  }
+
+  logout() {
+    localStorage.removeItem('token');
+    this.isLoggedInSubject.next(false);
   }
 
   get token() {
     return localStorage.getItem('token') as string;
+  }
+  getUsername(): string | null {
+    const decoded = this.decodeToken();
+    return decoded ? decoded.sub || decoded.username : null;
+  }
+
+  getRole(): string | null {
+    const decoded = this.decodeToken();
+    return decoded ? decoded.role : null;
   }
 
   isTokenValid() {
@@ -41,4 +60,9 @@ export class TokenService {
       return null;
     }
   }
+
+
+
+
+
 }

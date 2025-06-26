@@ -82,10 +82,9 @@
               <i class="pi pi-wallet"></i>
               <div>
                 <span class="field-label">Total Amount</span>
-                <span class="field-value">{{ calculateTotalAmount() | currency }}</span>
+                <span class="field-value">{{ sale.amount | currency }}</span>
               </div>
             </div>
-
             <div class="result-actions">
               <button type="button" (click)="editsale(sale)" class="edit-button">
                 <i class="pi pi-pencil"></i> Edit

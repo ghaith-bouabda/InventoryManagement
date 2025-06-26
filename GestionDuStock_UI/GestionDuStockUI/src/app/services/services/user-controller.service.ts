@@ -126,5 +126,72 @@ export class UserControllerService extends BaseService {
       map((r: StrictHttpResponse<UserDto>): UserDto => r.body)
     );
   }
+  /** Path part for operation `editUser()` */
+  static readonly EditUserPath = '/api/users/edit/{id}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `editUser()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  editUser$Response(params: {
+    id: number;
+    body: UserDto
+  }, context?: HttpContext): Observable<StrictHttpResponse<UserDto>> {
+    return this.http.put(this.rootUrl + `/api/users/edit/${params.id}`, params.body, {
+      context: context
+    }).pipe(
+      map((r: any) => r as StrictHttpResponse<UserDto>)
+    );
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `editUser$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  editUser(params: {
+    id: number;
+    body: UserDto
+  }, context?: HttpContext): Observable<UserDto> {
+    return this.editUser$Response(params, context).pipe(
+      map((r: StrictHttpResponse<UserDto>): UserDto => r.body)
+    );
+  }
+
+  /** Path part for operation `deleteUser()` */
+  static readonly DeleteUserPath = '/api/users/delete/{id}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `deleteUser()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteUser$Response(params: {
+    id: number;
+  }, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return this.http.delete(this.rootUrl + `/api/users/delete/${params.id}`, {
+      context: context
+    }).pipe(
+      map((r: any) => r as StrictHttpResponse<void>)
+    );
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `deleteUser$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteUser(params: {
+    id: number;
+  }, context?: HttpContext): Observable<void> {
+    return this.deleteUser$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
+    );
+  }
 
 }

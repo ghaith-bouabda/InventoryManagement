@@ -36,20 +36,26 @@ export class LoginComponent {
     this.authService.authentication({ body: this.authReq }).subscribe({
       next: (res) => {
         this.tokenService.token = res.accessToken as string;
-     this.userController.getCurrentUser().subscribe({
-          next: (res) => {
-           localStorage.setItem('user',JSON.stringify(res));
-            this.authService.setCurrentUser(res);
 
+        this.userController.getCurrentUser().subscribe({
+          next: (user) => {
+            localStorage.setItem('user', JSON.stringify(user));
+            this.authService.setCurrentUser(user);  // Optional if you use a shared user service
+
+            this.router.navigate(['/']);
+          },
+          error: (err) => {
+            this.errorMsg.push('Failed to fetch user info');
           }
         });
-        this.router.navigate(['/']);
+
       },
       error: (err) => {
         this.errorMsg.push(err.error?.message || 'Authentication failed');
       }
     });
   }
+
 
 
 }

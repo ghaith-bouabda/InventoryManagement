@@ -56,7 +56,6 @@ public class purchaseController {
     public Long getTotalPurchases() {
         return purchaseService.getTotalPurchases();
     }
-    // Get a purchase by invoice number
     @GetMapping("/invoice/{invoiceNumber}")
     public ResponseEntity<purchaseDTO> getPurchaseByInvoiceNumber(@PathVariable String invoiceNumber) {
         Optional<purchaseDTO> purchase = purchaseService.getPurchaseByInvoiceNumber(invoiceNumber);
@@ -69,18 +68,6 @@ public class purchaseController {
     public ResponseEntity<Void> deletePurchase(@PathVariable("invoice") String invoiceNumber) {
         purchaseService.deletePurchase(invoiceNumber);
         return ResponseEntity.noContent().build();
-    }
-    @PostMapping("/import")
-    public ResponseEntity<?> importPurchases(@RequestParam("file") MultipartFile file) {
-        try {
-            int importedCount = purchaseService.importPurchasesFromFile(file);
-            return ResponseEntity.ok("Successfully imported " + importedCount + " purchases.");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Import failed: " + e.getMessage());
-        }
     }
 
 }

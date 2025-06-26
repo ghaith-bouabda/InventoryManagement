@@ -51,7 +51,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private supplierService: SupplierControllerService,
     private saleService: SaleControllerService,
     private authService: AuthControllerService,
-    private webSocketService: WebSocketService,
     private purchaseService: PurchaseControllerService,
     private toastr: ToastrService
   ) {}
@@ -59,7 +58,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.authService.isAdmin()
     this.loadDashboardData();
-    this.webSocketService.connect();
     this.fetchTotalPurchases();
     this.fetchTotalSales();
     this.updateStockStatusData();
@@ -71,7 +69,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.webSocketService.disconnect();
   }
 
   loadDashboardData(): void {
@@ -175,23 +172,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
 
   topProductsData: any;
-  salesPurchasesTrendData: any;
 
 
   topSellingProducts: any[] = [];
   recentSales: SaleDto[] = [];
   recentPurchases: PurchaseDto[] = [];
   activityLogs: any[] | undefined;
-  supplierOptions: any[] | undefined;
-  timePeriods: any[] | undefined;
-  selectedPeriod: any;
-  selectedSupplier: any;
-
   fetchRecentActivity(): void {
-    // Clear existing logs while loading
     this.activityLogs = undefined;
 
-    // Get recent sales
     this.saleService.getAllSales().subscribe({
       next: (sales) => {
         this.recentSales = sales
@@ -241,10 +230,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   fetchTopSellingProducts(): void {
-    // First get all products to map IDs to product objects
     this.productService.getAllProducts().subscribe({
       next: (allProducts) => {
-        // Create a map of product IDs to product objects
         const productsMap = new Map<number, ProductDto>();
         allProducts.forEach(product => {
           if (product.id) {
@@ -252,7 +239,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
           }
         });
 
-        // Now get all sales to calculate top selling products
         this.saleService.getAllSales().subscribe({
           next: (sales) => {
             const productSalesMap = new Map<number, { product: ProductDto | undefined, totalSold: number }>();
@@ -271,13 +257,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
               });
             });
 
-            // Convert to array, filter out undefined products, and sort by total sold
             this.topSellingProducts = Array.from(productSalesMap.values())
               .filter(item => item.product !== undefined)
               .sort((a, b) => b.totalSold - a.totalSold)
-              .slice(0, 5); // Get top 5
+              .slice(0, 5);
 
-            // Update the chart data
             this.topProductsData = {
               labels: this.topSellingProducts.map(p => p.product?.name || 'Unknown Product'),
               datasets: [{
