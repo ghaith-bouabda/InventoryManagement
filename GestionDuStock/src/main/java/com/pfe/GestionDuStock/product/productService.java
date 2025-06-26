@@ -19,8 +19,7 @@ public class productService {
 
     private final productRepository productRepository;
     private final supplierRepository supplierRepository;
-    private final supplierMapper supplierMapper;// Added to fetch supplier when needed
-
+    
     public productDTO saveProduct(productDTO dto) {
         // Fetch the supplier by its ID in the DTO
         supplier supplier = supplierRepository.findById(dto.supplier().id())

@@ -90,11 +90,16 @@ export class SalesComponent implements OnInit {
 
   enrichSaleWithCustomerName(sale: SaleDto): any {
     const customer = this.customers.find(c => c.id === sale.customer?.id);
+    const calculatedAmount = sale.saleItems?.reduce((total, item) => total + (item.price * item.quantity), 0) || 0;
+
     return {
       ...sale,
-      customerName: customer?.customerName || 'Unknown'
+      customerName: customer?.customerName || 'Unknown',
+      amount: Math.round(calculatedAmount * 100) / 100
     };
   }
+
+
 
   search(): void {
     if (!this.salesLoaded) {

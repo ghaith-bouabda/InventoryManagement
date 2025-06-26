@@ -16,8 +16,8 @@ public class LowStockNotifier {
     @EventListener
     public void handleLowStockEvent(LowStockEvent event) {
         product product = event.getProduct();
-        // Double-check stock level before sending
         if (product.getStockQuantity() <= product.getStockThreshold()) {
+            // Always send notification without any checks
             messagingTemplate.convertAndSend("/topic/lowStock",
                     "Low stock for product: " + product.getName());
         }
