@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/GestionDuStock/GestionDuStock.iml" filepath="$PROJECT_DIR$/GestionDuStock/GestionDuStock.iml" />
-      <module fileurl="file://$PROJECT_DIR$/GestionDuStock_UI/GestionDuStock_UI.iml" filepath="$PROJECT_DIR$/GestionDuStock_UI/GestionDuStock_UI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Backend/GestionDuStock.iml" filepath="$PROJECT_DIR$/Backend/GestionDuStock.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Frontend/GestionDuStock_UI.iml" filepath="$PROJECT_DIR$/Frontend/GestionDuStock_UI.iml" />
     </modules>
   </component>
 </project>
