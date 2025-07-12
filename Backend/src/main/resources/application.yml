@@ -1,9 +1,10 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: ghaith
-    password: ghaith
+    url: jdbc:postgresql://dpg-d1oqkrk9c44c73fuain0-a.oregon-postgres.render.com:5432/inventory_db_rp2a
+    username: inventory_db_rp2a_user
+    password: AYnfeIRuKsRY5Q6ytboWSOqHOn8En7Az
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: create-drop
